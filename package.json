@@ -91,7 +91,7 @@
     "prettier": "^1.19.1",
     "react-app-rewire-hot-loader": "^2.0.1",
     "react-app-rewired": "^2.1.6",
-    "react-hot-loader": "^4.12.18",
+    "react-hot-loader": "^4.13.0",
     "redux-devtools": "^3.5.0",
     "webpack-bundle-analyzer": "^3.7.0",
     "yarn": "^1.22.4"
