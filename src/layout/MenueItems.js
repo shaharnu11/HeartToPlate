@@ -48,10 +48,20 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
         </Menu.Item>
         <Menu.Item key="ecommerce">
           <NavLink onClick={toggleCollapsed} to={`${path}/ecommerce`}>
-            Ecommerce
+            Ecommercee
           </NavLink>
         </Menu.Item>
       </SubMenu>
+      <Menu.Item key="VolunteersView" icon={!topMenu && <FeatherIcon icon="database" />}>
+        <NavLink onClick={toggleCollapsed} to={`${path}/firestore/Volunteers/View`}>
+          Volunteers
+        </NavLink>
+      </Menu.Item>
+      <Menu.Item key="GroupsView" icon={!topMenu && <FeatherIcon icon="database" />}>
+        <NavLink onClick={toggleCollapsed} to={`${path}/firestore/Groups/View`}>
+          Groups
+        </NavLink>
+      </Menu.Item>
       <SubMenu key="firestore" icon={!topMenu && <FeatherIcon icon="database" />} title="Firestore Crud">
         <Menu.Item key="fbView">
           <NavLink onClick={toggleCollapsed} to={`${path}/firestore/fbView`}>

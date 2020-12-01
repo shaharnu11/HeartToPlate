@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { hot } from 'react-hot-loader/root';
-//added for react-hot-loader   
-const App = () => <div>Hello World!</div>;
-export default process.env.NODE_ENV === "development" ? hot(App) : App
 
 import { Provider, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components';

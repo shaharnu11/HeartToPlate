@@ -67,13 +67,13 @@ const {
   fbSearchErr,
 } = actions;
 
-const fbDataSubmit = data => {
-  return async (dispatch, getState, { getFirebase, getFirestore }) => {
+const fbDataSubmit = (collection, data) => {
+  return async (dispatch, getState, { getFirestore }) => {
     const db = getFirestore();
     try {
       await dispatch(fbAddBegin());
       await db
-        .collection('crud')
+        .collection(collection)
         .doc(`${data.id}`)
         .set(data);
       await dispatch(fbAddSuccess(data));
@@ -85,16 +85,49 @@ const fbDataSubmit = data => {
   };
 };
 
-const fbDataRead = () => {
+const fbDataRead = (collection, pageSize, currentPage, sortBy, sortDirection) => {
   return async (dispatch, getState, { getFirebase, getFirestore }) => {
     const db = getFirestore();
     const data = [];
     try {
       await dispatch(fbReadBegin());
-      const query = await db.collection('crud').get();
+
+      // const count = 100; // change later
+      // [...Array(24).keys()].forEach(_ => {
+      //   data.push(
+      //     JSON.parse(
+      //       '{"email":"a@gmail.com","join":"2020/10/08","status":"active","city":"","name":"bla","country":"","url":null,"position":"s","company":"s","id":1603031715050}',
+      //     ),
+      //   );
+      // });
+
+      // const query = await db
+      //   .collection('curd')
+      //   // .orderBy('id')
+      //   // .startAfter(0)
+      //   // .limit(pageSize)
+      //   .get();
+
+      // const g = await query;
+
+      const query = await db
+        .collection(collection)
+        .orderBy(sortBy, sortDirection)
+        .limit(pageSize * currentPage + 1)
+        .get();
+
       await query.forEach(doc => {
         data.push(doc.data());
       });
+
+      const isEndOfCollection = data.length > pageSize * currentPage;
+      if (isEndOfCollection) {
+        data.pop();
+        [...Array(pageSize).keys()].forEach(_ => {
+          data.push(data[data.length - 1]);
+        });
+      }
+
       await dispatch(fbReadSuccess(data));
     } catch (err) {
       await dispatch(fbReadErr(err));
@@ -102,13 +135,13 @@ const fbDataRead = () => {
   };
 };
 
-const fbDataSearch = value => {
+const fbDataSearch = (collection, value) => {
   return async (dispatch, getState, { getFirebase, getFirestore }) => {
     const db = getFirestore();
     const data = [];
     try {
       await dispatch(fbSearchBegin());
-      const query = await db.collection('crud').get();
+      const query = await db.collection(collection).get();
       await query.forEach(doc => {
         data.push(doc.data());
       });
@@ -120,20 +153,20 @@ const fbDataSearch = value => {
   };
 };
 
-const fbDataUpdate = (id, data) => {
+const fbDataUpdate = (collection, id, data) => {
   return async (dispatch, getState, { getFirebase, getFirestore }) => {
     const db = getFirestore();
     try {
       await dispatch(fbUpdateBegin());
       await db
-        .collection('crud')
+        .collection(collection)
         .doc(`${id}`)
         .update({
           ...data,
         });
 
       const query = await db
-        .collection('crud')
+        .collection(collection)
         .where('id', '==', id)
         .get();
       await query.forEach(doc => {
@@ -148,17 +181,17 @@ const fbDataUpdate = (id, data) => {
   };
 };
 
-const fbDataDelete = id => {
+const fbDataDelete = (collection, id) => {
   return async (dispatch, getState, { getFirebase, getFirestore }) => {
     const db = getFirestore();
     const data = [];
     try {
       await dispatch(fbDeleteBegin());
       await db
-        .collection('crud')
+        .collection(collection)
         .doc(`${id}`)
         .delete();
-      const query = await db.collection('crud').get();
+      const query = await db.collection(collection).get(); // shahar fix
       await query.forEach(doc => {
         data.push(doc.data());
       });
@@ -172,13 +205,13 @@ const fbDataDelete = id => {
   };
 };
 
-const fbDataSingle = id => {
+const fbDataSingle = (collection, id) => {
   return async (dispatch, getState, { getFirebase, getFirestore }) => {
     const db = getFirestore();
     try {
       await dispatch(fbSingleDataBegin());
       const query = await db
-        .collection('crud')
+        .collection(collection)
         .where('id', '==', id)
         .get();
       await query.forEach(doc => {

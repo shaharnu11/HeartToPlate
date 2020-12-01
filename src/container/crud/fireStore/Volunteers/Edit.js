@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import FeatherIcon from 'feather-icons-react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import { RecordFormWrapper } from './style';
-import { PageHeader } from '../../../components/page-headers/page-headers';
-import { Cards } from '../../../components/cards/frame/cards-frame';
-import { Button } from '../../../components/buttons/buttons';
-import { Main, BasicFormWrapper } from '../../styled';
-import { fbDataUpdate, fbDataSingle, fbFileUploder } from '../../../redux/firestore/actionCreator';
-import Heading from '../../../components/heading/heading';
+import { RecordFormWrapper } from '../style';
+import { PageHeader } from '../../../../components/page-headers/page-headers';
+import { Cards } from '../../../../components/cards/frame/cards-frame';
+import { Button } from '../../../../components/buttons/buttons';
+import { Main, BasicFormWrapper } from '../../../styled';
+import { fbDataUpdate, fbDataSingle, fbFileUploder } from '../../../../redux/firestore/actionCreator';
+import Heading from '../../../../components/heading/heading';
 
 const { Option } = Select;
 const dateFormat = 'YYYY/MM/DD';
@@ -32,13 +32,13 @@ const Edit = ({ match }) => {
   const [form] = Form.useForm();
   useEffect(() => {
     if (fbDataSingle) {
-      dispatch(fbDataSingle(parseInt(match.params.id, 10)));
+      dispatch(fbDataSingle('Volunteers', parseInt(match.params.id, 10)));
     }
   }, [dispatch, match.params.id]);
 
   const handleSubmit = values => {
     dispatch(
-      fbDataUpdate(match.params.collection, parseInt(match.params.id, 10), {
+      fbDataUpdate('Volunteers', parseInt(match.params.id, 10), {
         ...values,
         url: url !== null ? url : crud.url,
         join: state.join,
@@ -76,7 +76,7 @@ const Edit = ({ match }) => {
       <PageHeader
         buttons={[
           <Button className="btn-add_new" size="default" key="1" type="primary">
-            <Link key="1" to={`/admin/firestore/${match.params.collection}`}>
+            <Link key="1" to="/admin/firestore/Volunteers/View">
               View All
             </Link>
           </Button>,
@@ -104,7 +104,7 @@ const Edit = ({ match }) => {
                                 ? url
                                 : crud.url !== null
                                 ? crud.url
-                                : require('../../../static/img/avatar/profileImage.png')
+                                : require('../../../../static/img/avatar/profileImage.png')
                             }
                             alt={crud.id}
                           />
@@ -201,8 +201,8 @@ const Edit = ({ match }) => {
   );
 };
 
-Edit.propTypes = {
-  match: PropTypes.shape(PropTypes.object).isRequired,
-};
+// Edit.propTypes = {
+//   match: PropTypes.shape(PropTypes.object).isRequired,
+// };
 
 export default Edit;

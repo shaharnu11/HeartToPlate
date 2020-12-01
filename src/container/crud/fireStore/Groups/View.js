@@ -4,25 +4,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import FontAwesome from 'react-fontawesome';
-import ReactExport from 'react-export-excel';
-import { render } from 'less';
-import { RecordViewWrapper } from './style';
-import { Main, TableWrapper } from '../../styled';
-import { Button } from '../../../components/buttons/buttons';
-import { Cards } from '../../../components/cards/frame/cards-frame';
-import { PageHeader } from '../../../components/page-headers/page-headers';
-import { fbDataDelete, fbDataRead, fbDataSearch } from '../../../redux/firestore/actionCreator';
-import DownloadExcel from '../../../utilities/DownloadExcel';
-
-const { ExcelFile } = ReactExport;
-const { ExcelSheet } = ReactExport.ExcelFile;
-const { ExcelColumn } = ReactExport.ExcelFile;
+import { RecordViewWrapper } from '../style';
+import { Main, TableWrapper } from '../../../styled';
+import { Button } from '../../../../components/buttons/buttons';
+import { Cards } from '../../../../components/cards/frame/cards-frame';
+import { PageHeader } from '../../../../components/page-headers/page-headers';
+import { fbDataDelete, fbDataRead, fbDataSearch } from '../../../../redux/firestore/actionCreator';
 
 const SortDirections = {
   DESC: 'desc',
   ASC: 'asc',
 };
-const ViewPageBase = (collection, page, columns, createDataSource) => {
+const ViewPage = () => {
   const dispatch = useDispatch();
   const { crud, isLoading } = useSelector(state => {
     return {
@@ -42,24 +35,13 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
 
   useEffect(() => {
     if (fbDataRead) {
-      dispatch(fbDataRead(collection, state.pageSize, state.currentPage, state.sortBy, state.sortDirection));
+      dispatch(fbDataRead(state.pageSize, state.currentPage, state.sortBy, state.sortDirection));
     }
   }, [dispatch]);
+  const dataSource = [];
 
   const handleExport = () => {
-    setState({
-      ...state,
-      export: true,
-    });
-  };
-
-  const handleReExport = () => {
-    setState({
-      ...state,
-      export: !state.export,
-    });
-
-    return <DownloadExcel data={crud.data} />;
+    dispatch(fbDataRead());
   };
 
   const handleDelete = id => {
@@ -71,25 +53,43 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
   };
 
   const onHandleSearch = e => {
-    dispatch(fbDataSearch(collection, e.target.value, crud.data));
+    dispatch(fbDataSearch(e.target.value, crud.data));
   };
 
-  const dataSource = createDataSource(crud).map(data => {
-    return {
-      ...data,
-      action: (
-        <div className="table-actions">
-          <Link className="edit" to={`/admin/firestore/${page}/edit/${data.id}`}>
-            <FeatherIcon icon="edit" size={14} />
-          </Link>
-          &nbsp;&nbsp;&nbsp;
-          <Link className="delete" onClick={() => handleDelete(data.id)} to="#">
-            <FeatherIcon icon="trash-2" size={14} />
-          </Link>
-        </div>
-      ),
-    };
-  });
+  if (crud.data.length)
+    crud.data.map((person, key) => {
+      const { id, name, email, company, position, join, status, city, country, url } = person;
+      return dataSource.push({
+        key: key + 1,
+        name: (
+          <div className="record-img align-center-v">
+            <img src={url !== null ? url : require('../../../../static/img/avatar/profileImage.png')} alt={id} />
+            <span>
+              <span>{name}</span>
+              <span className="record-location">
+                {city},{country}
+              </span>
+            </span>
+          </div>
+        ),
+        email,
+        company,
+        position,
+        jdate: join,
+        status: <span className={`status ${status}`}>{status}</span>,
+        action: (
+          <div className="table-actions">
+            <Link className="edit" to={`/admin/firestore/edit/${id}`}>
+              <FeatherIcon icon="edit" size={14} />
+            </Link>
+            &nbsp;&nbsp;&nbsp;
+            <Link className="delete" onClick={() => handleDelete(id)} to="#">
+              <FeatherIcon icon="trash-2" size={14} />
+            </Link>
+          </div>
+        ),
+      });
+    });
 
   const onSelectChange = selectedRowKey => {
     setState({ ...state, selectedRowKeys: selectedRowKey });
@@ -101,7 +101,7 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
       currentPage: data.current,
       pageSize: data.pageSize,
     });
-    dispatch(fbDataRead(collection, data.pageSize, data.current, state.sortBy, state.sortDirection));
+    dispatch(fbDataRead(data.pageSize, data.current, state.sortBy, state.sortDirection));
   };
 
   const rowSelection = {
@@ -121,10 +121,10 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
       sortBy,
       sortDirection,
     });
-    dispatch(fbDataRead(collection, state.pageSize, state.currentPage, sortBy, sortDirection));
+    dispatch(fbDataRead(state.pageSize, state.currentPage, sortBy, sortDirection));
   };
 
-  const reateSortableTitle = title => {
+  const createSortedIconTitle = title => {
     const isSortedBy = state.sortBy === title;
 
     return (
@@ -135,7 +135,7 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
           name={isSortedBy ? `sort-${state.sortDirection === SortDirections.DESC ? 'down' : 'up'}` : 'sort'}
           onClick={() => handleSort(title, isSortedBy)}
           className="super-crazy-colors"
-          size="2x"
+          size="1x"
           style={{
             color: isSortedBy ? (state.sortDirection === SortDirections.DESC ? 'red' : 'green') : undefined,
             textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)',
@@ -145,16 +145,54 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
     );
   };
 
+  const columns = [
+    {
+      title: createSortedIconTitle('name'),
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: createSortedIconTitle('Email'),
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
+      title: createSortedIconTitle('Company'),
+      dataIndex: 'company',
+      key: 'company',
+    },
+    {
+      title: createSortedIconTitle('Position'),
+      dataIndex: 'position',
+      key: 'position',
+    },
+    {
+      title: createSortedIconTitle('Status'),
+      dataIndex: 'status',
+      key: 'status',
+    },
+    {
+      title: createSortedIconTitle('Joining Date'),
+      dataIndex: 'jdate',
+      key: 'jdate',
+    },
+    {
+      title: createSortedIconTitle('Actions'),
+      dataIndex: 'action',
+      key: 'action',
+      width: '90px',
+    },
+  ];
   return (
     <RecordViewWrapper>
-      {/* {state.export ? handleReExport() : 123} */}
+      {/* {crud.length ? <DownloadExcel data={crud} /> : {}} */}
       {/* {crudAll ? crudAll.length : 123} */}
 
       <PageHeader
         subTitle={
           <div>
             <Button className="btn-add_new" size="default" key="1" type="primary">
-              <Link to={`/admin/firestore/${page}/Add`}>
+              <Link to="/admin/firestore/fbAdd">
                 <FeatherIcon icon="plus" size={14} /> Add New
               </Link>
             </Button>
@@ -187,6 +225,7 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
                 <div>
                   <TableWrapper className="table-data-view table-responsive">
                     <Table
+                      // eslint-disable-next-line react/jsx-boolean-value
                       rowSelection={rowSelection}
                       pagination={{
                         showSizeChanger: true,
@@ -196,19 +235,7 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
                       }}
                       dataSource={dataSource}
                       onChange={handlePagination}
-                      columns={columns
-                        .map(column => {
-                          return {
-                            ...column,
-                            title: column.sortable ? reateSortableTitle(column.title) : column.title,
-                          };
-                        })
-                        .concat({
-                          title: 'Actions',
-                          dataIndex: 'action',
-                          key: 'action',
-                          width: '90px',
-                        })}
+                      columns={columns}
                     />
                   </TableWrapper>
                 </div>
@@ -221,4 +248,4 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
   );
 };
 
-export default ViewPageBase;
+export default ViewPage;
