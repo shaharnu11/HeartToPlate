@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input, Select, InputNumber, Checkbox, Switch, Upload, Spin, Modal } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Row, Col, Form, Input, Select, InputNumber, Checkbox, Spin } from 'antd';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Helper from '../Helper';
@@ -9,91 +8,54 @@ import { PageHeader } from '../../../../components/page-headers/page-headers';
 import { Cards } from '../../../../components/cards/frame/cards-frame';
 import { Button } from '../../../../components/buttons/buttons';
 import { Main, BasicFormWrapper } from '../../../styled';
-import { fbDataUpdate, fbDataSingle, fbFileReader, fbFileUploder } from '../../../../redux/firestore/actionCreator';
+import { fbDataUpdate, fbDataSingle, fbDataSearch } from '../../../../redux/firestore/actionCreator';
 
 const Edit = ({ match }) => {
   const dispatch = useDispatch();
-  const volunteerId = parseInt(match.params.id, 10);
+  const GroupManagerId = parseInt(match.params.id, 10);
 
-  const { crud, isLoading, fileUplode, isFileLoading } = useSelector(state => {
+  const { crud, isLoading, searchData } = useSelector(state => {
     return {
       crud: state.singleCrud.data,
       isLoading: state.singleCrud.loading,
-      isFileLoading: state.singleCrud.fileLoading,
-      fileUplode: state.crud.file,
+      searchData: state.crud.searchData,
     };
   });
   const [streets, setStreets] = useState([]);
-  const [signedFormFiles, setSignedFormFiles] = useState([]);
-  const [signedFormPreview, setSignedFormPreview] = useState({
-    image: null,
-    visible: false,
-    title: null,
-  });
+  const [regionManagers, setRegionManagers] = useState([]);
+  const [groups, setGroups] = useState([]);
+
+  useEffect(() => {
+    if (searchData && searchData.collection === 'RegionManagers') {
+      setRegionManagers(searchData.data);
+    }
+    if (searchData && searchData.collection === 'Groups') {
+      setGroups(searchData.data);
+    }
+  }, [searchData]);
 
   const [form] = Form.useForm();
 
-  React.useEffect(() => {
-    if (fileUplode != null) {
-      form.setFieldsValue({
-        signedForm: fileUplode,
-      });
-    }
-  }, [dispatch, fileUplode]);
-
-  useEffect(() => {
-    if (crud != null) {
-      Helper.handleCitySelect(crud.city, setStreets);
-    }
-  }, [dispatch, crud]);
-
   useEffect(() => {
     if (fbDataSingle) {
-      dispatch(fbDataSingle('Volunteers', volunteerId));
+      dispatch(fbDataSingle('GroupManagers', GroupManagerId));
     }
-  }, [dispatch, volunteerId]);
-
-  useEffect(() => {
-    if (crud != null) {
-      setSignedFormFiles([
-        {
-          uid: '1',
-          status: 'done',
-          name: crud.signedForm.name,
-          url: crud.signedForm.url,
-        },
-      ]);
-    }
-  }, [dispatch, crud]);
+  }, [dispatch, GroupManagerId]);
 
   const handleSubmit = values => {
-    dispatch(fbDataUpdate('Volunteers', volunteerId, values));
+    dispatch(fbDataUpdate('GroupManagers', GroupManagerId, values));
   };
 
-  const handlePreview = async file => {
-    function getBase64() {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      });
+  const handleRegionManagerSearch = value => {
+    if (value.length > 2) {
+      dispatch(fbDataSearch('RegionManagers', value, ['name', 'email']));
     }
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64();
-    }
-
-    setSignedFormPreview({
-      image: file.url || file.preview,
-      visible: true,
-      title: file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
-    });
   };
 
-  const handleChange = ({ fileList }) => {
-    const newFileList = [fileList[fileList.length - 1]];
-    setSignedFormFiles(newFileList);
-    dispatch(fbFileUploder(newFileList[0].originFileObj, 'SignedForms'));
+  const handleGroupSearch = value => {
+    if (value.length > 2) {
+      dispatch(fbDataSearch('Groups', value, ['name']));
+    }
   };
 
   const requireee = false;
@@ -103,7 +65,7 @@ const Edit = ({ match }) => {
       <PageHeader
         buttons={[
           <Button className="btn-add_new" size="default" key="1" type="primary">
-            <Link key="1" to="/admin/firestore/Volunteers/View">
+            <Link key="1" to="/admin/firestore/GroupManagers/View">
               View All
             </Link>
           </Button>,
@@ -227,45 +189,38 @@ const Edit = ({ match }) => {
                               </Checkbox.Group>
                             </Form.Item>
 
-                            <Form.Item name="carOwner" label="Car Owner" initialValue={crud.carOwner}>
-                              <Switch style={{ height: '18px' }} defaultChecked={crud.carOwner} />
-                            </Form.Item>
-
-                            <Form.Item name="kosherFood" label="Kosher Food" initialValue={crud.kosherFood}>
-                              <Switch style={{ height: '18px' }} defaultChecked={crud.kosherFood} />
-                            </Form.Item>
-
-                            <Form.Item label="Signed Form">
-                              <Form.Item
-                                name="signedForm"
-                                rules={[{ required: requireee }]}
-                                noStyle
-                                initialValue={crud.signedForm}
+                            <Form.Item
+                              initialValue={null}
+                              name="regionManager"
+                              rules={[{ required: requireee }]}
+                              label="Region Manager"
+                            >
+                              <Select
+                                allowClear
+                                style={{ width: '100%' }}
+                                onSearch={_ => handleRegionManagerSearch(_)}
+                                showSearch
                               >
-                                <Upload
-                                  name="files"
-                                  beforeUpload={() => false}
-                                  listType="picture"
-                                  fileList={signedFormFiles}
-                                  multiple={false}
-                                  onPreview={handlePreview}
-                                  onChange={handleChange}
-                                  showUploadList={{ showRemoveIcon: false }}
-                                >
-                                  <Button>
-                                    <UploadOutlined />
-                                    Upload
-                                  </Button>
-                                </Upload>
-                                <Modal
-                                  visible={signedFormPreview.visible}
-                                  title={signedFormPreview.title}
-                                  footer={null}
-                                  onCancel={() => setSignedFormPreview({ ...signedFormPreview, visible: false })}
-                                >
-                                  <img alt="example" style={{ width: '100%' }} src={signedFormPreview.image} />
-                                </Modal>
-                              </Form.Item>
+                                {regionManagers.map(_ => (
+                                  <Select.Option key={_} value={_}>
+                                    {_}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            </Form.Item>
+                            <Form.Item initialValue={[]} name="groups" rules={[{ required: requireee }]} label="Groups">
+                              <Select
+                                allowClear
+                                style={{ width: '100%' }}
+                                onSearch={_ => handleGroupSearch(_)}
+                                showSearch
+                              >
+                                {groups.map(_ => (
+                                  <Select.Option key={_} value={_}>
+                                    {_}
+                                  </Select.Option>
+                                ))}
+                              </Select>
                             </Form.Item>
 
                             <div className="record-form-actions text-right">

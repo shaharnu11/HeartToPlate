@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input, Switch, Checkbox, Select, InputNumber, Upload, Modal } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Form, Input, Switch, Checkbox, Select, InputNumber } from 'antd';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { InboxOutlined, UploadOutlined } from '@ant-design/icons';
 import Helper from '../Helper';
 
 import { RecordFormWrapper } from '../style';
@@ -10,37 +9,34 @@ import { PageHeader } from '../../../../components/page-headers/page-headers';
 import { Cards } from '../../../../components/cards/frame/cards-frame';
 import { Button } from '../../../../components/buttons/buttons';
 import { Main, BasicFormWrapper } from '../../../styled';
-import { fbDataSubmit, fbFileClear, fbFileUploder } from '../../../../redux/firestore/actionCreator';
+import { fbDataSearch, fbDataSubmit, fbFileClear } from '../../../../redux/firestore/actionCreator';
 
 const AddNew = () => {
   const dispatch = useDispatch();
-  const { isLoading, fileUplode } = useSelector(state => {
+  const { searchData, isLoading } = useSelector(state => {
     return {
       isLoading: state.crud.loading,
-      fileUplode: state.crud.file,
+      searchData: state.crud.searchData,
     };
   });
 
   const [form] = Form.useForm();
   const [streets, setStreets] = useState([]);
-  const [signedFormFiles, setSignedFormFiles] = useState([]);
-  const [signedFormPreview, setSignedFormPreview] = useState({
-    image: null,
-    visible: false,
-    title: null,
-  });
+  const [regionManagers, setRegionManagers] = useState([]);
+  const [groups, setGroups] = useState([]);
 
-  React.useEffect(() => {
-    if (fileUplode != null) {
-      form.setFieldsValue({
-        signedForm: fileUplode,
-      });
+  useEffect(() => {
+    if (searchData && searchData.collection === 'RegionManagers') {
+      setRegionManagers(searchData.data);
     }
-  }, [dispatch, fileUplode]);
+    if (searchData && searchData.collection === 'Groups') {
+      setGroups(searchData.data);
+    }
+  }, [searchData]);
 
   const handleSubmit = values => {
     dispatch(
-      fbDataSubmit('Volunteers', {
+      fbDataSubmit('GroupManagers', {
         ...values,
         id: new Date().getTime(),
         joinDate: new Date(),
@@ -50,30 +46,16 @@ const AddNew = () => {
     dispatch(fbFileClear());
   };
 
-  const handleChange = ({ fileList }) => {
-    const newFileList = [fileList[fileList.length - 1]];
-    setSignedFormFiles(newFileList);
-    dispatch(fbFileUploder(newFileList[0].originFileObj, 'SignedForms'));
+  const handleRegionManagerSearch = value => {
+    if (value.length > 2) {
+      dispatch(fbDataSearch('RegionManagers', value, ['name', 'email']));
+    }
   };
 
-  const handlePreview = async file => {
-    function getBase64() {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      });
+  const handleGroupSearch = value => {
+    if (value.length > 2) {
+      dispatch(fbDataSearch('Groups', value, ['name']));
     }
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64();
-    }
-
-    setSignedFormPreview({
-      image: file.url || file.preview,
-      visible: true,
-      title: file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
-    });
   };
 
   const requireee = false;
@@ -82,7 +64,7 @@ const AddNew = () => {
       <PageHeader
         buttons={[
           <Button className="btn-add_new" size="default" key="1" type="primary">
-            <Link to="/admin/firestore/Volunteers/View">View All</Link>
+            <Link to="/admin/firestore/GroupManagers/View">View All</Link>
           </Button>,
         ]}
         ghost
@@ -107,18 +89,14 @@ const AddNew = () => {
                         <Form.Item name="name" label="Name" rules={[{ required: requireee }]}>
                           <Input placeholder="Input Name" />
                         </Form.Item>
-
                         <Form.Item name="phone" label="Phone" rules={[{ required: requireee }]}>
                           <Input placeholder="Phone" />
                         </Form.Item>
-
                         <Form.Item name="email" rules={[{ required: requireee, type: 'email' }]} label="Email">
                           <Input placeholder="example@gmail.com" />
                         </Form.Item>
-
                         <Form.Item name="city" rules={[{ required: requireee }]} label="City">
                           <Select
-                            autocomplete="off"
                             allowClear
                             style={{ width: '100%' }}
                             onSelect={_ => Helper.handleCitySelect(_, setStreets)}
@@ -127,7 +105,6 @@ const AddNew = () => {
                             {Helper.getCityOptions()}
                           </Select>
                         </Form.Item>
-
                         <Form.Item label="Address">
                           <Form.Item name="address" rules={[{ required: requireee }]}>
                             <Select allowClear showSearch placeholder="Street">
@@ -138,11 +115,9 @@ const AddNew = () => {
                             <InputNumber min={1} placeholder="Number" />
                           </Form.Item>
                         </Form.Item>
-
                         <Form.Item name="age" rules={[{ required: requireee }]} label="Age">
                           <InputNumber min={1} />
                         </Form.Item>
-
                         <Form.Item name="language" rules={[{ required: requireee }]} label="Language">
                           <Checkbox.Group>
                             <Row>
@@ -169,43 +144,34 @@ const AddNew = () => {
                             </Row>
                           </Checkbox.Group>
                         </Form.Item>
-
-                        <Form.Item name="carOwner" label="Car Owner" initialValue={false}>
-                          <Switch style={{ height: '18px' }} />
+                        <Form.Item
+                          initialValue={null}
+                          name="regionManager"
+                          rules={[{ required: requireee }]}
+                          label="Region Manager"
+                        >
+                          <Select
+                            allowClear
+                            style={{ width: '100%' }}
+                            onSearch={_ => handleRegionManagerSearch(_)}
+                            showSearch
+                          >
+                            {regionManagers.map(_ => (
+                              <Select.Option key={_} value={_}>
+                                {_}
+                              </Select.Option>
+                            ))}
+                          </Select>
                         </Form.Item>
-
-                        <Form.Item name="kosherFood" label="Kosher Food" initialValue={false}>
-                          <Switch style={{ height: '18px' }} />
+                        <Form.Item initialValue={[]} name="groups" rules={[{ required: requireee }]} label="Groups">
+                          <Select allowClear style={{ width: '100%' }} onSearch={_ => handleGroupSearch(_)} showSearch>
+                            {groups.map(_ => (
+                              <Select.Option key={_} value={_}>
+                                {_}
+                              </Select.Option>
+                            ))}
+                          </Select>
                         </Form.Item>
-
-                        <Form.Item label="Signed Form">
-                          <Form.Item name="signedForm" rules={[{ required: requireee }]} noStyle>
-                            <Upload
-                              name="files"
-                              beforeUpload={() => false}
-                              listType="picture"
-                              fileList={signedFormFiles}
-                              multiple={false}
-                              onPreview={handlePreview}
-                              onChange={handleChange}
-                              showUploadList={{ showRemoveIcon: false }}
-                            >
-                              <Button>
-                                <UploadOutlined />
-                                Upload
-                              </Button>
-                            </Upload>
-                            <Modal
-                              visible={signedFormPreview.visible}
-                              title={signedFormPreview.title}
-                              footer={null}
-                              onCancel={() => setSignedFormPreview({ ...signedFormPreview, visible: false })}
-                            >
-                              <img alt="example" style={{ width: '100%' }} src={signedFormPreview.image} />
-                            </Modal>
-                          </Form.Item>
-                        </Form.Item>
-
                         <div className="record-form-actions text-right">
                           <Button size="default" htmlType="Save" type="primary">
                             {isLoading ? 'Loading...' : 'Submit'}

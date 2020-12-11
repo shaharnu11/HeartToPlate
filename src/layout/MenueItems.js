@@ -57,6 +57,11 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
           Volunteers
         </NavLink>
       </Menu.Item>
+      <Menu.Item key="GroupManagersView" icon={!topMenu && <FeatherIcon icon="database" />}>
+        <NavLink onClick={toggleCollapsed} to={`${path}/firestore/GroupManagers/View`}>
+          Group managers
+        </NavLink>
+      </Menu.Item>
       <Menu.Item key="GroupsView" icon={!topMenu && <FeatherIcon icon="database" />}>
         <NavLink onClick={toggleCollapsed} to={`${path}/firestore/Groups/View`}>
           Groups

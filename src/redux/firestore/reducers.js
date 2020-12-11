@@ -5,6 +5,10 @@ const {
   FB_ADD_SUCCESS,
   FB_ADD_ERR,
 
+  FB_READ_FILE_BEGIN,
+  FB_READ_FILE_SUCCESS,
+  FB_READ_FILE_ERR,
+
   FB_UPLOAD_BEGIN,
   FB_UPLOAD_SUCCESS,
   FB_UPLOAD_ERR,
@@ -56,7 +60,7 @@ const fsCrudReducer = (state = initialState, action) => {
     case FB_UPLOAD_SUCCESS:
       return {
         ...state,
-        url: data,
+        file: data,
         error: false,
         fileLoading: false,
       };
@@ -97,7 +101,7 @@ const fsCrudReducer = (state = initialState, action) => {
     case FB_SEARCH_SUCCESS:
       return {
         ...state,
-        data,
+        searchData: data,
         error: false,
       };
 
@@ -178,15 +182,36 @@ const fsCrudReducer = (state = initialState, action) => {
 const fsSingleCrudReducer = (state = initialStateSingle, action) => {
   const { type, data, err } = action;
   switch (type) {
+    case FB_READ_FILE_BEGIN:
+      return {
+        ...state,
+        fileLoading: true,
+      };
+
+    case FB_READ_FILE_SUCCESS:
+      return {
+        ...state,
+        fileUrl: data,
+        error: false,
+        fileLoading: false,
+      };
+
+    case FB_READ_FILE_ERR:
+      return {
+        ...state,
+        error: err,
+        fileLoading: false,
+      };
+
     case FB_SINGLE_DATA_BEGIN:
       return {
-        ...initialStateSingle,
+        ...state,
         loading: true,
       };
 
     case FB_SINGLE_DATA_SUCCESS:
       return {
-        ...initialStateSingle,
+        ...state,
         data,
         error: false,
         loading: false,
@@ -194,7 +219,7 @@ const fsSingleCrudReducer = (state = initialStateSingle, action) => {
 
     case FB_SINGLE_DATA_ERR:
       return {
-        ...initialStateSingle,
+        ...state,
         error: err,
         loading: false,
       };

@@ -3,9 +3,7 @@ import { Row, Col, Table, Spin } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
-import FontAwesome from 'react-fontawesome';
 import ReactExport from 'react-export-excel';
-import { render } from 'less';
 import { RecordViewWrapper } from './style';
 import { Main, TableWrapper } from '../../styled';
 import { Button } from '../../../components/buttons/buttons';
@@ -18,11 +16,7 @@ const { ExcelFile } = ReactExport;
 const { ExcelSheet } = ReactExport.ExcelFile;
 const { ExcelColumn } = ReactExport.ExcelFile;
 
-const SortDirections = {
-  DESC: 'desc',
-  ASC: 'asc',
-};
-const ViewPageBase = (collection, page, columns, createDataSource) => {
+const ViewPageBase = (collection, columns, createDataSource) => {
   const dispatch = useDispatch();
   const { crud, isLoading } = useSelector(state => {
     return {
@@ -31,36 +25,39 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
     };
   });
 
-  const [state, setState] = useState({
-    selectedRowKeys: [],
-    currentPage: 1,
+  const [pagination, setPagination] = useState({
+    showSizeChanger: true,
+    current: 1,
     pageSize: 10,
-    sortBy: 'id',
-    sortDirection: SortDirections.UP,
+    showQuickJumper: false,
   });
-  const { selectedRowKeys } = state;
+
+  const [sorter, setSorter] = useState({
+    columnKey: 'id',
+    order: 'asc',
+  });
 
   useEffect(() => {
     if (fbDataRead) {
-      dispatch(fbDataRead(collection, state.pageSize, state.currentPage, state.sortBy, state.sortDirection));
+      dispatch(fbDataRead(collection, pagination, sorter));
     }
   }, [dispatch]);
 
-  const handleExport = () => {
-    setState({
-      ...state,
-      export: true,
-    });
-  };
+  // const handleExport = () => {
+  //   setState({
+  //     ...state,
+  //     export: true,
+  //   });
+  // };
 
-  const handleReExport = () => {
-    setState({
-      ...state,
-      export: !state.export,
-    });
+  // const handleReExport = () => {
+  //   setState({
+  //     ...state,
+  //     export: !state.export,
+  //   });
 
-    return <DownloadExcel data={crud.data} />;
-  };
+  //   return <DownloadExcel data={crud.data} />;
+  // };
 
   const handleDelete = id => {
     const confirm = window.confirm('Are you sure delete this?');
@@ -74,12 +71,12 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
     dispatch(fbDataSearch(collection, e.target.value, crud.data));
   };
 
-  const dataSource = createDataSource(crud).map(data => {
+  const dataSource = createDataSource(crud.data).map(data => {
     return {
       ...data,
       action: (
-        <div className="table-actions">
-          <Link className="edit" to={`/admin/firestore/${page}/edit/${data.id}`}>
+        <div style={{ textAlign: 'right' }}>
+          <Link className="edit" to={`/admin/firestore/${collection}/edit/${data.id}`}>
             <FeatherIcon icon="edit" size={14} />
           </Link>
           &nbsp;&nbsp;&nbsp;
@@ -88,62 +85,56 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
           </Link>
         </div>
       ),
+      asd: 3,
     };
   });
 
-  const onSelectChange = selectedRowKey => {
-    setState({ ...state, selectedRowKeys: selectedRowKey });
+  const handleChange = (tablePagination, filters, tableSorter, extra) => {
+    if (extra.action === 'paginate') {
+      setPagination(tablePagination);
+      dispatch(fbDataRead(collection, pagination, sorter));
+    }
+    if (extra.action === 'sort') {
+      setSorter({ ...tableSorter, order: tableSorter.order === 'ascend' ? 'asc' : 'desc' });
+      dispatch(fbDataRead(collection, pagination, sorter));
+    }
   };
 
-  const handlePagination = data => {
-    setState({
-      ...state,
-      currentPage: data.current,
-      pageSize: data.pageSize,
-    });
-    dispatch(fbDataRead(collection, data.pageSize, data.current, state.sortBy, state.sortDirection));
-  };
+  // const handleSort = (sortBy, isFiledSorted) => {
+  //   const sortDirection = isFiledSorted
+  //     ? state.sortDirection === SortDirections.DESC
+  //       ? SortDirections.ASC
+  //       : SortDirections.DESC
+  //     : SortDirections.DESC;
 
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
+  //   setState({
+  //     ...state,
+  //     sortBy,
+  //     sortDirection,
+  //   });
+  //   dispatch(fbDataRead(collection, state.pageSize, state.currentPage, sortBy, sortDirection));
+  // };
 
-  const handleSort = (sortBy, isFiledSorted) => {
-    const sortDirection = isFiledSorted
-      ? state.sortDirection === SortDirections.DESC
-        ? SortDirections.ASC
-        : SortDirections.DESC
-      : SortDirections.DESC;
+  // const reateSortableTitle = title => {
+  //   const isSortedBy = state.sortBy === title;
 
-    setState({
-      ...state,
-      sortBy,
-      sortDirection,
-    });
-    dispatch(fbDataRead(collection, state.pageSize, state.currentPage, sortBy, sortDirection));
-  };
-
-  const reateSortableTitle = title => {
-    const isSortedBy = state.sortBy === title;
-
-    return (
-      <div>
-        {title}
-        <span>&nbsp;&nbsp;</span>
-        <FontAwesome
-          name={isSortedBy ? `sort-${state.sortDirection === SortDirections.DESC ? 'down' : 'up'}` : 'sort'}
-          onClick={() => handleSort(title, isSortedBy)}
-          className="super-crazy-colors"
-          size="2x"
-          style={{
-            color: isSortedBy ? (state.sortDirection === SortDirections.DESC ? 'red' : 'green') : undefined,
-            textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)',
-          }}
-        />
-      </div>
-    );
-  };
+  //   return (
+  //     <div>
+  //       {title}
+  //       <span>&nbsp;&nbsp;</span>
+  //       <FontAwesome
+  //         name={isSortedBy ? `sort-${state.sortDirection === SortDirections.DESC ? 'down' : 'up'}` : 'sort'}
+  //         onClick={() => handleSort(title, isSortedBy)}
+  //         className="super-crazy-colors"
+  //         size="2x"
+  //         style={{
+  //           color: isSortedBy ? (state.sortDirection === SortDirections.DESC ? 'red' : 'green') : undefined,
+  //           textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)',
+  //         }}
+  //       />
+  //     </div>
+  //   );
+  // };
 
   return (
     <RecordViewWrapper>
@@ -154,14 +145,14 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
         subTitle={
           <div>
             <Button className="btn-add_new" size="default" key="1" type="primary">
-              <Link to={`/admin/firestore/${page}/Add`}>
+              <Link to={`/admin/firestore/${collection}/Add`}>
                 <FeatherIcon icon="plus" size={14} /> Add New
               </Link>
             </Button>
-            <Button size="small" type="white" onClick={handleExport}>
+            {/* <Button size="small" type="white" onClick={handleExport}>
               <FeatherIcon icon="download" size={14} />
               Export
-            </Button>
+            </Button> */}
           </div>
         }
         buttons={[
@@ -187,27 +178,27 @@ const ViewPageBase = (collection, page, columns, createDataSource) => {
                 <div>
                   <TableWrapper className="table-data-view table-responsive">
                     <Table
-                      rowSelection={rowSelection}
-                      pagination={{
-                        showSizeChanger: true,
-                        current: state.currentPage,
-                        pageSize: state.pageSize,
-                        showQuickJumper: false,
-                      }}
+                      // rowSelection={rowSelection}
+                      pagination={pagination}
                       dataSource={dataSource}
-                      onChange={handlePagination}
+                      onChange={handleChange}
+                      scroll={{ x: 1500, y: 300 }}
                       columns={columns
                         .map(column => {
                           return {
+                            width: 10,
                             ...column,
-                            title: column.sortable ? reateSortableTitle(column.title) : column.title,
+                            showSorterTooltip: false,
+
+                            // title: column.sortable ? reateSortableTitle(column.title) : column.title,
                           };
                         })
                         .concat({
                           title: 'Actions',
                           dataIndex: 'action',
                           key: 'action',
-                          width: '90px',
+                          width: 7,
+                          fixed: 'right',
                         })}
                     />
                   </TableWrapper>

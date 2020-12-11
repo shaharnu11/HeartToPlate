@@ -54,6 +54,10 @@ const {
   fbDeleteSuccess,
   fbDeleteErr,
 
+  fbReadFileBegin,
+  fbReadFileSuccess,
+  fbReadFileErr,
+
   fbSingleDataBegin,
   fbSingleDataSuccess,
   fbSingleDataErr,
@@ -69,9 +73,10 @@ const {
 
 const fbDataSubmit = (collection, data) => {
   return async (dispatch, getState, { getFirestore }) => {
+    await dispatch(fbAddBegin());
+
     const db = getFirestore();
     try {
-      await dispatch(fbAddBegin());
       await db
         .collection(collection)
         .doc(`${data.id}`)
@@ -84,46 +89,34 @@ const fbDataSubmit = (collection, data) => {
     }
   };
 };
-
-const fbDataRead = (collection, pageSize, currentPage, sortBy, sortDirection) => {
-  return async (dispatch, getState, { getFirebase, getFirestore }) => {
+/*
+{collection : }
+*/
+const fbDataRead = (collection, pagination, sorter) => {
+  return async (dispatch, getState, { getFirestore }) => {
     const db = getFirestore();
     const data = [];
     try {
       await dispatch(fbReadBegin());
 
-      // const count = 100; // change later
-      // [...Array(24).keys()].forEach(_ => {
-      //   data.push(
-      //     JSON.parse(
-      //       '{"email":"a@gmail.com","join":"2020/10/08","status":"active","city":"","name":"bla","country":"","url":null,"position":"s","company":"s","id":1603031715050}',
-      //     ),
-      //   );
-      // });
-
-      // const query = await db
-      //   .collection('curd')
-      //   // .orderBy('id')
-      //   // .startAfter(0)
-      //   // .limit(pageSize)
-      //   .get();
-
-      // const g = await query;
-
-      const query = await db
-        .collection(collection)
-        .orderBy(sortBy, sortDirection)
-        .limit(pageSize * currentPage + 1)
-        .get();
+      let collectionRef = db.collection(collection);
+      if (sorter != null) {
+        collectionRef = collectionRef.orderBy(sorter.columnKey, sorter.order);
+      }
+      if (pagination != null) {
+        collectionRef = collectionRef.limit(pagination.pageSize * pagination.current + 1);
+      }
+      const query = await collectionRef.get();
 
       await query.forEach(doc => {
         data.push(doc.data());
       });
 
-      const isEndOfCollection = data.length > pageSize * currentPage;
+      const isEndOfCollection = data.length > pagination.pageSize * pagination.current;
+
       if (isEndOfCollection) {
         data.pop();
-        [...Array(pageSize).keys()].forEach(_ => {
+        [...Array(pagination.pageSize).keys()].forEach(_ => {
           data.push(data[data.length - 1]);
         });
       }
@@ -135,18 +128,22 @@ const fbDataRead = (collection, pageSize, currentPage, sortBy, sortDirection) =>
   };
 };
 
-const fbDataSearch = (collection, value) => {
-  return async (dispatch, getState, { getFirebase, getFirestore }) => {
+const fbDataSearch = (collection, value, keys) => {
+  return async (dispatch, getState, { getFirestore }) => {
     const db = getFirestore();
     const data = [];
     try {
       await dispatch(fbSearchBegin());
-      const query = await db.collection(collection).get();
+      const query = await db
+        .collection(collection)
+        .where(keys[0], '>=', value)
+        .get();
       await query.forEach(doc => {
         data.push(doc.data());
       });
       const searchValue = data.filter(item => item.name.toLowerCase().startsWith(value.toLowerCase()));
-      await dispatch(fbSearchSuccess(searchValue));
+      // await dispatch(fbSearchSuccess(searchValue));
+      await dispatch(fbSearchSuccess({ collection, data: [12345, 2, 3] }));
     } catch (err) {
       await dispatch(fbSearchErr(err));
     }
@@ -154,7 +151,7 @@ const fbDataSearch = (collection, value) => {
 };
 
 const fbDataUpdate = (collection, id, data) => {
-  return async (dispatch, getState, { getFirebase, getFirestore }) => {
+  return async (dispatch, getState, { getFirestore }) => {
     const db = getFirestore();
     try {
       await dispatch(fbUpdateBegin());
@@ -223,36 +220,52 @@ const fbDataSingle = (collection, id) => {
   };
 };
 
-const fbFileUploder = imageAsFile => {
-  return async (dispatch, getState, { getFirebase, getFirestore, storage }) => {
+const fbFileUploder = (imageAsFile, location) => {
+  return async (dispatch, getState, { storage }) => {
     try {
       await dispatch(fbUploadBegin());
+
+      const fileName = imageAsFile.name.replace(/(\.[\w\d_-]+)$/i, `_${new Date().getTime()}$1`);
       const uploadTask = storage()
-        .ref(`/images/${imageAsFile.name}`)
+        .ref(`/${location}/${fileName}`)
         .put(imageAsFile);
 
       await uploadTask.on(
         'state_changed',
-        snapShot => {
-          // takes a snap shot of the process as it is happening
-          console.log(snapShot);
-        },
+        () => {},
         err => {
-          // catches the errors
-          console.log(err);
+          dispatch(fbUploadErr(err));
         },
         () => {
           storage()
-            .ref('images')
-            .child(imageAsFile.name)
+            .ref(location)
+            .child(fileName)
             .getDownloadURL()
             .then(fireBaseUrl => {
-              dispatch(fbUploadSuccess(fireBaseUrl));
+              dispatch(fbUploadSuccess({ name: fileName, url: fireBaseUrl }));
             });
         },
       );
     } catch (err) {
       await dispatch(fbUploadErr(err));
+    }
+  };
+};
+
+const fbFileReader = (location, fileName) => {
+  return async (dispatch, getState, { getFirebase, getFirestore, storage }) => {
+    try {
+      await dispatch(fbReadFileBegin());
+
+      storage()
+        .ref(location)
+        .child(fileName)
+        .getDownloadURL()
+        .then(fireBaseUrl => {
+          dispatch(fbReadFileSuccess(fireBaseUrl));
+        });
+    } catch (err) {
+      await dispatch(fbReadFileErr(err));
     }
   };
 };
@@ -268,4 +281,14 @@ const fbFileClear = () => {
   };
 };
 
-export { fbDataSubmit, fbDataSearch, fbDataDelete, fbDataSingle, fbDataUpdate, fbDataRead, fbFileUploder, fbFileClear };
+export {
+  fbDataSubmit,
+  fbDataSearch,
+  fbDataDelete,
+  fbDataSingle,
+  fbDataUpdate,
+  fbDataRead,
+  fbFileReader,
+  fbFileUploder,
+  fbFileClear,
+};

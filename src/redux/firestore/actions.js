@@ -19,6 +19,10 @@ const actions = {
   FB_DELETE_SUCCESS: 'FB_DELETE_SUCCESS',
   FB_DELETE_ERR: 'FB_DELETE_ERR',
 
+  FB_READ_FILE_BEGIN: 'FB_READ_FILE_BEGIN',
+  FB_READ_FILE_SUCCESS: 'FB_READ_FILE_SUCCESS',
+  FB_READ_FILE_ERR: 'FB_READ_FILE_ERR',
+
   FB_SINGLE_DATA_BEGIN: 'FB_SINGLE_DATA_BEGIN',
   FB_SINGLE_DATA_SUCCESS: 'FB_SINGLE_DATA_SUCCESS',
   FB_SINGLE_DATA_ERR: 'FB_SINGLE_DATA_ERR',
@@ -67,6 +71,26 @@ const actions = {
   fbUploadErr: err => {
     return {
       type: actions.FB_UPLOAD_ERR,
+      err,
+    };
+  },
+
+  fbReadFileBegin: () => {
+    return {
+      type: actions.FB_READ_FILE_BEGIN,
+    };
+  },
+
+  fbReadFileSuccess: data => {
+    return {
+      type: actions.FB_READ_FILE_SUCCESS,
+      data,
+    };
+  },
+
+  fbReadFileErr: err => {
+    return {
+      type: actions.FB_READ_FILE_ERR,
       err,
     };
   },
