@@ -3,53 +3,31 @@ import { Switch, Image } from 'antd';
 import ViewPageBase from '../View';
 
 const ViewPage = () => {
-  const createDataSource = data => {
+  const createDataSource = volunteers => {
     const dataSource = [];
 
-    try {
-      if (data.length) {
-        data.map((person, key) => {
-          return dataSource.push({
-            key: key + 1,
-            id: person.id,
-            name: person.name,
-            phone: person.phone,
-            email: person.email,
-            city: person.city,
-            address: `${person.address} ${person.addressNumber}`,
-            age: person.age,
-            language: person.language.map(s => (
-              <>
-                {s}
-                <br />
-              </>
-            )),
-            carOwner: <Switch checked={person.carOwner} />,
-            kosherFood: <Switch checked={person.kosherFood} />,
-            signedForm: <Image width={20} src={person.signedForm.url} />,
-            // id,
-            // name: (
-            //   <div className="record-img align-center-v">
-            //     <img src={url !== null ? url : require('../../../../static/img/avatar/profileImage.png')} alt={id} />
-            //     <span>
-            //       <span>{name}</span>
-            //       <span className="record-location">
-            //         {city},{country}
-            //       </span>
-            //     </span>
-            //   </div>
-            // ),
-            // email,
-            // company,
-            // position,
-            // jdate: join,
-            // status: <span className={`status ${status}`}>{status}</span>,
-          });
-        });
-      }
-    } catch (err) {
-      const a = err;
-    }
+    volunteers.map((volunteer, key) => {
+      return dataSource.push({
+        key: key + 1,
+        id: volunteer.id,
+        name: volunteer.name,
+        phone: volunteer.phone,
+        email: volunteer.email,
+        city: volunteer.city,
+        address: `${volunteer.address} ${volunteer.addressNumber}`,
+        age: volunteer.age,
+        language: volunteer.language.map(_ => (
+          <>
+            {_}
+            <br />
+          </>
+        )),
+        carOwner: <Switch checked={volunteer.carOwner} />,
+        kosherFood: <Switch checked={volunteer.kosherFood} />,
+        signedForm: <Image width={20} src={volunteer.signedForm.url} />,
+      });
+    });
+
     return dataSource;
   };
 

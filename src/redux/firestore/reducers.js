@@ -101,7 +101,7 @@ const fsCrudReducer = (state = initialState, action) => {
     case FB_SEARCH_SUCCESS:
       return {
         ...state,
-        searchData: data,
+        ...data,
         error: false,
       };
 
@@ -120,7 +120,7 @@ const fsCrudReducer = (state = initialState, action) => {
     case FB_READ_SUCCESS:
       return {
         ...state,
-        data,
+        ...data,
         error: false,
         loading: false,
       };
@@ -212,7 +212,7 @@ const fsSingleCrudReducer = (state = initialStateSingle, action) => {
     case FB_SINGLE_DATA_SUCCESS:
       return {
         ...state,
-        data,
+        ...data,
         error: false,
         loading: false,
       };

@@ -1,82 +1,121 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input, Select, DatePicker, Radio, Upload, Spin } from 'antd';
+import { Row, Col, Form, Input, Select, Spin } from 'antd';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import FeatherIcon from 'feather-icons-react';
-import moment from 'moment';
-import PropTypes from 'prop-types';
+import Helper from '../Helper';
 import { RecordFormWrapper } from '../style';
 import { PageHeader } from '../../../../components/page-headers/page-headers';
 import { Cards } from '../../../../components/cards/frame/cards-frame';
 import { Button } from '../../../../components/buttons/buttons';
 import { Main, BasicFormWrapper } from '../../../styled';
-import { fbDataUpdate, fbDataSingle, fbFileUploder } from '../../../../redux/firestore/actionCreator';
-import Heading from '../../../../components/heading/heading';
+import { fbDataUpdate, fbDataSingle, fbDataSearch } from '../../../../redux/firestore/actionCreator';
 
-const { Option } = Select;
-const dateFormat = 'YYYY/MM/DD';
 const Edit = ({ match }) => {
   const dispatch = useDispatch();
+  const collection = 'Groups';
+  const groupId = parseInt(match.params.id, 10);
+  const joinColumns = [
+    {
+      key: 'volunteers',
+      joinCollection: 'Volunteers',
+    },
+    {
+      key: 'elders',
+      joinCollection: 'Elders',
+    },
+  ];
 
-  const { crud, isLoading, url, isFileLoading } = useSelector(state => {
+  const {
+    group,
+    //  groupManagers,
+    volunteers,
+    elders,
+    isLoading,
+  } = useSelector(state => {
     return {
-      crud: state.singleCrud.data,
-      isLoading: state.crud.loading,
-      url: state.crud.url,
-      isFileLoading: state.crud.fileLoading,
+      group: state.singleCrud[collection],
+      isLoading: state.singleCrud.loading,
+      volunteers: state.crud.Volunteers,
+      elders: state.crud.Elders,
     };
   });
-  const [state, setState] = useState({
-    join: null,
-  });
   const [form] = Form.useForm();
-  useEffect(() => {
-    if (fbDataSingle) {
-      dispatch(fbDataSingle('Groups', parseInt(match.params.id, 10)));
-    }
-  }, [dispatch, match.params.id]);
 
-  const handleSubmit = values => {
-    dispatch(
-      fbDataUpdate('Groups', parseInt(match.params.id, 10), {
-        ...values,
-        url: url !== null ? url : crud.url,
-        join: state.join,
-        id: parseInt(match.params.id, 10),
-      }),
+  const [volunteersOptions, setVolunteersOptions] = useState(null);
+  const [eldersOptions, setEldersOptions] = useState(null);
+  const volunteersKeys = ['name', 'email'];
+  const eldersKeys = ['name'];
+
+  const setVolunteersOptionsWrapper = _ => {
+    setVolunteersOptions(
+      _.map(volunteer => (
+        <Select.Option key={volunteersKeys.map(key => volunteer[key]).join(' ')} value={volunteer.id}>
+          {volunteer.name} ({volunteer.email})
+        </Select.Option>
+      )),
     );
   };
 
-  const onChange = (date, dateString) => {
-    setState({ join: dateString });
+  const setEldersOptionsWrapper = _ => {
+    setEldersOptions(
+      _.map(elder => (
+        <Select.Option key={eldersKeys.map(key => elder[key]).join(' ')} value={elder.id}>
+          {elder.name}
+        </Select.Option>
+      )),
+    );
   };
 
-  const props = {
-    name: 'file',
-    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-    multiple: false,
-    showUploadList: false,
-    headers: {
-      authorization: 'authorization-text',
-    },
-    onChange(info) {
-      if (info.file.status !== 'uploading') {
-        dispatch(fbFileUploder(info.file.originFileObj));
-      }
-      if (info.file.status === 'done') {
-        // message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === 'error') {
-        // message.error(`${info.file.name} file upload failed.`);
-      }
-    },
+  useEffect(() => {
+    if (volunteers !== undefined) {
+      setVolunteersOptionsWrapper(volunteers);
+    }
+  }, [volunteers]);
+
+  useEffect(() => {
+    if (elders !== undefined) {
+      setEldersOptionsWrapper(elders);
+    }
+  }, [elders]);
+
+  useEffect(() => {
+    if (group !== undefined) {
+      setVolunteersOptionsWrapper(group.volunteers);
+      setEldersOptionsWrapper(group.elders);
+    }
+  }, [group]);
+
+  useEffect(() => {
+    if (fbDataSingle) {
+      dispatch(fbDataSingle(collection, groupId, joinColumns));
+    }
+  }, [dispatch, groupId]);
+
+  const handleSubmit = values => {
+    dispatch(fbDataUpdate(collection, groupId, values));
   };
+
+  const handleVolunteersSearch = value => {
+    setVolunteersOptions(null);
+    if (value.length > 2) {
+      dispatch(fbDataSearch('Volunteers', value, volunteersKeys));
+    }
+  };
+  const handleEldersSearch = value => {
+    setEldersOptions(null);
+    if (value.length > 2) {
+      dispatch(fbDataSearch('Elders', value, eldersKeys));
+    }
+  };
+
+  const requireee = false;
 
   return (
     <>
       <PageHeader
         buttons={[
           <Button className="btn-add_new" size="default" key="1" type="primary">
-            <Link key="1" to="/admin/firestore/Groups/View">
+            <Link key="1" to={`/admin/firestore/${collection}/View`}>
               View All
             </Link>
           </Button>,
@@ -89,44 +128,14 @@ const Edit = ({ match }) => {
           <Col xs={24}>
             <RecordFormWrapper>
               <Cards headless>
-                {crud === null ? (
+                {group === undefined ? (
                   <div className="record-spin">
                     <Spin />
                   </div>
                 ) : (
                   <Row justify="center">
                     <Col xl={10} md={16} xs={24}>
-                      <figure className="pro-image align-center-v mt-25">
-                        {crud !== null && (
-                          <img
-                            src={
-                              url !== null
-                                ? url
-                                : crud.url !== null
-                                ? crud.url
-                                : require('../../../../static/img/avatar/profileImage.png')
-                            }
-                            alt={crud.id}
-                          />
-                        )}
-
-                        <figcaption>
-                          <Upload {...props}>
-                            <Link className="upload-btn" to="#">
-                              <FeatherIcon icon="camera" size={16} />
-                            </Link>
-                          </Upload>
-                          <div className="info">
-                            <Heading as="h4">Profile Photo</Heading>
-                          </div>
-                          {isFileLoading && (
-                            <div className="isUploadSpain">
-                              <Spin />
-                            </div>
-                          )}
-                        </figcaption>
-                      </figure>
-                      {crud !== null && (
+                      {group !== null && (
                         <BasicFormWrapper>
                           <Form
                             className="add-record-form"
@@ -136,51 +145,64 @@ const Edit = ({ match }) => {
                             name="edit"
                             onFinish={handleSubmit}
                           >
-                            <Form.Item name="name" initialValue={crud.name} label="Name">
-                              <Input />
+                            <Form.Item
+                              name="name"
+                              label="Name"
+                              rules={[{ required: requireee }]}
+                              initialValue={group.name}
+                            >
+                              <Input placeholder="Input Name" />
                             </Form.Item>
-                            <Form.Item initialValue={crud.email} name="email" rules={[{ type: 'email' }]} label="Email">
-                              <Input />
-                            </Form.Item>
-                            <Form.Item name="country" initialValue={crud.country} label="Country">
-                              <Select style={{ width: '100%' }}>
-                                <Option value="">Please Select</Option>
-                                <Option value="bangladesh">Bangladesh</Option>
-                                <Option value="india">India</Option>
-                                <Option value="pakistan">Pakistan</Option>
-                                <Option value="srilanka">Srilanka</Option>
+
+                            <Form.Item
+                              name="city"
+                              rules={[{ required: requireee }]}
+                              label="City"
+                              initialValue={group.city}
+                            >
+                              <Select autocomplete="off" allowClear style={{ width: '100%' }} showSearch>
+                                {Helper.getCityOptions()}
                               </Select>
                             </Form.Item>
-                            <Form.Item name="city" initialValue={crud.city} label="City">
-                              <Select style={{ width: '100%' }}>
-                                <Option value="">Please Select</Option>
-                                <Option value="dhaka">Dhaka</Option>
-                                <Option value="mymensingh">Mymensingh</Option>
-                                <Option value="khulna">Khulna</Option>
-                                <Option value="barisal">Barisal</Option>
-                              </Select>
-                            </Form.Item>
-                            <Form.Item name="company" initialValue={crud.company} label="Company">
-                              <Input />
-                            </Form.Item>
-                            <Form.Item name="position" initialValue={crud.position} label="Position">
-                              <Input />
-                            </Form.Item>
-                            <Form.Item label="Joining Date">
-                              <DatePicker
-                                defaultValue={moment(`${state.join === null ? crud.join : state.join}`, dateFormat)}
-                                onChange={onChange}
+
+                            <Form.Item
+                              initialValue={group.volunteers.map(_ => _.id)}
+                              name="volunteers"
+                              rules={[{ required: requireee }]}
+                              label="Volunteers"
+                            >
+                              <Select
+                                mode="multiple"
+                                notFoundContent={volunteersOptions === null ? <Spin size="small" /> : null}
+                                allowClear
                                 style={{ width: '100%' }}
-                                format={dateFormat}
-                              />
+                                onSearch={_ => handleVolunteersSearch(_)}
+                                showSearch
+                                optionFilterProp="key"
+                              >
+                                {volunteersOptions}
+                              </Select>
                             </Form.Item>
-                            <Form.Item name="status" initialValue={crud.status} label="Status">
-                              <Radio.Group>
-                                <Radio value="active">Active</Radio>
-                                <Radio value="deactivated">Deactivated</Radio>
-                                <Radio value="blocked">Blocked</Radio>
-                              </Radio.Group>
+
+                            <Form.Item
+                              initialValue={group.elders.map(_ => _.id)}
+                              name="elders"
+                              rules={[{ required: requireee }]}
+                              label="Elders"
+                            >
+                              <Select
+                                mode="multiple"
+                                notFoundContent={eldersOptions === null ? <Spin size="small" /> : null}
+                                allowClear
+                                style={{ width: '100%' }}
+                                onSearch={_ => handleEldersSearch(_)}
+                                showSearch
+                                optionFilterProp="key"
+                              >
+                                {eldersOptions}
+                              </Select>
                             </Form.Item>
+
                             <div className="record-form-actions text-right">
                               <Button htmlType="submit" type="primary">
                                 {isLoading ? 'Loading...' : 'Update'}
@@ -200,9 +222,5 @@ const Edit = ({ match }) => {
     </>
   );
 };
-
-// Edit.propTypes = {
-//   match: PropTypes.shape(PropTypes.object).isRequired,
-// };
 
 export default Edit;

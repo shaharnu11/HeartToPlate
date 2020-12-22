@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Form, Input, Switch, Checkbox, Select, InputNumber } from 'antd';
+import { Row, Col, Form, Input, Select, InputNumber, Spin } from 'antd';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Helper from '../Helper';
@@ -13,26 +13,29 @@ import { fbDataSearch, fbDataSubmit, fbFileClear } from '../../../../redux/fires
 
 const AddNew = () => {
   const dispatch = useDispatch();
-  const { searchData, isLoading } = useSelector(state => {
+  const { groups, isLoading } = useSelector(state => {
     return {
       isLoading: state.crud.loading,
-      searchData: state.crud.searchData,
+      groups: state.crud.Groups,
     };
   });
 
   const [form] = Form.useForm();
   const [streets, setStreets] = useState([]);
-  const [regionManagers, setRegionManagers] = useState([]);
-  const [groups, setGroups] = useState([]);
+  const [groupsOptions, setGroupsOptions] = useState(null);
+  const groupsKeys = ['name'];
 
   useEffect(() => {
-    if (searchData && searchData.collection === 'RegionManagers') {
-      setRegionManagers(searchData.data);
+    if (groups !== undefined) {
+      setGroupsOptions(
+        groups.map(group => (
+          <Select.Option key={groupsKeys.map(key => group[key]).join(' ')} value={group.id}>
+            {group.name}
+          </Select.Option>
+        )),
+      );
     }
-    if (searchData && searchData.collection === 'Groups') {
-      setGroups(searchData.data);
-    }
-  }, [searchData]);
+  }, [groups]);
 
   const handleSubmit = values => {
     dispatch(
@@ -46,15 +49,10 @@ const AddNew = () => {
     dispatch(fbFileClear());
   };
 
-  const handleRegionManagerSearch = value => {
+  const handleGroupsSearch = value => {
+    setGroupsOptions(null);
     if (value.length > 2) {
-      dispatch(fbDataSearch('RegionManagers', value, ['name', 'email']));
-    }
-  };
-
-  const handleGroupSearch = value => {
-    if (value.length > 2) {
-      dispatch(fbDataSearch('Groups', value, ['name']));
+      dispatch(fbDataSearch('Groups', value, groupsKeys));
     }
   };
 
@@ -115,63 +113,26 @@ const AddNew = () => {
                             <InputNumber min={1} placeholder="Number" />
                           </Form.Item>
                         </Form.Item>
+
                         <Form.Item name="age" rules={[{ required: requireee }]} label="Age">
                           <InputNumber min={1} />
                         </Form.Item>
-                        <Form.Item name="language" rules={[{ required: requireee }]} label="Language">
-                          <Checkbox.Group>
-                            <Row>
-                              <Col>
-                                <Checkbox value="Hebrew" style={{ lineHeight: '32px' }}>
-                                  hebrew
-                                </Checkbox>
-                              </Col>
-                              <Col>
-                                <Checkbox value="English" style={{ lineHeight: '32px' }}>
-                                  english
-                                </Checkbox>
-                              </Col>
-                              <Col>
-                                <Checkbox value="Russian" style={{ lineHeight: '32px' }}>
-                                  russian
-                                </Checkbox>
-                              </Col>
-                              <Col>
-                                <Checkbox value="Arabic" style={{ lineHeight: '32px' }}>
-                                  arabic
-                                </Checkbox>
-                              </Col>
-                            </Row>
-                          </Checkbox.Group>
-                        </Form.Item>
-                        <Form.Item
-                          initialValue={null}
-                          name="regionManager"
-                          rules={[{ required: requireee }]}
-                          label="Region Manager"
-                        >
+
+                        {Helper.getLanguagesCheckboxs(requireee)}
+
+                        <Form.Item initialValue={[]} name="groups" rules={[{ required: requireee }]} label="Groups">
                           <Select
                             allowClear
                             style={{ width: '100%' }}
-                            onSearch={_ => handleRegionManagerSearch(_)}
+                            notFoundContent={groupsOptions === null ? <Spin size="small" /> : null}
+                            onSearch={_ => handleGroupsSearch(_)}
                             showSearch
+                            optionFilterProp="key"
                           >
-                            {regionManagers.map(_ => (
-                              <Select.Option key={_} value={_}>
-                                {_}
-                              </Select.Option>
-                            ))}
+                            {groupsOptions}
                           </Select>
                         </Form.Item>
-                        <Form.Item initialValue={[]} name="groups" rules={[{ required: requireee }]} label="Groups">
-                          <Select allowClear style={{ width: '100%' }} onSearch={_ => handleGroupSearch(_)} showSearch>
-                            {groups.map(_ => (
-                              <Select.Option key={_} value={_}>
-                                {_}
-                              </Select.Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
+
                         <div className="record-form-actions text-right">
                           <Button size="default" htmlType="Save" type="primary">
                             {isLoading ? 'Loading...' : 'Submit'}

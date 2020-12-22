@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input, Select, InputNumber, Checkbox, Spin } from 'antd';
+import { Row, Col, Form, Input, Select, Spin, InputNumber } from 'antd';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Helper from '../Helper';
@@ -12,49 +12,63 @@ import { fbDataUpdate, fbDataSingle, fbDataSearch } from '../../../../redux/fire
 
 const Edit = ({ match }) => {
   const dispatch = useDispatch();
-  const GroupManagerId = parseInt(match.params.id, 10);
+  const collection = 'GroupManagers';
+  const groupManagerId = parseInt(match.params.id, 10);
+  const joinColumns = [
+    {
+      key: 'groups',
+      joinCollection: 'Groups',
+    },
+  ];
 
-  const { crud, isLoading, searchData } = useSelector(state => {
+  const { groupManager, groups, isLoading } = useSelector(state => {
     return {
-      crud: state.singleCrud.data,
+      groupManager: state.singleCrud[collection],
       isLoading: state.singleCrud.loading,
-      searchData: state.crud.searchData,
+      groups: state.crud.groups,
     };
   });
+  const [form] = Form.useForm();
   const [streets, setStreets] = useState([]);
-  const [regionManagers, setRegionManagers] = useState([]);
-  const [groups, setGroups] = useState([]);
+  const [groupsOptions, setGroupsOptions] = useState(null);
+  const groupsKeys = ['name'];
+
+  const setGroupsOptionsWrapper = _ => {
+    setGroupsOptions(
+      _.map(group => (
+        <Select.Option key={groupsKeys.map(key => group[key]).join(' ')} value={group.id}>
+          {group.name}
+        </Select.Option>
+      )),
+    );
+  };
 
   useEffect(() => {
-    if (searchData && searchData.collection === 'RegionManagers') {
-      setRegionManagers(searchData.data);
+    if (groups !== undefined) {
+      setGroupsOptionsWrapper(groups);
     }
-    if (searchData && searchData.collection === 'Groups') {
-      setGroups(searchData.data);
-    }
-  }, [searchData]);
+  }, [groups]);
 
-  const [form] = Form.useForm();
+  useEffect(() => {
+    if (groupManager !== undefined) {
+      setGroupsOptionsWrapper(groupManager.groups);
+    }
+  }, [groupManager]);
 
   useEffect(() => {
     if (fbDataSingle) {
-      dispatch(fbDataSingle('GroupManagers', GroupManagerId));
+      dispatch(fbDataSingle(collection, groupManagerId, joinColumns));
     }
-  }, [dispatch, GroupManagerId]);
+  }, [dispatch, groupManagerId]);
 
   const handleSubmit = values => {
-    dispatch(fbDataUpdate('GroupManagers', GroupManagerId, values));
+    dispatch(fbDataUpdate(collection, groupManagerId, values));
   };
 
-  const handleRegionManagerSearch = value => {
+  const handleGroupsSearch = value => {
+    setGroupsOptions(null);
     if (value.length > 2) {
-      dispatch(fbDataSearch('RegionManagers', value, ['name', 'email']));
-    }
-  };
-
-  const handleGroupSearch = value => {
-    if (value.length > 2) {
-      dispatch(fbDataSearch('Groups', value, ['name']));
+      dispatch(fbDataSearch('Elders', value, groupsKeys));
     }
   };
 
@@ -65,7 +79,7 @@ const Edit = ({ match }) => {
       <PageHeader
         buttons={[
           <Button className="btn-add_new" size="default" key="1" type="primary">
-            <Link key="1" to="/admin/firestore/GroupManagers/View">
+            <Link key="1" to={`/admin/firestore/${collection}/View`}>
               View All
             </Link>
           </Button>,
@@ -78,14 +92,14 @@ const Edit = ({ match }) => {
           <Col xs={24}>
             <RecordFormWrapper>
               <Cards headless>
-                {crud === null ? (
+                {groupManager === undefined ? (
                   <div className="record-spin">
                     <Spin />
                   </div>
                 ) : (
                   <Row justify="center">
                     <Col xl={10} md={16} xs={24}>
-                      {crud !== null && (
+                      {groupManager !== null && (
                         <BasicFormWrapper>
                           <Form
                             className="add-record-form"
@@ -98,26 +112,26 @@ const Edit = ({ match }) => {
                             <Form.Item
                               name="name"
                               label="Name"
-                              initialValue={crud.name}
                               rules={[{ required: requireee }]}
+                              initialValue={groupManager.name}
                             >
                               <Input placeholder="Input Name" />
                             </Form.Item>
 
                             <Form.Item
                               name="phone"
-                              initialValue={crud.phone}
                               label="Phone"
                               rules={[{ required: requireee }]}
+                              initialValue={groupManager.phone}
                             >
                               <Input placeholder="Phone" />
                             </Form.Item>
 
                             <Form.Item
                               name="email"
-                              initialValue={crud.email}
                               rules={[{ required: requireee, type: 'email' }]}
                               label="Email"
+                              initialValue={groupManager.email}
                             >
                               <Input placeholder="example@gmail.com" />
                             </Form.Item>
@@ -126,7 +140,7 @@ const Edit = ({ match }) => {
                               name="city"
                               rules={[{ required: requireee }]}
                               label="City"
-                              initialValue={crud.city}
+                              initialValue={groupManager.city}
                             >
                               <Select
                                 allowClear
@@ -139,7 +153,11 @@ const Edit = ({ match }) => {
                             </Form.Item>
 
                             <Form.Item label="Address">
-                              <Form.Item name="address" rules={[{ required: requireee }]} initialValue={crud.address}>
+                              <Form.Item
+                                name="address"
+                                rules={[{ required: requireee }]}
+                                initialValue={groupManager.address}
+                              >
                                 <Select allowClear showSearch placeholder="Street">
                                   {Helper.getStreetOptions(streets)}
                                 </Select>
@@ -147,79 +165,38 @@ const Edit = ({ match }) => {
                               <Form.Item
                                 name="addressNumber"
                                 rules={[{ required: requireee }]}
-                                initialValue={crud.addressNumber}
+                                initialValue={groupManager.addressNumber}
                               >
                                 <InputNumber min={1} placeholder="Number" />
                               </Form.Item>
                             </Form.Item>
 
-                            <Form.Item name="age" rules={[{ required: requireee }]} label="Age" initialValue={crud.age}>
+                            <Form.Item
+                              name="age"
+                              rules={[{ required: requireee }]}
+                              label="Age"
+                              initialValue={groupManager.age}
+                            >
                               <InputNumber min={1} />
                             </Form.Item>
 
-                            <Form.Item
-                              name="language"
-                              rules={[{ required: requireee }]}
-                              initialValue={crud.language}
-                              label="Language"
-                            >
-                              <Checkbox.Group>
-                                <Row>
-                                  <Col>
-                                    <Checkbox value="hebrew" style={{ lineHeight: '32px' }}>
-                                      hebrew
-                                    </Checkbox>
-                                  </Col>
-                                  <Col>
-                                    <Checkbox value="english" style={{ lineHeight: '32px' }}>
-                                      english
-                                    </Checkbox>
-                                  </Col>
-                                  <Col>
-                                    <Checkbox value="russian" style={{ lineHeight: '32px' }}>
-                                      russian
-                                    </Checkbox>
-                                  </Col>
-                                  <Col>
-                                    <Checkbox value="arabic" style={{ lineHeight: '32px' }}>
-                                      arabic
-                                    </Checkbox>
-                                  </Col>
-                                </Row>
-                              </Checkbox.Group>
-                            </Form.Item>
+                            {Helper.getLanguagesCheckboxs(requireee, groupManager.language)}
 
                             <Form.Item
-                              initialValue={null}
-                              name="regionManager"
+                              initialValue={groupManager.groups.map(_ => _.id)}
+                              name="groups"
                               rules={[{ required: requireee }]}
-                              label="Region Manager"
+                              label="Groups"
                             >
                               <Select
                                 allowClear
                                 style={{ width: '100%' }}
-                                onSearch={_ => handleRegionManagerSearch(_)}
+                                notFoundContent={groupsOptions === null ? <Spin size="small" /> : null}
+                                onSearch={_ => handleGroupsSearch(_)}
                                 showSearch
+                                optionFilterProp="key"
                               >
-                                {regionManagers.map(_ => (
-                                  <Select.Option key={_} value={_}>
-                                    {_}
-                                  </Select.Option>
-                                ))}
-                              </Select>
-                            </Form.Item>
-                            <Form.Item initialValue={[]} name="groups" rules={[{ required: requireee }]} label="Groups">
-                              <Select
-                                allowClear
-                                style={{ width: '100%' }}
-                                onSearch={_ => handleGroupSearch(_)}
-                                showSearch
-                              >
-                                {groups.map(_ => (
-                                  <Select.Option key={_} value={_}>
-                                    {_}
-                                  </Select.Option>
-                                ))}
+                                {groupsOptions}
                               </Select>
                             </Form.Item>
 

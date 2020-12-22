@@ -3,11 +3,11 @@ import { Switch, Image } from 'antd';
 import ViewPageBase from '../View';
 
 const ViewPage = () => {
-  const createDataSource = data => {
+  const createDataSource = groupManagers => {
     const dataSource = [];
 
-    if (data.length) {
-      data.map((groupManager, key) => {
+    if (groupManagers.length) {
+      groupManagers.map((groupManager, key) => {
         return dataSource.push({
           key: key + 1,
           id: groupManager.id,
@@ -23,7 +23,6 @@ const ViewPage = () => {
               <br />
             </>
           )),
-          regionManager: groupManager.regionManager,
           groups: groupManager.groups.map(_ => _.name),
         });
       });
@@ -75,14 +74,10 @@ const ViewPage = () => {
       key: 'language',
     },
     {
-      title: 'Region Manager',
-      dataIndex: 'regionManager',
-      key: 'regionManager',
-    },
-    {
       title: 'Groups',
       dataIndex: 'groups',
       key: 'groups',
+      joinCollection: 'Groups',
     },
   ];
 

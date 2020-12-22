@@ -6,6 +6,10 @@ const VolunteersView = lazy(() => import('../../container/crud/fireStore/Volunte
 const VolunteersEdit = lazy(() => import('../../container/crud/fireStore/Volunteers/Edit'));
 const VolunteersAdd = lazy(() => import('../../container/crud/fireStore/Volunteers/Add'));
 
+const EldersView = lazy(() => import('../../container/crud/fireStore/Elders/View'));
+const EldersEdit = lazy(() => import('../../container/crud/fireStore/Elders/Edit'));
+const EldersAdd = lazy(() => import('../../container/crud/fireStore/Elders/Add'));
+
 const GroupManagersView = lazy(() => import('../../container/crud/fireStore/GroupManagers/View'));
 const GroupManagersEdit = lazy(() => import('../../container/crud/fireStore/GroupManagers/Edit'));
 const GroupManagersAdd = lazy(() => import('../../container/crud/fireStore/GroupManagers/Add'));
@@ -25,6 +29,10 @@ const FirebaseRoute = () => {
       <Route excat path={`${path}/Volunteers/View`} component={VolunteersView} />
       <Route exact path={`${path}/Volunteers/Edit/:id`} component={VolunteersEdit} />
       <Route exact path={`${path}/Volunteers/Add`} component={VolunteersAdd} />
+
+      <Route excat path={`${path}/Elders/View`} component={EldersView} />
+      <Route exact path={`${path}/Elders/Edit/:id`} component={EldersEdit} />
+      <Route exact path={`${path}/Elders/Add`} component={EldersAdd} />
 
       <Route excat path={`${path}/GroupManagers/View`} component={GroupManagersView} />
       <Route exact path={`${path}/GroupManagers/Edit/:id`} component={GroupManagersEdit} />

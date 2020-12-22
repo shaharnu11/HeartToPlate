@@ -18,10 +18,9 @@ const { ExcelColumn } = ReactExport.ExcelFile;
 
 const ViewPageBase = (collection, columns, createDataSource) => {
   const dispatch = useDispatch();
-  const { crud, isLoading } = useSelector(state => {
+  const { documents } = useSelector(state => {
     return {
-      crud: state.crud,
-      isLoading: false,
+      documents: state.crud[collection],
     };
   });
 
@@ -39,7 +38,14 @@ const ViewPageBase = (collection, columns, createDataSource) => {
 
   useEffect(() => {
     if (fbDataRead) {
-      dispatch(fbDataRead(collection, pagination, sorter));
+      dispatch(
+        fbDataRead(
+          collection,
+          pagination,
+          sorter,
+          columns.filter(_ => _.joinCollection !== undefined),
+        ),
+      );
     }
   }, [dispatch]);
 
@@ -67,27 +73,27 @@ const ViewPageBase = (collection, columns, createDataSource) => {
     return false;
   };
 
-  const onHandleSearch = e => {
-    dispatch(fbDataSearch(collection, e.target.value, crud.data));
-  };
+  // const onHandleSearch = e => {
+  //   dispatch(fbDataSearch(collection, e.target.value, crud));
+  // };
 
-  const dataSource = createDataSource(crud.data).map(data => {
-    return {
-      ...data,
-      action: (
-        <div style={{ textAlign: 'right' }}>
-          <Link className="edit" to={`/admin/firestore/${collection}/edit/${data.id}`}>
-            <FeatherIcon icon="edit" size={14} />
-          </Link>
-          &nbsp;&nbsp;&nbsp;
-          <Link className="delete" onClick={() => handleDelete(data.id)} to="#">
-            <FeatherIcon icon="trash-2" size={14} />
-          </Link>
-        </div>
-      ),
-      asd: 3,
-    };
-  });
+  const getDataSource = () =>
+    createDataSource(documents).map(data => {
+      return {
+        ...data,
+        action: (
+          <div style={{ textAlign: 'right' }}>
+            <Link className="edit" to={`/admin/firestore/${collection}/edit/${data.id}`}>
+              <FeatherIcon icon="edit" size={14} />
+            </Link>
+            &nbsp;&nbsp;&nbsp;
+            <Link className="delete" onClick={() => handleDelete(data.id)} to="#">
+              <FeatherIcon icon="trash-2" size={14} />
+            </Link>
+          </div>
+        ),
+      };
+    });
 
   const handleChange = (tablePagination, filters, tableSorter, extra) => {
     if (extra.action === 'paginate') {
@@ -99,42 +105,6 @@ const ViewPageBase = (collection, columns, createDataSource) => {
       dispatch(fbDataRead(collection, pagination, sorter));
     }
   };
-
-  // const handleSort = (sortBy, isFiledSorted) => {
-  //   const sortDirection = isFiledSorted
-  //     ? state.sortDirection === SortDirections.DESC
-  //       ? SortDirections.ASC
-  //       : SortDirections.DESC
-  //     : SortDirections.DESC;
-
-  //   setState({
-  //     ...state,
-  //     sortBy,
-  //     sortDirection,
-  //   });
-  //   dispatch(fbDataRead(collection, state.pageSize, state.currentPage, sortBy, sortDirection));
-  // };
-
-  // const reateSortableTitle = title => {
-  //   const isSortedBy = state.sortBy === title;
-
-  //   return (
-  //     <div>
-  //       {title}
-  //       <span>&nbsp;&nbsp;</span>
-  //       <FontAwesome
-  //         name={isSortedBy ? `sort-${state.sortDirection === SortDirections.DESC ? 'down' : 'up'}` : 'sort'}
-  //         onClick={() => handleSort(title, isSortedBy)}
-  //         className="super-crazy-colors"
-  //         size="2x"
-  //         style={{
-  //           color: isSortedBy ? (state.sortDirection === SortDirections.DESC ? 'red' : 'green') : undefined,
-  //           textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)',
-  //         }}
-  //       />
-  //     </div>
-  //   );
-  // };
 
   return (
     <RecordViewWrapper>
@@ -160,7 +130,7 @@ const ViewPageBase = (collection, columns, createDataSource) => {
             <span className="search-icon">
               <FeatherIcon icon="search" size={14} />
             </span>
-            <input onChange={onHandleSearch} type="text" name="recored-search" placeholder="Search Here" />
+            {/* <input onChange={onHandleSearch} type="text" name="recored-search" placeholder="Search Here" /> */}
           </div>,
         ]}
         ghost
@@ -170,7 +140,7 @@ const ViewPageBase = (collection, columns, createDataSource) => {
         <Row gutter={15}>
           <Col className="w-100" md={24}>
             <Cards headless>
-              {isLoading ? (
+              {documents === undefined ? (
                 <div className="spin">
                   <Spin />
                 </div>
@@ -178,19 +148,16 @@ const ViewPageBase = (collection, columns, createDataSource) => {
                 <div>
                   <TableWrapper className="table-data-view table-responsive">
                     <Table
-                      // rowSelection={rowSelection}
                       pagination={pagination}
-                      dataSource={dataSource}
+                      dataSource={getDataSource()}
                       onChange={handleChange}
-                      scroll={{ x: 1500, y: 300 }}
+                      scroll={{ x: columns.length * 150, y: 300 }}
                       columns={columns
                         .map(column => {
                           return {
                             width: 10,
                             ...column,
                             showSorterTooltip: false,
-
-                            // title: column.sortable ? reateSortableTitle(column.title) : column.title,
                           };
                         })
                         .concat({

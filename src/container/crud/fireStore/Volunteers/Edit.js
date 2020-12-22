@@ -3,6 +3,7 @@ import { Row, Col, Form, Input, Select, InputNumber, Checkbox, Switch, Upload, S
 import { UploadOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { helpers } from 'chart.js';
 import Helper from '../Helper';
 import { RecordFormWrapper } from '../style';
 import { PageHeader } from '../../../../components/page-headers/page-headers';
@@ -13,13 +14,13 @@ import { fbDataUpdate, fbDataSingle, fbFileReader, fbFileUploder } from '../../.
 
 const Edit = ({ match }) => {
   const dispatch = useDispatch();
+  const collection = 'Volunteers';
   const volunteerId = parseInt(match.params.id, 10);
 
-  const { crud, isLoading, fileUplode, isFileLoading } = useSelector(state => {
+  const { volunteer, isLoading, fileUplode } = useSelector(state => {
     return {
-      crud: state.singleCrud.data,
+      volunteer: state.singleCrud[collection],
       isLoading: state.singleCrud.loading,
-      isFileLoading: state.singleCrud.fileLoading,
       fileUplode: state.crud.file,
     };
   });
@@ -42,32 +43,28 @@ const Edit = ({ match }) => {
   }, [dispatch, fileUplode]);
 
   useEffect(() => {
-    if (crud != null) {
-      Helper.handleCitySelect(crud.city, setStreets);
-    }
-  }, [dispatch, crud]);
+    if (volunteer !== undefined) {
+      Helper.handleCitySelect(volunteer.city, setStreets);
 
-  useEffect(() => {
-    if (fbDataSingle) {
-      dispatch(fbDataSingle('Volunteers', volunteerId));
-    }
-  }, [dispatch, volunteerId]);
-
-  useEffect(() => {
-    if (crud != null) {
       setSignedFormFiles([
         {
           uid: '1',
           status: 'done',
-          name: crud.signedForm.name,
-          url: crud.signedForm.url,
+          name: volunteer.signedForm.name,
+          url: volunteer.signedForm.url,
         },
       ]);
     }
-  }, [dispatch, crud]);
+  }, [dispatch, volunteer]);
+
+  useEffect(() => {
+    if (fbDataSingle) {
+      dispatch(fbDataSingle(collection, volunteerId));
+    }
+  }, [dispatch, volunteerId]);
 
   const handleSubmit = values => {
-    dispatch(fbDataUpdate('Volunteers', volunteerId, values));
+    dispatch(fbDataUpdate(collection, volunteerId, values));
   };
 
   const handlePreview = async file => {
@@ -103,7 +100,7 @@ const Edit = ({ match }) => {
       <PageHeader
         buttons={[
           <Button className="btn-add_new" size="default" key="1" type="primary">
-            <Link key="1" to="/admin/firestore/Volunteers/View">
+            <Link key="1" to={`/admin/firestore/${collection}/View`}>
               View All
             </Link>
           </Button>,
@@ -116,14 +113,14 @@ const Edit = ({ match }) => {
           <Col xs={24}>
             <RecordFormWrapper>
               <Cards headless>
-                {crud === null ? (
+                {volunteer === undefined ? (
                   <div className="record-spin">
                     <Spin />
                   </div>
                 ) : (
                   <Row justify="center">
                     <Col xl={10} md={16} xs={24}>
-                      {crud !== null && (
+                      {volunteer !== null && (
                         <BasicFormWrapper>
                           <Form
                             className="add-record-form"
@@ -136,7 +133,7 @@ const Edit = ({ match }) => {
                             <Form.Item
                               name="name"
                               label="Name"
-                              initialValue={crud.name}
+                              initialValue={volunteer.name}
                               rules={[{ required: requireee }]}
                             >
                               <Input placeholder="Input Name" />
@@ -144,7 +141,7 @@ const Edit = ({ match }) => {
 
                             <Form.Item
                               name="phone"
-                              initialValue={crud.phone}
+                              initialValue={volunteer.phone}
                               label="Phone"
                               rules={[{ required: requireee }]}
                             >
@@ -153,7 +150,7 @@ const Edit = ({ match }) => {
 
                             <Form.Item
                               name="email"
-                              initialValue={crud.email}
+                              initialValue={volunteer.email}
                               rules={[{ required: requireee, type: 'email' }]}
                               label="Email"
                             >
@@ -164,7 +161,7 @@ const Edit = ({ match }) => {
                               name="city"
                               rules={[{ required: requireee }]}
                               label="City"
-                              initialValue={crud.city}
+                              initialValue={volunteer.city}
                             >
                               <Select
                                 allowClear
@@ -177,7 +174,11 @@ const Edit = ({ match }) => {
                             </Form.Item>
 
                             <Form.Item label="Address">
-                              <Form.Item name="address" rules={[{ required: requireee }]} initialValue={crud.address}>
+                              <Form.Item
+                                name="address"
+                                rules={[{ required: requireee }]}
+                                initialValue={volunteer.address}
+                              >
                                 <Select allowClear showSearch placeholder="Street">
                                   {Helper.getStreetOptions(streets)}
                                 </Select>
@@ -185,54 +186,29 @@ const Edit = ({ match }) => {
                               <Form.Item
                                 name="addressNumber"
                                 rules={[{ required: requireee }]}
-                                initialValue={crud.addressNumber}
+                                initialValue={volunteer.addressNumber}
                               >
                                 <InputNumber min={1} placeholder="Number" />
                               </Form.Item>
                             </Form.Item>
 
-                            <Form.Item name="age" rules={[{ required: requireee }]} label="Age" initialValue={crud.age}>
+                            <Form.Item
+                              name="age"
+                              rules={[{ required: requireee }]}
+                              label="Age"
+                              initialValue={volunteer.age}
+                            >
                               <InputNumber min={1} />
                             </Form.Item>
 
-                            <Form.Item
-                              name="language"
-                              rules={[{ required: requireee }]}
-                              initialValue={crud.language}
-                              label="Language"
-                            >
-                              <Checkbox.Group>
-                                <Row>
-                                  <Col>
-                                    <Checkbox value="hebrew" style={{ lineHeight: '32px' }}>
-                                      hebrew
-                                    </Checkbox>
-                                  </Col>
-                                  <Col>
-                                    <Checkbox value="english" style={{ lineHeight: '32px' }}>
-                                      english
-                                    </Checkbox>
-                                  </Col>
-                                  <Col>
-                                    <Checkbox value="russian" style={{ lineHeight: '32px' }}>
-                                      russian
-                                    </Checkbox>
-                                  </Col>
-                                  <Col>
-                                    <Checkbox value="arabic" style={{ lineHeight: '32px' }}>
-                                      arabic
-                                    </Checkbox>
-                                  </Col>
-                                </Row>
-                              </Checkbox.Group>
+                            {Helper.getLanguagesCheckboxs(requireee, volunteer.language)}
+
+                            <Form.Item name="carOwner" label="Car Owner" initialValue={volunteer.carOwner}>
+                              <Switch style={{ height: '18px' }} defaultChecked={volunteer.carOwner} />
                             </Form.Item>
 
-                            <Form.Item name="carOwner" label="Car Owner" initialValue={crud.carOwner}>
-                              <Switch style={{ height: '18px' }} defaultChecked={crud.carOwner} />
-                            </Form.Item>
-
-                            <Form.Item name="kosherFood" label="Kosher Food" initialValue={crud.kosherFood}>
-                              <Switch style={{ height: '18px' }} defaultChecked={crud.kosherFood} />
+                            <Form.Item name="kosherFood" label="Kosher Food" initialValue={volunteer.kosherFood}>
+                              <Switch style={{ height: '18px' }} defaultChecked={volunteer.kosherFood} />
                             </Form.Item>
 
                             <Form.Item label="Signed Form">
@@ -240,7 +216,7 @@ const Edit = ({ match }) => {
                                 name="signedForm"
                                 rules={[{ required: requireee }]}
                                 noStyle
-                                initialValue={crud.signedForm}
+                                initialValue={volunteer.signedForm}
                               >
                                 <Upload
                                   name="files"

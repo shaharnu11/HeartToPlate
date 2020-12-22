@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { notification } from 'antd';
 import actions from './actions';
 
@@ -92,36 +93,60 @@ const fbDataSubmit = (collection, data) => {
 /*
 {collection : }
 */
-const fbDataRead = (collection, pagination, sorter) => {
+const fbDataRead = (collection, pagination, sorter, joinColumns) => {
   return async (dispatch, getState, { getFirestore }) => {
     const db = getFirestore();
-    const data = [];
+    const datas = [];
     try {
       await dispatch(fbReadBegin());
 
       let collectionRef = db.collection(collection);
+
       if (sorter != null) {
         collectionRef = collectionRef.orderBy(sorter.columnKey, sorter.order);
       }
       if (pagination != null) {
         collectionRef = collectionRef.limit(pagination.pageSize * pagination.current + 1);
       }
-      const query = await collectionRef.get();
+      await collectionRef.get().then(query =>
+        query.forEach(doc => {
+          datas.push(doc.data());
+        }),
+      );
 
-      await query.forEach(doc => {
-        data.push(doc.data());
-      });
+      if (joinColumns.length > 0) {
+        const promiss = [];
+        datas.forEach(data => {
+          joinColumns.forEach(joinColumn => {
+            promiss.push(
+              db
+                .collection(joinColumn.joinCollection)
+                .where('id', 'in', [data[joinColumn.key]].flat())
+                .get()
+                .then(query => {
+                  const newVal = [];
+                  query.forEach(doc => {
+                    newVal.push(doc.data());
+                  });
+                  data[joinColumn.key] = newVal;
+                }),
+            );
+          });
+        });
 
-      const isEndOfCollection = data.length > pagination.pageSize * pagination.current;
+        await Promise.all(promiss);
+      }
+
+      const isEndOfCollection = datas.length > pagination.pageSize * pagination.current;
 
       if (isEndOfCollection) {
-        data.pop();
+        datas.pop();
         [...Array(pagination.pageSize).keys()].forEach(_ => {
-          data.push(data[data.length - 1]);
+          datas.push(datas[datas.length - 1]);
         });
       }
 
-      await dispatch(fbReadSuccess(data));
+      await dispatch(fbReadSuccess(collection, datas));
     } catch (err) {
       await dispatch(fbReadErr(err));
     }
@@ -134,16 +159,32 @@ const fbDataSearch = (collection, value, keys) => {
     const data = [];
     try {
       await dispatch(fbSearchBegin());
-      const query = await db
-        .collection(collection)
-        .where(keys[0], '>=', value)
-        .get();
-      await query.forEach(doc => {
-        data.push(doc.data());
-      });
-      const searchValue = data.filter(item => item.name.toLowerCase().startsWith(value.toLowerCase()));
-      // await dispatch(fbSearchSuccess(searchValue));
-      await dispatch(fbSearchSuccess({ collection, data: [12345, 2, 3] }));
+
+      const queries = await Promise.all(
+        keys.map(async key => {
+          return db
+            .collection(collection)
+            .where(key, '>=', value)
+            .get();
+        }),
+      );
+
+      await Promise.all(
+        queries.map(async _ => {
+          return _.forEach(doc => {
+            data.push(doc.data());
+          });
+        }),
+      );
+
+      const dataIds = data.map(_ => _.id);
+
+      await dispatch(
+        fbSearchSuccess(
+          collection,
+          data.filter((val, index) => dataIds.indexOf(val.id) === index),
+        ),
+      );
     } catch (err) {
       await dispatch(fbSearchErr(err));
     }
@@ -202,18 +243,40 @@ const fbDataDelete = (collection, id) => {
   };
 };
 
-const fbDataSingle = (collection, id) => {
-  return async (dispatch, getState, { getFirebase, getFirestore }) => {
+const fbDataSingle = (collection, id, joinColumns) => {
+  return async (dispatch, getState, { getFirestore }) => {
     const db = getFirestore();
     try {
       await dispatch(fbSingleDataBegin());
-      const query = await db
-        .collection(collection)
-        .where('id', '==', id)
-        .get();
-      await query.forEach(doc => {
-        dispatch(fbSingleDataSuccess(doc.data()));
-      });
+      const data = (
+        await db
+          .collection(collection)
+          .doc(id.toString())
+          .get()
+      ).data();
+
+      if (joinColumns !== undefined) {
+        const promiss = [];
+        joinColumns.forEach(joinColumn => {
+          promiss.push(
+            db
+              .collection(joinColumn.joinCollection)
+              .where('id', 'in', [data[joinColumn.key]].flat())
+              .get()
+              .then(query => {
+                const newVal = [];
+                query.forEach(doc => {
+                  newVal.push(doc.data());
+                });
+                data[joinColumn.key] = Array.isArray(data[joinColumn.key]) ? newVal : newVal[0];
+              }),
+          );
+        });
+
+        await Promise.all(promiss);
+      }
+
+      await dispatch(fbSingleDataSuccess(collection, data));
     } catch (err) {
       await dispatch(fbSingleDataErr(err));
     }

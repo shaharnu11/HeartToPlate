@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select } from 'antd';
+import { Select, Form, Checkbox, Row, Col } from 'antd';
 
 import citiesAndStreets from './israeli_street_and_cities_names.json';
 
@@ -23,6 +23,36 @@ const Helper = {
             {_}
           </Select.Option>
         )),
+  getLanguagesCheckboxs: (required, value = []) => {
+    return (
+      <Form.Item name="language" rules={[{ required }]} initialValue={value} label="Language">
+        <Checkbox.Group>
+          <Row>
+            <Col>
+              <Checkbox value="hebrew" style={{ lineHeight: '32px' }}>
+                Hebrew
+              </Checkbox>
+            </Col>
+            <Col>
+              <Checkbox value="english" style={{ lineHeight: '32px' }}>
+                English
+              </Checkbox>
+            </Col>
+            <Col>
+              <Checkbox value="russian" style={{ lineHeight: '32px' }}>
+                Russian
+              </Checkbox>
+            </Col>
+            <Col>
+              <Checkbox value="arabic" style={{ lineHeight: '32px' }}>
+                Arabic
+              </Checkbox>
+            </Col>
+          </Row>
+        </Checkbox.Group>
+      </Form.Item>
+    );
+  },
 };
 
 export default Helper;

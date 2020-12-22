@@ -41,11 +41,14 @@ const actions = {
     };
   },
 
-  fbSearchSuccess: data => {
-    return {
+  fbSearchSuccess: (collection, data) => {
+    const action = {
       type: actions.FB_SEARCH_SUCCESS,
-      data,
+      data: {},
     };
+    action.data[collection] = data;
+
+    return action;
   },
 
   fbSearchErr: err => {
@@ -121,11 +124,14 @@ const actions = {
     };
   },
 
-  fbReadSuccess: data => {
-    return {
+  fbReadSuccess: (collection, data) => {
+    const action = {
       type: actions.FB_READ_SUCCESS,
-      data,
+      data: {},
     };
+    action.data[collection] = data;
+
+    return action;
   },
 
   fbReadErr: err => {
@@ -181,11 +187,14 @@ const actions = {
     };
   },
 
-  fbSingleDataSuccess: data => {
-    return {
+  fbSingleDataSuccess: (collection, data) => {
+    const action = {
       type: actions.FB_SINGLE_DATA_SUCCESS,
-      data,
+      data: {},
     };
+    action.data[collection] = data;
+
+    return action;
   },
 
   fbSingleDataErr: err => {
