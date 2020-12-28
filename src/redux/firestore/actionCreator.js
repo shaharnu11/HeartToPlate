@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-syntax */
+// import { filter } from 'all-the-cities';
 import { notification } from 'antd';
 import actions from './actions';
 
@@ -93,7 +94,7 @@ const fbDataSubmit = (collection, data) => {
 /*
 {collection : }
 */
-const fbDataRead = (collection, pagination, sorter, joinColumns) => {
+const fbDataRead = (collection, pagination, sorter, joinColumns, filter) => {
   return async (dispatch, getState, { getFirestore }) => {
     const db = getFirestore();
     const datas = [];
@@ -102,8 +103,11 @@ const fbDataRead = (collection, pagination, sorter, joinColumns) => {
 
       let collectionRef = db.collection(collection);
 
+      if (filter != null) {
+        collectionRef = collectionRef.where(filter.column, '>=', filter.text);
+      }
       if (sorter != null) {
-        collectionRef = collectionRef.orderBy(sorter.columnKey, sorter.order);
+        collectionRef = collectionRef.orderBy(sorter.columnKey, sorter.order === 'ascend' ? 'asc' : 'desc');
       }
       if (pagination != null) {
         collectionRef = collectionRef.limit(pagination.pageSize * pagination.current + 1);
@@ -121,7 +125,7 @@ const fbDataRead = (collection, pagination, sorter, joinColumns) => {
             promiss.push(
               db
                 .collection(joinColumn.joinCollection)
-                .where('id', 'in', [data[joinColumn.key]].flat())
+                .where(joinColumn.destinationColumn, joinColumn.action, data[joinColumn.sourceColumn])
                 .get()
                 .then(query => {
                   const newVal = [];
@@ -149,6 +153,7 @@ const fbDataRead = (collection, pagination, sorter, joinColumns) => {
       await dispatch(fbReadSuccess(collection, datas));
     } catch (err) {
       await dispatch(fbReadErr(err));
+      await updateNotificationError(err);
     }
   };
 };

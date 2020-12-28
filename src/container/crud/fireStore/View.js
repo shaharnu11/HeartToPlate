@@ -1,12 +1,16 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Table, Spin } from 'antd';
+import { Row, Col, Table, Spin, Input, Button, Space } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import ReactExport from 'react-export-excel';
+import Highlighter from 'react-highlight-words';
+import { SearchOutlined } from '@ant-design/icons';
+// import { filter } from 'all-the-cities';
 import { RecordViewWrapper } from './style';
 import { Main, TableWrapper } from '../../styled';
-import { Button } from '../../../components/buttons/buttons';
+// import { Button } from '../../../components/buttons/buttons';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 import { PageHeader } from '../../../components/page-headers/page-headers';
 import { fbDataDelete, fbDataRead, fbDataSearch } from '../../../redux/firestore/actionCreator';
@@ -24,30 +28,13 @@ const ViewPageBase = (collection, columns, createDataSource) => {
     };
   });
 
+  const joinColumns = columns.filter(_ => _.joinCollection !== undefined);
   const [pagination, setPagination] = useState({
     showSizeChanger: true,
     current: 1,
     pageSize: 10,
     showQuickJumper: false,
   });
-
-  const [sorter, setSorter] = useState({
-    columnKey: 'id',
-    order: 'asc',
-  });
-
-  useEffect(() => {
-    if (fbDataRead) {
-      dispatch(
-        fbDataRead(
-          collection,
-          pagination,
-          sorter,
-          columns.filter(_ => _.joinCollection !== undefined),
-        ),
-      );
-    }
-  }, [dispatch]);
 
   // const handleExport = () => {
   //   setState({
@@ -65,6 +52,93 @@ const ViewPageBase = (collection, columns, createDataSource) => {
   //   return <DownloadExcel data={crud.data} />;
   // };
 
+  const [sorter, setSorter] = useState(null);
+  const [filter, setFilter] = useState();
+
+  useEffect(() => {
+    if (fbDataRead) {
+      dispatch(fbDataRead(collection, pagination, sorter, joinColumns));
+    }
+  }, [dispatch]);
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    setFilter({ column: dataIndex, text: selectedKeys[0] });
+    confirm();
+  };
+
+  const handleReset = clearFilters => {
+    setFilter(null);
+    clearFilters();
+  };
+
+  const getColumnFilterProps = column => {
+    if (column.filtered === undefined || (filter && filter.column != null && filter.column !== column.key)) {
+      return {};
+    }
+
+    const dataIndex = column.key;
+    let searchInput = 3;
+
+    return {
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            ref={node => {
+              searchInput = node;
+            }}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            style={{ width: 188, marginBottom: 8, display: 'block' }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Search
+            </Button>
+            <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+              Reset
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+      // onFilter: (value, record) => {
+      //   const a = 3;
+      //   return record[dataIndex]
+      //     ? record[dataIndex]
+      //         .toString()
+      //         .toLowerCase()
+      //         .includes(value.toLowerCase())
+      //     : '';
+      // },
+      onFilterDropdownVisibleChange: visible => {
+        if (visible) {
+          setTimeout(() => searchInput.select(), 100);
+        }
+      },
+      render: text => {
+        return filter && filter.column === dataIndex ? (
+          <Highlighter
+            class="highlighterFilter"
+            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+            searchWords={[filter.text]}
+            autoEscape
+            textToHighlight={text ? text.toString() : ''}
+          />
+        ) : (
+          text
+        );
+      },
+    };
+  };
+
   const handleDelete = id => {
     const confirm = window.confirm('Are you sure delete this?');
     if (confirm) {
@@ -72,10 +146,6 @@ const ViewPageBase = (collection, columns, createDataSource) => {
     }
     return false;
   };
-
-  // const onHandleSearch = e => {
-  //   dispatch(fbDataSearch(collection, e.target.value, crud));
-  // };
 
   const getDataSource = () =>
     createDataSource(documents).map(data => {
@@ -98,11 +168,25 @@ const ViewPageBase = (collection, columns, createDataSource) => {
   const handleChange = (tablePagination, filters, tableSorter, extra) => {
     if (extra.action === 'paginate') {
       setPagination(tablePagination);
-      dispatch(fbDataRead(collection, pagination, sorter));
+      dispatch(fbDataRead(collection, pagination, sorter, joinColumns, filter));
     }
     if (extra.action === 'sort') {
-      setSorter({ ...tableSorter, order: tableSorter.order === 'ascend' ? 'asc' : 'desc' });
-      dispatch(fbDataRead(collection, pagination, sorter));
+      setSorter(tableSorter);
+      dispatch(fbDataRead(collection, pagination, tableSorter, joinColumns, filter));
+    }
+
+    if (extra.action === 'filter') {
+      const filterColumn = Object.keys(filters).filter(_ => filters[_] != null)[0];
+      const filterText = filters[filterColumn];
+
+      if (filterText != null) {
+        const newFilter = { column: filterColumn, text: filters[filterColumn][0] };
+        const customeSorter = { columnKey: filterColumn, order: 'ascend' };
+        setSorter({ ...customeSorter });
+        dispatch(fbDataRead(collection, pagination, customeSorter, joinColumns, newFilter));
+      } else {
+        dispatch(fbDataRead(collection, pagination, null, joinColumns, null));
+      }
     }
   };
 
@@ -110,7 +194,6 @@ const ViewPageBase = (collection, columns, createDataSource) => {
     <RecordViewWrapper>
       {/* {state.export ? handleReExport() : 123} */}
       {/* {crudAll ? crudAll.length : 123} */}
-
       <PageHeader
         subTitle={
           <div>
@@ -151,13 +234,23 @@ const ViewPageBase = (collection, columns, createDataSource) => {
                       pagination={pagination}
                       dataSource={getDataSource()}
                       onChange={handleChange}
-                      scroll={{ x: columns.length * 150, y: 300 }}
+                      scroll={{ x: columns.length * 170, y: 300 }}
                       columns={columns
                         .map(column => {
                           return {
                             width: 10,
                             ...column,
+
+                            ...getColumnFilterProps(column),
+                            // filtered: false,
+                            // filteredValue: searchedColumn,
+                            // filterDropdownVisible:
+                            //   searchedColumn != null
+                            //     ? searchedColumn === column.key && column.filtered
+                            //     : column.filtered,
                             showSorterTooltip: false,
+                            sortOrder: sorter && sorter.columnKey === column.key && sorter.order,
+                            sorter: filter != null ? filter.column === column.key : true,
                           };
                         })
                         .concat({

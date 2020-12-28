@@ -1,35 +1,29 @@
 import React from 'react';
-import { Switch, Image } from 'antd';
 import ViewPageBase from '../View';
 
 const ViewPage = () => {
-  const createDataSource = groupManagers => {
+  const createDataSource = regionManagers => {
     const dataSource = [];
 
-    if (groupManagers.length) {
-      groupManagers.map((groupManager, key) => {
+    if (regionManagers.length) {
+      regionManagers.map((regionManager, key) => {
         return dataSource.push({
           key: key + 1,
-          id: groupManager.id,
-          name: groupManager.name,
-          phone: groupManager.phone,
-          email: groupManager.email,
-          city: groupManager.city,
-          address: `${groupManager.address} ${groupManager.addressNumber}`,
-          age: groupManager.age,
-          language: (
+          id: regionManager.id,
+          name: regionManager.name,
+          phone: regionManager.phone,
+          email: regionManager.email,
+          city: regionManager.city,
+          address: `${regionManager.address} ${regionManager.addressNumber}`,
+          language: regionManager.language.map(_ => (
+            <>
+              {_}
+              <br />
+            </>
+          )),
+          groupManagers: (
             <div>
-              {groupManager.language.map((_, i) => (
-                <div key={i}>
-                  {_}
-                  <br />
-                </div>
-              ))}
-            </div>
-          ),
-          groups: (
-            <div>
-              {groupManager.groups.map((_, i) => (
+              {regionManager.groupManagers.map((_, i) => (
                 <div key={i}>
                   <a href={`../GroupManagers/edit/${_.id}`}>{_.name}</a>
                   <br />
@@ -76,28 +70,22 @@ const ViewPage = () => {
       key: 'address',
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      sorter: true,
-    },
-    {
       title: 'Language',
       dataIndex: 'language',
       key: 'language',
     },
     {
-      title: 'Groups',
-      dataIndex: 'groups',
-      key: 'groups',
-      joinCollection: 'Groups',
-      sourceColumn: 'groups',
+      title: 'Group managers',
+      dataIndex: 'groupManagers',
+      key: 'groupManagers',
+      joinCollection: 'GroupManagers',
+      sourceColumn: 'groupManagers',
       action: 'in',
       destinationColumn: 'id',
     },
   ];
 
-  return ViewPageBase('GroupManagers', columns, createDataSource);
+  return ViewPageBase('RegionManagers', columns, createDataSource);
 };
 
 export default ViewPage;

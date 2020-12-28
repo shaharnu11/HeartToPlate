@@ -1,6 +1,9 @@
 import React from 'react';
-import { Switch, Input } from 'antd';
+import { Switch, Table, Input, Button, Space } from 'antd';
+import Highlighter from 'react-highlight-words';
+import { SearchOutlined } from '@ant-design/icons';
 import ViewPageBase from '../View';
+import Helper from '../Helper';
 
 const ViewPage = () => {
   const createDataSource = elders => {
@@ -46,11 +49,13 @@ const ViewPage = () => {
       title: 'Phone',
       dataIndex: 'phone',
       key: 'phone',
+      sorter: true,
     },
     {
       title: 'City',
       dataIndex: 'city',
       key: 'city',
+      sorter: true,
     },
     {
       title: 'Address',
@@ -67,6 +72,7 @@ const ViewPage = () => {
       title: 'Language',
       dataIndex: 'language',
       key: 'language',
+      filters: Helper.languages.map(_ => ({ text: _, value: _ })),
     },
     {
       title: 'Kosher',

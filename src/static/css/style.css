@@ -1,5 +1,11 @@
 /* Utilitiy classes */
+.ant-table-column-sorters{
+  padding-left: 0 !important;
+}
 
+.highlighterFilter  span{
+  display: inline !important;
+}
 .spin {
   height: 100vh;
   display: flex;

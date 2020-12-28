@@ -13,25 +13,25 @@ import { fbDataSingle } from '../../../../redux/firestore/actionCreator';
 
 const Edit = ({ match }) => {
   const dispatch = useDispatch();
-  const collection = 'GroupManagers';
-  const groupManagerId = parseInt(match.params.id, 10);
+  const collection = 'RegionManagers';
+  const regionManagerId = parseInt(match.params.id, 10);
   const joinColumns = [
     {
-      key: 'groups',
-      joinCollection: 'Groups',
+      key: 'groupManagers',
+      joinCollection: 'GroupManagers',
     },
   ];
-  const { groupManager } = useSelector(state => {
+  const { regionManager } = useSelector(state => {
     return {
-      groupManager: state.singleCrud[collection],
+      regionManager: state.singleCrud[collection],
     };
   });
 
   useEffect(() => {
     if (fbDataSingle) {
-      dispatch(fbDataSingle(collection, groupManagerId, joinColumns));
+      dispatch(fbDataSingle(collection, regionManagerId, joinColumns));
     }
-  }, [dispatch, groupManagerId]);
+  }, [dispatch, regionManagerId]);
 
   return (
     <>
@@ -51,12 +51,12 @@ const Edit = ({ match }) => {
           <Col xs={24}>
             <RecordFormWrapper>
               <Cards headless>
-                {groupManager === undefined ? (
+                {regionManager === undefined ? (
                   <div className="record-spin">
                     <Spin />
                   </div>
                 ) : (
-                  <SingleView IsActionAdd={false} groupManager={groupManager} />
+                  <SingleView IsActionAdd={false} regionManager={regionManager} />
                 )}
               </Cards>
             </RecordFormWrapper>

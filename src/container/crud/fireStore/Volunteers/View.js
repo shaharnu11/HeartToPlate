@@ -16,12 +16,26 @@ const ViewPage = () => {
         city: volunteer.city,
         address: `${volunteer.address} ${volunteer.addressNumber}`,
         age: volunteer.age,
-        language: volunteer.language.map(_ => (
-          <>
-            {_}
-            <br />
-          </>
-        )),
+        language: (
+          <div>
+            {volunteer.language.map((_, i) => (
+              <div key={i}>
+                {_}
+                <br />
+              </div>
+            ))}
+          </div>
+        ),
+        groups: (
+          <div>
+            {volunteer.groups.map((_, i) => (
+              <div key={i}>
+                <a href={`../Groups/edit/${_.id}`}>{_.name}</a>
+                <br />
+              </div>
+            ))}
+          </div>
+        ),
         carOwner: <Switch checked={volunteer.carOwner} />,
         kosherFood: <Switch checked={volunteer.kosherFood} />,
         signedForm: <Image width={20} src={volunteer.signedForm.url} />,
@@ -36,14 +50,14 @@ const ViewPage = () => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      sorter: true,
-
       fixed: 'left',
+      filtered: true,
     },
     {
       title: 'Phone',
       dataIndex: 'phone',
       key: 'phone',
+      filtered: true,
     },
     {
       title: 'Email',
@@ -90,6 +104,15 @@ const ViewPage = () => {
       dataIndex: 'signedForm',
       key: 'signedForm',
       sorter: true,
+    },
+    {
+      title: 'Groups',
+      dataIndex: 'groups',
+      key: 'groups',
+      joinCollection: 'Groups',
+      sourceColumn: 'id',
+      action: 'array-contains',
+      destinationColumn: 'volunteers',
     },
   ];
 
