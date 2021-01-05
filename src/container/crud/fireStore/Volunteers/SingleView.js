@@ -1,13 +1,14 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input, Select, InputNumber, Switch, Upload, Modal, Radio } from 'antd';
+import { Row, Col, Form, Input, Select, InputNumber, Switch, Upload, Modal, Radio, DatePicker } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadOutlined } from '@ant-design/icons';
+import moment from 'moment';
 import Helper from '../Helper';
 import { Button } from '../../../../components/buttons/buttons';
 import { BasicFormWrapper } from '../../../styled';
-import { fbDataUpdate, fbDataSubmit, fbFileUploder, fbFileClear } from '../../../../redux/firestore/actionCreator';
+import { fbFileUploder } from '../../../../redux/firestore/actionCreator';
 
 const SingleView = ({ IsActionAdd, volunteer }) => {
   const dispatch = useDispatch();
@@ -33,14 +34,16 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
     if (volunteer !== undefined) {
       Helper.handleCitySelect(volunteer.city, setStreets);
 
-      setSignedFormFiles([
-        {
-          uid: '1',
-          status: 'done',
-          name: volunteer.signedForm.name,
-          url: volunteer.signedForm.url,
-        },
-      ]);
+      if (volunteer.signedForm !== null) {
+        setSignedFormFiles([
+          {
+            uid: '1',
+            status: 'done',
+            name: volunteer.signedForm.name,
+            url: volunteer.signedForm.url,
+          },
+        ]);
+      }
     }
   }, [dispatch, volunteer]);
 
@@ -61,12 +64,13 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
         city: volunteer.city,
         address: volunteer.address,
         addressNumber: volunteer.addressNumber,
-        age: volunteer.age,
+        birthday: moment(new Date(volunteer.birthday.seconds * 1000)),
         language: volunteer.language,
         carOwner: volunteer.carOwner,
         kosherFood: volunteer.kosherFood,
         frequency: volunteer.frequency,
         signedForm: volunteer.signedForm,
+        comments: volunteer.comments,
       });
     }
   }, [volunteer]);
@@ -152,8 +156,8 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                 </Form.Item>
               </Form.Item>
 
-              <Form.Item name="age" rules={[{ required: requireee }]} label="Age">
-                <InputNumber min={1} />
+              <Form.Item name="birthday" rules={[{ required: requireee }]} label="Date of birth">
+                <DatePicker format="DD/MM/YYYY" />
               </Form.Item>
 
               {Helper.getLanguagesCheckboxs(requireee)}
@@ -173,6 +177,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                 </Radio.Group>
               </Form.Item>
 
+              {Helper.createHistoryComments()}
               <Form.Item label="Signed Form">
                 <Form.Item name="signedForm" rules={[{ required: requireee }]} noStyle>
                   <Upload

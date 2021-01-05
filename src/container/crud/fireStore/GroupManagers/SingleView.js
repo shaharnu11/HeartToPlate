@@ -1,11 +1,12 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input, Select, Spin, InputNumber } from 'antd';
+import { Row, Col, Form, Input, Select, Spin, InputNumber, DatePicker } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 import Helper from '../Helper';
 import { Button } from '../../../../components/buttons/buttons';
 import { BasicFormWrapper } from '../../../styled';
-import { fbDataUpdate, fbDataSubmit, fbDataSearch, fbFileClear } from '../../../../redux/firestore/actionCreator';
+import { fbDataSearch } from '../../../../redux/firestore/actionCreator';
 
 const SingleView = ({ IsActionAdd, groupManager }) => {
   const dispatch = useDispatch();
@@ -47,7 +48,7 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
         city: groupManager.city,
         address: groupManager.address,
         addressNumber: groupManager.addressNumber,
-        age: groupManager.age,
+        birthday: moment(new Date(groupManager.birthday.seconds * 1000)),
         language: groupManager.language,
         groups: groupManager.groups.map(_ => _.id),
       });
@@ -136,8 +137,8 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
                 </Form.Item>
               </Form.Item>
 
-              <Form.Item name="age" rules={[{ required: requireee }]} label="Age">
-                <InputNumber min={1} />
+              <Form.Item name="birthday" rules={[{ required: requireee }]} label="Date of birth">
+                <DatePicker format="DD/MM/YYYY" />
               </Form.Item>
 
               {Helper.getLanguagesCheckboxs(requireee)}

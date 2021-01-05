@@ -1,5 +1,4 @@
 import React from 'react';
-import { Switch, Image } from 'antd';
 import ViewPageBase from '../View';
 
 const ViewPage = () => {

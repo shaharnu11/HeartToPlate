@@ -1,7 +1,5 @@
 import React from 'react';
 import { Switch, Table, Input, Button, Space } from 'antd';
-import Highlighter from 'react-highlight-words';
-import { SearchOutlined } from '@ant-design/icons';
 import ViewPageBase from '../View';
 import Helper from '../Helper';
 
@@ -17,19 +15,22 @@ const ViewPage = () => {
         phone: elder.phone,
         city: elder.city,
         address: `${elder.address} ${elder.addressNumber}`,
-        age: elder.age,
-        language: elder.language.map(_ => (
-          <>
-            {_}
-            <br />
-          </>
-        )),
+        birthday: Helper.toDateFormat(elder.birthday.seconds),
+        language: (
+          <div>
+            {elder.language.map((_, i) => (
+              <div key={i}>
+                {_}
+                <br />
+              </div>
+            ))}
+          </div>
+        ),
         kosherFood: <Switch checked={elder.kosherFood} />,
         contact: elder.contact,
         source: elder.source,
-        frequency: elder.frequency,
         deliveryStatus: <Switch checked={elder.deliveryStatus} />,
-        comments: <Input.TextArea rows={2} value={elder.comments} />,
+        joinDate: Helper.toDateFormat(elder.joinDate.seconds),
       });
     });
 
@@ -41,21 +42,19 @@ const ViewPage = () => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      sorter: true,
-
+      filtered: true,
       fixed: 'left',
     },
     {
       title: 'Phone',
       dataIndex: 'phone',
       key: 'phone',
-      sorter: true,
+      filtered: true,
     },
     {
       title: 'City',
       dataIndex: 'city',
       key: 'city',
-      sorter: true,
     },
     {
       title: 'Address',
@@ -63,10 +62,9 @@ const ViewPage = () => {
       key: 'address',
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      sorter: true,
+      title: 'Birthday',
+      dataIndex: 'birthday',
+      key: 'birthday',
     },
     {
       title: 'Language',
@@ -78,37 +76,26 @@ const ViewPage = () => {
       title: 'Kosher',
       dataIndex: 'kosherFood',
       key: 'kosherFood',
-      sorter: true,
     },
     {
       title: 'Contact',
       dataIndex: 'contact',
       key: 'contact',
-      sorter: true,
     },
     {
       title: 'Source',
       dataIndex: 'source',
       key: 'source',
-      sorter: true,
-    },
-    {
-      title: 'Frequency',
-      dataIndex: 'frequency',
-      key: 'frequency',
-      sorter: true,
     },
     {
       title: 'Delivery status',
       dataIndex: 'deliveryStatus',
       key: 'deliveryStatus',
-      sorter: true,
     },
     {
-      title: 'Comments',
-      dataIndex: 'comments',
-      key: 'comments',
-      sorter: true,
+      title: 'Joined Date',
+      dataIndex: 'joinDate',
+      key: 'joinDate',
     },
   ];
 

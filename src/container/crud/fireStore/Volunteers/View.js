@@ -1,6 +1,9 @@
 import React from 'react';
 import { Switch, Image } from 'antd';
+import FeatherIcon from 'feather-icons-react';
+import { Icon } from '../../../icons/IconStyled';
 import ViewPageBase from '../View';
+import Helper from '../Helper';
 
 const ViewPage = () => {
   const createDataSource = volunteers => {
@@ -15,7 +18,7 @@ const ViewPage = () => {
         email: volunteer.email,
         city: volunteer.city,
         address: `${volunteer.address} ${volunteer.addressNumber}`,
-        age: volunteer.age,
+        birthday: Helper.toDateFormat(volunteer.birthday.seconds),
         language: (
           <div>
             {volunteer.language.map((_, i) => (
@@ -38,7 +41,15 @@ const ViewPage = () => {
         ),
         carOwner: <Switch checked={volunteer.carOwner} />,
         kosherFood: <Switch checked={volunteer.kosherFood} />,
-        signedForm: <Image width={20} src={volunteer.signedForm.url} />,
+        signedForm:
+          volunteer.signedForm === null ? (
+            <Icon className="icon-single" style={{ padding: '0px' }}>
+              <FeatherIcon color="red" icon="x-square" size={18} />
+            </Icon>
+          ) : (
+            <Image width={20} src={volunteer.signedForm.url} />
+          ),
+        joinDate: Helper.toDateFormat(volunteer.joinDate.seconds),
       });
     });
 
@@ -63,7 +74,7 @@ const ViewPage = () => {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
-      sortable: true,
+      filtered: true,
     },
 
     {
@@ -77,10 +88,9 @@ const ViewPage = () => {
       key: 'address',
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      sorter: true,
+      title: 'Birthday',
+      dataIndex: 'birthday',
+      key: 'birthday',
     },
     {
       title: 'Language',
@@ -91,19 +101,16 @@ const ViewPage = () => {
       title: 'Car',
       dataIndex: 'carOwner',
       key: 'carOwner',
-      sorter: true,
     },
     {
       title: 'Kosher',
       dataIndex: 'kosherFood',
       key: 'kosherFood',
-      sorter: true,
     },
     {
       title: 'Signed Form',
       dataIndex: 'signedForm',
       key: 'signedForm',
-      sorter: true,
     },
     {
       title: 'Groups',
@@ -113,6 +120,11 @@ const ViewPage = () => {
       sourceColumn: 'id',
       action: 'array-contains',
       destinationColumn: 'volunteers',
+    },
+    {
+      title: 'Joined Date',
+      dataIndex: 'joinDate',
+      key: 'joinDate',
     },
   ];
 

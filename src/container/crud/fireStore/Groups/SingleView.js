@@ -68,22 +68,6 @@ const SingleView = ({ IsActionAdd, group }) => {
     }
   }, [group]);
 
-  // const handleSubmit = values => {
-  //   if (IsActionAdd) {
-  //     dispatch(
-  //       fbDataSubmit(collection, {
-  //         ...values,
-  //         id: new Date().getTime(),
-  //         joinDate: new Date(),
-  //       }),
-  //     );
-  //     form.resetFields();
-  //     dispatch(fbFileClear());
-  //   } else {
-  //     dispatch(fbDataUpdate(collection, group.id, values));
-  //   }
-  // };
-
   const handleVolunteersSearch = value => {
     setVolunteersOptions(null);
     if (value.length > 2) {

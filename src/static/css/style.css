@@ -3,6 +3,15 @@
   padding-left: 0 !important;
 }
 
+.dateInput{
+  margin: 0px !important;
+
+}
+.dateInput .ant-col .ant-form-item-control-input{
+  min-height: 0px !important;
+
+}
+
 .highlighterFilter  span{
   display: inline !important;
 }
