@@ -1,5 +1,6 @@
 import * as firebase from 'firebase/app';
-
+import 'firebase/auth';
+import 'firebase/firestore';
 // const firebaseConfig = {
 //   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
 //   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -11,19 +12,24 @@ import * as firebase from 'firebase/app';
 //   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 // };
 
-
 const firebaseConfig = {
-  apiKey: "AIzaSyB07Gpw25c0OxAwo380cjoT7XQ_z5qb14U",
-  authDomain: "eldars911-15acb.firebaseapp.com",
-  databaseURL: "https://eldars911-15acb.firebaseio.com",
-  projectId: "eldars911-15acb",
-  storageBucket: "eldars911-15acb.appspot.com",
-  messagingSenderId: "486750080639",
-  appId: "1:486750080639:web:5a80863ef16b5ce5c1f94a",
-  measurementId: "G-JH6JH7PH80"
+  apiKey: 'AIzaSyB07Gpw25c0OxAwo380cjoT7XQ_z5qb14U',
+  authDomain: 'eldars911-15acb.firebaseapp.com',
+  databaseURL: 'https://eldars911-15acb.firebaseio.com',
+  projectId: 'eldars911-15acb',
+  storageBucket: 'eldars911-15acb.appspot.com',
+  messagingSenderId: '486750080639',
+  appId: '1:486750080639:web:5a80863ef16b5ce5c1f94a',
+  measurementId: 'G-JH6JH7PH80',
 };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
+export const auth = firebase.auth();
+export const firestore = firebase.firestore();
+// const provider = new firebase.auth.GoogleAuthProvider();
+// export const signInWithGoogle = () => {
+//   auth.signInWithPopup(provider);
+// };
 export default firebase;

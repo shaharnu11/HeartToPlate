@@ -52,6 +52,11 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
           </NavLink>
         </Menu.Item>
       </SubMenu>
+      <Menu.Item icon={!topMenu && <FeatherIcon icon="bookmark" />} key="note">
+        <NavLink onClick={toggleCollapsed} to={`${path}/app/note/all`}>
+          Note
+        </NavLink>
+      </Menu.Item>
       <Menu.Item key="VolunteersView" icon={!topMenu && <FeatherIcon icon="database" />}>
         <NavLink onClick={toggleCollapsed} to={`${path}/firestore/Volunteers/View`}>
           Volunteers
@@ -229,11 +234,11 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
           </NavLink>
         </Menu.Item>
       </SubMenu>
-      <Menu.Item icon={!topMenu && <FeatherIcon icon="bookmark" />} key="note">
+      {/* <Menu.Item icon={!topMenu && <FeatherIcon icon="bookmark" />} key="note">
         <NavLink onClick={toggleCollapsed} to={`${path}/app/note/all`}>
           Note
         </NavLink>
-      </Menu.Item>
+      </Menu.Item> */}
 
       <SubMenu key="profile" icon={!topMenu && <FeatherIcon icon="user" />} title="Social App">
         <Menu.Item key="myProfile">

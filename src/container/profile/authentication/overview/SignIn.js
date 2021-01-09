@@ -10,7 +10,7 @@ import { Checkbox } from '../../../../components/checkbox/checkbox';
 import Heading from '../../../../components/heading/heading';
 
 const SignIn = () => {
-  const history = useHistory();
+  // const history = useHistory();
   const dispatch = useDispatch();
   const isLoading = useSelector(state => state.auth.loading);
   const [form] = Form.useForm();
@@ -18,9 +18,10 @@ const SignIn = () => {
     checked: null,
   });
 
-  const handleSubmit = () => {
-    dispatch(login());
-    history.push('/admin');
+  const handleSubmit = ({ username, password }) => {
+    dispatch(login(username, password));
+
+    // history.push('/admin');
   };
 
   const onChange = checked => {
@@ -40,12 +41,12 @@ const SignIn = () => {
           <Form.Item
             name="username"
             rules={[{ message: 'Please input your username or Email!', required: true }]}
-            initialValue="name@example.com"
+            initialValue="temp@gmail.com"
             label="Username or Email Address"
           >
             <Input />
           </Form.Item>
-          <Form.Item name="password" initialValue="123456" label="Password">
+          <Form.Item name="password" initialValue="temptemp" label="Password">
             <Input.Password placeholder="Password" />
           </Form.Item>
           <div className="auth-form-action">
