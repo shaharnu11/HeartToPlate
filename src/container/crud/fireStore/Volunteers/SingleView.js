@@ -58,7 +58,8 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
   useEffect(() => {
     if (volunteer !== undefined) {
       form.setFieldsValue({
-        name: volunteer.name,
+        firstName: volunteer.firstName,
+        lastName: volunteer.lastName,
         phone: volunteer.phone,
         email: volunteer.email,
         city: volunteer.city,
@@ -70,7 +71,9 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
         kosherFood: volunteer.kosherFood,
         frequency: volunteer.frequency,
         signedForm: volunteer.signedForm,
-        comments: volunteer.comments,
+        comments: volunteer.comments.map((_, i) => {
+          return { ..._, date: new Date(_.date.seconds * 1000), key: i };
+        }),
       });
     }
   }, [volunteer]);
@@ -114,14 +117,20 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
               layout="vertical"
               form={form}
               name={IsActionAdd ? 'addnew' : 'edit'}
-              onFinish={values =>
-                Helper.handleSubmit(dispatch, volunteer === undefined ? null : volunteer.id, collection, form, {
+              onFinish={values => {
+                const a = 3;
+                return Helper.handleSubmit(dispatch, volunteer === undefined ? null : volunteer.id, collection, form, {
                   ...values,
                   signedForm: { name: values.signedForm.name, url: values.signedForm.url },
-                })
-              }
+                  birthday: values.birthday.toDate(),
+                });
+              }}
             >
-              <Form.Item name="name" label="Name" rules={[{ required: requireee }]}>
+              <Form.Item name="firstName" label="First Name" rules={[{ required: requireee }]}>
+                <Input placeholder="Input Name" />
+              </Form.Item>
+
+              <Form.Item name="lastName" label="Last Name" rules={[{ required: requireee }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
 

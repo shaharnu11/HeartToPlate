@@ -11,7 +11,8 @@ const ViewPage = () => {
       return dataSource.push({
         key: key + 1,
         id: elder.id,
-        name: elder.name,
+        firstName: elder.firstName,
+        lastName: elder.lastName,
         phone: elder.phone,
         city: elder.city,
         address: `${elder.address} ${elder.addressNumber}`,
@@ -39,9 +40,16 @@ const ViewPage = () => {
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: 'First Name',
+      dataIndex: 'firstName',
+      key: 'firstName',
+      filtered: true,
+      fixed: 'left',
+    },
+    {
+      title: 'Last Name',
+      dataIndex: 'lastName',
+      key: 'lastName',
       filtered: true,
       fixed: 'left',
     },

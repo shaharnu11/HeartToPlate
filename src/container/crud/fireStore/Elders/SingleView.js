@@ -34,7 +34,8 @@ const SingleView = ({ IsActionAdd, elder }) => {
       Helper.handleCitySelect(elder.city, setStreets);
 
       form.setFieldsValue({
-        name: elder.name,
+        firstName: elder.firstName,
+        lastName: elder.lastName,
         phone: elder.phone,
         city: elder.city,
         address: elder.address,
@@ -64,13 +65,21 @@ const SingleView = ({ IsActionAdd, elder }) => {
               form={form}
               name={IsActionAdd ? 'addnew' : 'edit'}
               onFinish={values => {
-                Helper.handleSubmit(dispatch, elder === undefined ? null : elder.id, collection, form, {
-                  ...values,
-                  birthday: values.birthday.toDate(),
-                });
+                Helper.checkIfPhoneAlreadyExist(collection, values.phone, elder === undefined ? null : elder.id).then(
+                  __ => {
+                    const a = __;
+                    // Helper.handleSubmit(dispatch, elder === undefined ? null : elder.id, collection, form, {
+                    //   ...values,
+                    //   birthday: values.birthday.toDate(),
+                    // });
+                  },
+                );
               }}
             >
-              <Form.Item name="name" label="Name" rules={[{ required: requireee }]}>
+              <Form.Item name="firstName" label="First Name" rules={[{ required: requireee }]}>
+                <Input placeholder="Input Name" />
+              </Form.Item>
+              <Form.Item name="lastName" label="Last Name" rules={[{ required: requireee }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
               <Form.Item name="phone" label="Phone" rules={[{ required: requireee }]}>

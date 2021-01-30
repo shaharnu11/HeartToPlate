@@ -42,7 +42,8 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
     if (groupManager !== undefined) {
       setGroupsOptionsWrapper(groupManager.groups);
       form.setFieldsValue({
-        name: groupManager.name,
+        firstName: groupManager.firstName,
+        lastName: groupManager.lastName,
         phone: groupManager.phone,
         email: groupManager.email,
         city: groupManager.city,
@@ -54,22 +55,6 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
       });
     }
   }, [groupManager]);
-
-  // const handleSubmit = values => {
-  //   if (IsActionAdd) {
-  //     dispatch(
-  //       fbDataSubmit(collection, {
-  //         ...values,
-  //         id: new Date().getTime(),
-  //         joinDate: new Date(),
-  //       }),
-  //     );
-  //     form.resetFields();
-  //     dispatch(fbFileClear());
-  //   } else {
-  //     dispatch(fbDataUpdate(collection, groupManager.id, values));
-  //   }
-  // };
 
   const handleGroupsSearch = value => {
     setGroupsOptions(null);
@@ -102,7 +87,11 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
                 )
               }
             >
-              <Form.Item name="name" label="Name" rules={[{ required: requireee }]}>
+              <Form.Item name="firstName" label="First Name" rules={[{ required: requireee }]}>
+                <Input placeholder="Input Name" />
+              </Form.Item>
+
+              <Form.Item name="lastName" label="Last Name" rules={[{ required: requireee }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
 

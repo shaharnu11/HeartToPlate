@@ -142,7 +142,7 @@ const ViewPageBase = (collection, columns, createDataSource) => {
   const handleDelete = id => {
     const confirm = window.confirm('Are you sure delete this?');
     if (confirm) {
-      dispatch(fbDataDelete(parseInt(id, 10)));
+      dispatch(fbDataDelete(collection, parseInt(id, 10)));
     }
     return false;
   };
@@ -234,20 +234,13 @@ const ViewPageBase = (collection, columns, createDataSource) => {
                       pagination={pagination}
                       dataSource={getDataSource()}
                       onChange={handleChange}
-                      scroll={{ x: columns.length * 170, y: 300 }}
+                      scroll={{ x: columns.length * 140, y: 300 }}
                       columns={columns
                         .map(column => {
                           return {
-                            width: 10,
+                            width: 5,
                             ...column,
-
                             ...getColumnFilterProps(column),
-                            // filtered: false,
-                            // filteredValue: searchedColumn,
-                            // filterDropdownVisible:
-                            //   searchedColumn != null
-                            //     ? searchedColumn === column.key && column.filtered
-                            //     : column.filtered,
                             showSorterTooltip: false,
                             sortOrder: sorter && sorter.columnKey === column.key && sorter.order,
                             sorter: filter != null ? filter.column === column.key : true,
@@ -257,8 +250,9 @@ const ViewPageBase = (collection, columns, createDataSource) => {
                           title: 'Actions',
                           dataIndex: 'action',
                           key: 'action',
-                          width: 7,
+                          width: 4,
                           fixed: 'right',
+                          align: 'right',
                         })}
                     />
                   </TableWrapper>

@@ -9,9 +9,30 @@ import citiesAndStreets from './israeli_street_and_cities_names.json';
 import { fbDataUpdate, fbDataSubmit, fbFileClear } from '../../../redux/firestore/actionCreator';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 import { Button } from '../../../components/buttons/buttons';
+import { firestore as db } from '../../../config/database/firebase';
 
 const Helper = {
-  languages: ['hebrew', 'english', 'russian', 'arabic'],
+  languages: ['hebrew', 'english', 'russian', 'arabic', 'amharic'],
+
+  checkIfPhoneAlreadyExist: async (collection, phone, id) => {
+    try {
+      const ref = db.collection(collection).where('phone', '==', phone);
+
+      const result = await ref.get();
+
+      if (id != null) {
+        return result.docs.filter(_ => _.data().id !== id).length;
+        const fff = true;
+      }
+      const gg = result.size === 0;
+      const fff = true;
+
+      const ggg = true;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  },
 
   createHistoryComments: () => {
     const DateHeader = props => {
@@ -19,7 +40,7 @@ const Helper = {
     };
 
     return (
-      <Form.List name="comments" label="Comments">
+      <Form.List name="comments" label="Comments" initialValue={[]}>
         {(fields, { add, remove }) => (
           <Cards title="Comments" caption="The simplest use of Timelines">
             <Form.Item>

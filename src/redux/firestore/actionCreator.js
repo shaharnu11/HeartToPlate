@@ -225,7 +225,7 @@ const fbDataUpdate = (collection, id, data) => {
 };
 
 const fbDataDelete = (collection, id) => {
-  return async (dispatch, getState, { getFirebase, getFirestore }) => {
+  return async (dispatch, getState, { getFirestore }) => {
     const db = getFirestore();
     const data = [];
     try {

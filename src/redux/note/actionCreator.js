@@ -1,82 +1,84 @@
+import { notification } from 'antd';
 import actions from './actions';
-import initialState from '../../demoData/note.json';
 
-const {
-  noteReadBegin,
-  noteReadSuccess,
-  noteReadErr,
-  starUpdateBegin,
-  starUpdateSuccess,
-  starUpdateErr,
-  labelUpdateBegin,
-  labelUpdateSuccess,
-  labelUpdateErr,
-} = actions;
+const { noteReadBegin, noteReadSuccess, noteReadErr, labelUpdateBegin, labelUpdateSuccess, labelUpdateErr } = actions;
 
 const noteGetData = () => {
-  return async dispatch => {
+  return async (dispatch, getState, { getFirestore }) => {
     try {
       dispatch(noteReadBegin());
-      dispatch(noteReadSuccess(initialState));
+      const db = getFirestore();
+      const datas = [];
+
+      await db
+        .collection('Notes')
+        .get()
+        .then(query =>
+          query.forEach(doc => {
+            datas.push(doc.data());
+          }),
+        );
+      dispatch(noteReadSuccess(datas));
     } catch (err) {
       dispatch(noteReadErr(err));
     }
   };
 };
 
-const noteAddData = data => {
-  return async dispatch => {
+const noteAddData = (notes, newNote) => {
+  return async (dispatch, getState, { getFirestore }) => {
     try {
       dispatch(noteReadBegin());
-      dispatch(noteReadSuccess(data));
-    } catch (err) {
-      dispatch(noteReadErr(err));
-    }
-  };
-};
-
-const noteDeleteData = data => {
-  return async dispatch => {
-    try {
-      dispatch(noteReadBegin());
-      dispatch(noteReadSuccess(data));
-    } catch (err) {
-      dispatch(noteReadErr(err));
-    }
-  };
-};
-
-const onStarUpdate = (data, id) => {
-  return async dispatch => {
-    try {
-      dispatch(starUpdateBegin());
-      data.map(item => {
-        if (item.key === id) {
-          const fav = item;
-          if (item.stared) {
-            fav.stared = false;
-          } else {
-            fav.stared = true;
-          }
-        }
-        return dispatch(starUpdateSuccess(data));
+      const db = getFirestore();
+      await db
+        .collection('Notes')
+        .doc(`${newNote.id}`)
+        .set(newNote);
+      await dispatch(noteReadSuccess([...notes, newNote]));
+      notification.success({
+        message: 'Your note was successfully added',
       });
     } catch (err) {
-      dispatch(starUpdateErr(err));
+      dispatch(noteReadErr(err));
     }
   };
 };
 
-const onLabelUpdate = (data, id, value) => {
-  return async dispatch => {
+const noteDeleteData = (notes, deletedNote) => {
+  return async (dispatch, getState, { getFirestore }) => {
+    try {
+      dispatch(noteReadBegin());
+      const db = getFirestore();
+      await db
+        .collection('Notes')
+        .doc(`${deletedNote.id}`)
+        .delete();
+      dispatch(noteReadSuccess(notes.filter(_ => _.id !== deletedNote.id)));
+      notification.success({
+        message: 'Your note was successfully deleted',
+      });
+    } catch (err) {
+      dispatch(noteReadErr(err));
+    }
+  };
+};
+
+const onLabelUpdate = (noteData, data, label) => {
+  return async (dispatch, getState, { getFirestore }) => {
     try {
       dispatch(labelUpdateBegin());
-      data.map(item => {
-        if (item.key === id) {
-          const fav = item;
-          fav.label = value;
+      const db = getFirestore();
+      await db
+        .collection('Notes')
+        .doc(`${data.id}`)
+        .set({ ...data, label });
+
+      noteData.map(_ => {
+        if (_.id === data.id) {
+          const fav = _;
+          fav.label = label;
         }
-        return dispatch(labelUpdateSuccess(data));
+        return dispatch(labelUpdateSuccess(noteData));
       });
     } catch (err) {
       dispatch(labelUpdateErr(err));
@@ -84,19 +86,25 @@ const onLabelUpdate = (data, id, value) => {
   };
 };
 
-const onLabelFilter = label => {
-  return async dispatch => {
-    try {
-      dispatch(labelUpdateBegin());
-      const data = initialState.filter(item => {
-        return label === 'all' ? initialState : label === 'favorite' ? item.stared : item.label === label;
-      });
+// const onLabelFilter = label => {
+//   return async dispatch => {
+//     try {
+//       dispatch(labelUpdateBegin());
+//       const data = initialState.filter(item => {
+//         return label === 'all' ? initialState : label === 'favorite' ? item.stared : item.label === label;
+//       });
 
-      dispatch(labelUpdateSuccess(data));
-    } catch (err) {
-      dispatch(labelUpdateErr(err));
-    }
-  };
+//       dispatch(labelUpdateSuccess(data));
+//     } catch (err) {
+//       dispatch(labelUpdateErr(err));
+//     }
+//   };
+// };
+
+export {
+  noteGetData,
+  noteAddData,
+  noteDeleteData,
+  onLabelUpdate,
+  // onLabelFilter
 };
-
-export { noteGetData, noteAddData, noteDeleteData, onStarUpdate, onLabelUpdate, onLabelFilter };

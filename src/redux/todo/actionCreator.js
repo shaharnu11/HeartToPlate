@@ -1,60 +1,114 @@
+import { notification } from 'antd';
 import actions from './actions';
-import initialState from '../../demoData/todo.json';
 
 const { todoReadBegin, todoReadSuccess, todoReadErr, starUpdateBegin, starUpdateSuccess, starUpdateErr } = actions;
 
 const ToDoGetData = () => {
-  return async dispatch => {
+  return async (dispatch, getState, { getFirestore }) => {
     try {
       dispatch(todoReadBegin());
-      dispatch(todoReadSuccess(initialState));
+      const db = getFirestore();
+      const datas = [];
+
+      await db
+        .collection('ToDo')
+        .get()
+        .then(query =>
+          query.forEach(doc => {
+            datas.push(doc.data());
+          }),
+        );
+      dispatch(todoReadSuccess(datas));
     } catch (err) {
       dispatch(todoReadErr(err));
     }
   };
 };
 
-const ToDoAddData = data => {
-  return async dispatch => {
+const ToDoAddData = (toDos, newToDos) => {
+  return async (dispatch, getState, { getFirestore }) => {
     try {
       dispatch(todoReadBegin());
-      dispatch(todoReadSuccess(data));
+      const db = getFirestore();
+      await db
+        .collection('ToDo')
+        .doc(`${newToDos.id}`)
+        .set(newToDos);
+      await dispatch(todoReadSuccess([...toDos, newToDos]));
+      notification.success({
+        message: 'Your ToDo was successfully added',
+      });
     } catch (err) {
       dispatch(todoReadErr(err));
     }
   };
 };
 
-const ToDoDeleteData = data => {
-  return async dispatch => {
+const ToDoDeleteData = (todos, deletedTodo) => {
+  return async (dispatch, getState, { getFirestore }) => {
     try {
       dispatch(todoReadBegin());
-      dispatch(todoReadSuccess(data));
+      const db = getFirestore();
+      await db
+        .collection('ToDo')
+        .doc(`${deletedTodo.id}`)
+        .delete();
+      dispatch(todoReadSuccess(todos.filter(_ => _.id !== deletedTodo.id)));
+      notification.success({
+        message: 'Your todo was successfully deleted',
+      });
     } catch (err) {
       dispatch(todoReadErr(err));
     }
   };
 };
 
-const onStarUpdate = (data, id) => {
-  return async dispatch => {
+const onStarUpdate = (todos, updatedTodo) => {
+  return async (dispatch, getState, { getFirestore }) => {
     try {
       dispatch(starUpdateBegin());
-      data.map(item => {
-        if (item.key === id) {
-          const fav = item;
-          if (item.favorite) {
-            fav.favorite = false;
-          } else {
-            fav.favorite = true;
-          }
-        }
-        return dispatch(starUpdateSuccess(data));
-      });
+
+      const db = getFirestore();
+      await db
+        .collection('ToDo')
+        .doc(`${updatedTodo.id}`)
+        .update({
+          ...updatedTodo,
+          favorite: !updatedTodo.favorite,
+        });
+      dispatch(
+        starUpdateSuccess(
+          todos.map(_ => (_.id === updatedTodo.id ? { ...updatedTodo, favorite: !updatedTodo.favorite } : _)),
+        ),
+      );
     } catch (err) {
       dispatch(starUpdateErr(err));
     }
   };
 };
 
-export { ToDoGetData, ToDoAddData, ToDoDeleteData, onStarUpdate };
+const onActiveUpdate = (todos, updatedTodo) => {
+  return async (dispatch, getState, { getFirestore }) => {
+    try {
+      dispatch(starUpdateBegin());
+
+      const db = getFirestore();
+      await db
+        .collection('ToDo')
+        .doc(`${updatedTodo.id}`)
+        .update({
+          ...updatedTodo,
+          active: !updatedTodo.active,
+        });
+      dispatch(
+        starUpdateSuccess(
+          todos.map(_ => (_.id === updatedTodo.id ? { ...updatedTodo, active: !updatedTodo.active } : _)),
+        ),
+      );
+    } catch (err) {
+      dispatch(starUpdateErr(err));
+    }
+  };
+};
+
+export { ToDoGetData, ToDoAddData, ToDoDeleteData, onStarUpdate, onActiveUpdate };

@@ -10,7 +10,8 @@ const ViewPage = () => {
         return dataSource.push({
           key: key + 1,
           id: regionManager.id,
-          name: regionManager.name,
+          firstName: regionManager.firstName,
+          lastName: regionManager.lastName,
           phone: regionManager.phone,
           email: regionManager.email,
           city: regionManager.city,
@@ -40,11 +41,17 @@ const ViewPage = () => {
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      sorter: true,
-
+      title: 'First Name',
+      dataIndex: 'firstName',
+      key: 'firstName',
+      filtered: true,
+      fixed: 'left',
+    },
+    {
+      title: 'Last Name',
+      dataIndex: 'lastName',
+      key: 'lastName',
+      filtered: true,
       fixed: 'left',
     },
     {

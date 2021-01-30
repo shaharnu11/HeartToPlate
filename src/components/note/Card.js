@@ -7,68 +7,48 @@ import { Card } from './style';
 import { Cards } from '../cards/frame/cards-frame';
 import { Dropdown } from '../dropdown/dropdown';
 import { Bullet } from '../../container/note/style';
-import { noteDeleteData, onStarUpdate, onLabelUpdate } from '../../redux/note/actionCreator';
+import { noteDeleteData, onLabelUpdate } from '../../redux/note/actionCreator';
 
-const NoteCard = ({ data }) => {
+const NoteCard = ({ data, labels }) => {
   const dispatch = useDispatch();
   const { noteData } = useSelector(state => {
     return {
       noteData: state.Note.data,
     };
   });
-  const { title, key, description, stared, label } = data;
-  const onLabelChange = labels => {
-    dispatch(onLabelUpdate(noteData, key, labels));
+  const onLabelChange = label => {
+    dispatch(onLabelUpdate(noteData, data, label));
   };
   const content = (
     <>
       <div className="nav-labels">
         <ul>
-          <li>
-            <Link onClick={() => onLabelChange('personal')} to="#">
-              <Bullet className="personal" /> Personal
-            </Link>
-          </li>
-          <li>
-            <Link onClick={() => onLabelChange('work')} to="#">
-              <Bullet className="work" /> Work
-            </Link>
-          </li>
-          <li>
-            <Link onClick={() => onLabelChange('social')} to="#">
-              <Bullet className="social" /> Social
-            </Link>
-          </li>
-          <li>
-            <Link onClick={() => onLabelChange('important')} to="#">
-              <Bullet className="important" /> Important
-            </Link>
-          </li>
+          {labels.map(_ => {
+            return (
+              <li>
+                <Link onClick={() => onLabelChange(_)} to="#">
+                  <Bullet className={_} /> {_}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </>
   );
   const onHandleDelete = () => {
-    const value = noteData.filter(item => item.key !== key);
-    dispatch(noteDeleteData(value));
+    dispatch(noteDeleteData(noteData, data));
   };
   return (
-    <Card className={label}>
+    <Card className={data.label}>
       <Cards headless>
         <h4>
-          {title}
-          <span className={`status-bullet ${label}`} />
+          {data.title}
+          <span className={`status-bullet ${data.label}`} />
         </h4>
-        <p>{description}</p>
+        <p>{data.description}</p>
         <div className="actions">
           <span>
-            <Link
-              className={stared ? 'star active' : 'star'}
-              onClick={() => dispatch(onStarUpdate(noteData, key))}
-              to="#"
-            >
-              <FeatherIcon icon="star" size={16} />
-            </Link>
             <Link onClick={() => onHandleDelete()} to="#">
               <FeatherIcon icon="trash-2" size={16} />
             </Link>

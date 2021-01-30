@@ -1,25 +1,16 @@
-import React, { useState, lazy, Suspense, useLayoutEffect } from 'react';
+import React, { useState, lazy, Suspense, useLayoutEffect, useEffect } from 'react';
 import { Row, Col, Form, Input, Select, Spin } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import FeatherIcon from 'feather-icons-react';
 import { Link, useRouteMatch, Switch, Route, NavLink } from 'react-router-dom';
-import { NoteNav, NoteWrapper, Bullet } from './style';
+import { NoteNav, NoteWrapper, Bullet, NoteCardWrap } from './style';
 import { BasicFormWrapper, Main } from '../styled';
 import { Button } from '../../components/buttons/buttons';
 import { Cards } from '../../components/cards/frame/cards-frame';
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Modal } from '../../components/modals/antd-modals';
-import { ShareButtonPageHeader } from '../../components/buttons/share-button/share-button';
-import { ExportButtonPageHeader } from '../../components/buttons/export-button/export-button';
-import { CalendarButtonPageHeader } from '../../components/buttons/calendar-button/calendar-button';
-import { noteAddData } from '../../redux/note/actionCreator';
-
-const All = lazy(() => import('./overview/all'));
-const Favorite = lazy(() => import('./overview/favorite'));
-const Personal = lazy(() => import('./overview/personal'));
-const Work = lazy(() => import('./overview/work'));
-const Social = lazy(() => import('./overview/social'));
-const Important = lazy(() => import('./overview/important'));
+import { noteAddData, noteGetData } from '../../redux/note/actionCreator';
+import NoteCard from '../../components/note/Card';
 
 const { Option } = Select;
 const Note = () => {
@@ -31,6 +22,11 @@ const Note = () => {
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const { path } = useRouteMatch();
+
+  const labels = ['personal', 'work'];
+
+  const [labelFilter, setLabelFilter] = useState('all');
+  const [filterNoteData, setFilterNoteData] = useState(noteData);
   const [state, setState] = useState({
     visible: false,
     modalType: 'primary',
@@ -40,6 +36,22 @@ const Note = () => {
   });
 
   const { responsive, collapsed } = state;
+
+  useEffect(() => {
+    if (noteGetData) {
+      dispatch(noteGetData());
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (noteData !== undefined) {
+      setFilterNoteData(
+        noteData.filter(item => {
+          return labelFilter === 'all' ? true : item.label === labelFilter;
+        }),
+      );
+    }
+  }, [labelFilter, noteData]);
 
   useLayoutEffect(() => {
     function updateSize() {
@@ -67,21 +79,12 @@ const Note = () => {
 
   const handleOk = values => {
     onCancel();
-    const arrayData = [];
-    noteData.map(data => {
-      return arrayData.push(data.key);
-    });
-    const max = Math.max(...arrayData);
     dispatch(
-      noteAddData([
-        ...noteData,
-        {
-          ...values,
-          key: max + 1,
-          time: new Date().getTime(),
-          stared: false,
-        },
-      ]),
+      noteAddData(noteData, {
+        ...values,
+        id: new Date().getTime(),
+        time: new Date().getTime(),
+      }),
     );
     form.resetFields();
   };
@@ -104,23 +107,13 @@ const Note = () => {
     });
   };
 
+  const handleFilterLabelClick = filterLabel => {
+    setLabelFilter(filterLabel);
+  };
+
   return (
     <>
-      <PageHeader
-        ghost
-        title="Note"
-        buttons={[
-          <div key="1" className="page-header-actions">
-            <CalendarButtonPageHeader />
-            <ExportButtonPageHeader />
-            <ShareButtonPageHeader />
-            <Button size="small" type="primary">
-              <FeatherIcon icon="plus" size={14} />
-              Add New
-            </Button>
-          </div>,
-        ]}
-      />
+      <PageHeader ghost title="Note" />
 
       <Main>
         <NoteWrapper>
@@ -144,18 +137,10 @@ const Note = () => {
                       <NoteNav>
                         <ul>
                           <li>
-                            <NavLink to={`${path}/all`}>
+                            <NavLink to="#" onClick={() => handleFilterLabelClick('all')}>
                               <FeatherIcon icon="edit" size={18} />
                               <span className="nav-text">
                                 <span>All</span>
-                              </span>
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink to={`${path}/favorite`}>
-                              <FeatherIcon icon="star" size={18} />
-                              <span className="nav-text">
-                                <span>Favorites</span>
                               </span>
                             </NavLink>
                           </li>
@@ -165,26 +150,15 @@ const Note = () => {
                             <img src={require('../../static/img/icon/label.png')} alt="icon" /> Labels
                           </p>
                           <ul>
-                            <li>
-                              <NavLink to={`${path}/personal`}>
-                                <Bullet className="personal" /> Personal
-                              </NavLink>
-                            </li>
-                            <li>
-                              <Link to={`${path}/work`}>
-                                <Bullet className="work" /> Work
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to={`${path}/social`}>
-                                <Bullet className="social" /> Social
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to={`${path}/important`}>
-                                <Bullet className="important" /> Important
-                              </Link>
-                            </li>
+                            {labels.map(_ => {
+                              return (
+                                <li>
+                                  <Link to="#" onClick={() => handleFilterLabelClick(_)}>
+                                    <Bullet className={_} /> {_}
+                                  </Link>
+                                </li>
+                              );
+                            })}
                           </ul>
                         </div>
                       </NoteNav>
@@ -212,18 +186,16 @@ const Note = () => {
                       <NoteNav>
                         <ul>
                           <li>
-                            <NavLink to={`${path}/all`} onClick={collapseSidebar}>
+                            <NavLink
+                              to="#"
+                              onClick={() => {
+                                collapseSidebar();
+                                handleFilterLabelClick('all');
+                              }}
+                            >
                               <FeatherIcon icon="edit" size={18} />
                               <span className="nav-text">
                                 <span>All</span>
-                              </span>
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink to={`${path}/favorite`} onClick={collapseSidebar}>
-                              <FeatherIcon icon="star" size={18} />
-                              <span className="nav-text">
-                                <span>Favorites</span>
                               </span>
                             </NavLink>
                           </li>
@@ -233,26 +205,15 @@ const Note = () => {
                             <img src={require('../../static/img/icon/label.png')} alt="icon" /> Labels
                           </p>
                           <ul>
-                            <li>
-                              <NavLink to={`${path}/personal`} onClick={collapseSidebar}>
-                                <Bullet className="personal" /> Personal
-                              </NavLink>
-                            </li>
-                            <li>
-                              <NavLink to={`${path}/work`} onClick={collapseSidebar}>
-                                <Bullet className="work" /> Work
-                              </NavLink>
-                            </li>
-                            <li>
-                              <NavLink to={`${path}/social`} onClick={collapseSidebar}>
-                                <Bullet className="social" /> Social
-                              </NavLink>
-                            </li>
-                            <li>
-                              <NavLink to={`${path}/important`} onClick={collapseSidebar}>
-                                <Bullet className="important" /> Important
-                              </NavLink>
-                            </li>
+                            {labels.map(_ => {
+                              return (
+                                <li>
+                                  <NavLink to="#" onClick={() => handleFilterLabelClick(_)}>
+                                    <Bullet className={_} /> {_}
+                                  </NavLink>
+                                </li>
+                              );
+                            })}
                           </ul>
                         </div>
                       </NoteNav>
@@ -270,12 +231,26 @@ const Note = () => {
                     </div>
                   }
                 >
-                  <Route exact path={`${path}/all`} component={All} />
+                  <Cards title="Note Lists">
+                    <NoteCardWrap>
+                      <Row gutter={24}>
+                        {filterNoteData.map(item => {
+                          return (
+                            <Col xxl={8} xl={12} lg={12} sm={12} xs={24} key={item.key}>
+                              <NoteCard data={item} labels={labels} />
+                            </Col>
+                          );
+                        })}
+                      </Row>
+                    </NoteCardWrap>
+                  </Cards>
+
+                  {/* <Route exact path={`${path}/all`} component={All} />
                   <Route path={`${path}/favorite`} component={Favorite} />
                   <Route path={`${path}/personal`} component={Personal} />
                   <Route path={`${path}/work`} component={Work} />
                   <Route path={`${path}/social`} component={Social} />
-                  <Route path={`${path}/important`} component={Important} />
+                  <Route path={`${path}/important`} component={Important} /> */}
                 </Suspense>
               </Switch>
             </Col>
@@ -300,12 +275,11 @@ const Note = () => {
                 >
                   <Input.TextArea rows={4} placeholder="Note Description" />
                 </Form.Item>
-                <Form.Item name="label" initialValue="personal" label="Note Label">
+                <Form.Item name="label" initialValue={labels[0]} label="Note Label">
                   <Select style={{ width: '100%' }}>
-                    <Option value="personal">Personal</Option>
-                    <Option value="work">Work</Option>
-                    <Option value="social">Social</Option>
-                    <Option value="important">Important</Option>
+                    {labels.map(_ => {
+                      return <Option value={_}>{_}</Option>;
+                    })}
                   </Select>
                 </Form.Item>
                 <Button htmlType="submit" size="default" type="primary" key="submit">

@@ -1,8 +1,8 @@
 import actions from './actions';
-import toData from '../../demoData/note.json';
+// import toData from '../../demoData/note.json';
 
 const initialState = {
-  data: toData,
+  data: [],
   loading: false,
   error: null,
 };

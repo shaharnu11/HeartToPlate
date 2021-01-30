@@ -1,5 +1,6 @@
 import React from 'react';
 import ViewPageBase from '../View';
+import Helper from '../Helper';
 
 const ViewPage = () => {
   const createDataSource = groupManagers => {
@@ -10,12 +11,13 @@ const ViewPage = () => {
         return dataSource.push({
           key: key + 1,
           id: groupManager.id,
-          name: groupManager.name,
+          firstName: groupManager.firstName,
+          lastName: groupManager.lastName,
           phone: groupManager.phone,
           email: groupManager.email,
           city: groupManager.city,
           address: `${groupManager.address} ${groupManager.addressNumber}`,
-          age: groupManager.age,
+          birthday: Helper.toDateFormat(groupManager.birthday.seconds),
           language: (
             <div>
               {groupManager.language.map((_, i) => (
@@ -45,11 +47,17 @@ const ViewPage = () => {
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      sorter: true,
-
+      title: 'First Name',
+      dataIndex: 'firstName',
+      key: 'firstName',
+      filtered: true,
+      fixed: 'left',
+    },
+    {
+      title: 'Last Name',
+      dataIndex: 'lastName',
+      key: 'lastName',
+      filtered: true,
       fixed: 'left',
     },
     {
@@ -75,10 +83,9 @@ const ViewPage = () => {
       key: 'address',
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      sorter: true,
+      title: 'Birthday',
+      dataIndex: 'birthday',
+      key: 'birthday',
     },
     {
       title: 'Language',

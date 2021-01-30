@@ -12,7 +12,11 @@ const ViewPage = () => {
         name: group.name,
         city: group.city,
         comments: group.comments,
-        groupManager: <a href={`../GroupManagers/edit/${group.groupManager[0].id}`}>{group.groupManager[0].name}</a>,
+        groupManager: (
+          <a href={`../GroupManagers/edit/${group.groupManager[0].id}`}>
+            {group.groupManager[0].firstName} {group.groupManager[0].lastName}
+          </a>
+        ),
         volunteers: (
           <div>
             {group.volunteers.map((_, i) => (

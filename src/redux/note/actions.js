@@ -3,33 +3,33 @@ const actions = {
   NOTE_READ_SUCCESS: 'NOTE_READ_SUCCESS',
   NOTE_READ_ERR: 'NOTE_READ_ERR',
 
-  NOTE_STAR_UPDATE_BEGIN: 'NOTE_STAR_UPDATE_BEGIN',
-  NOTE_STAR_UPDATE_SUCCESS: 'NOTE_STAR_UPDATE_SUCCESS',
-  NOTE_STAR_UPDATE_ERR: 'NOTE_STAR_UPDATE_ERR',
+  // NOTE_STAR_UPDATE_BEGIN: 'NOTE_STAR_UPDATE_BEGIN',
+  // NOTE_STAR_UPDATE_SUCCESS: 'NOTE_STAR_UPDATE_SUCCESS',
+  // NOTE_STAR_UPDATE_ERR: 'NOTE_STAR_UPDATE_ERR',
 
   NOTE_LABEL_UPDATE_BEGIN: 'NOTE_LABEL_UPDATE_BEGIN',
   NOTE_LABEL_UPDATE_SUCCESS: 'NOTE_LABEL_UPDATE_SUCCESS',
   NOTE_LABEL_UPDATE_ERR: 'NOTE_LABEL_UPDATE_ERR',
 
-  starUpdateBegin: () => {
-    return {
-      type: actions.NOTE_STAR_UPDATE_BEGIN,
-    };
-  },
+  // starUpdateBegin: () => {
+  //   return {
+  //     type: actions.NOTE_STAR_UPDATE_BEGIN,
+  //   };
+  // },
 
-  starUpdateSuccess: data => {
-    return {
-      type: actions.NOTE_STAR_UPDATE_SUCCESS,
-      data,
-    };
-  },
+  // starUpdateSuccess: data => {
+  //   return {
+  //     type: actions.NOTE_STAR_UPDATE_SUCCESS,
+  //     data,
+  //   };
+  // },
 
-  starUpdateErr: err => {
-    return {
-      type: actions.NOTE_STAR_UPDATE_ERR,
-      err,
-    };
-  },
+  // starUpdateErr: err => {
+  //   return {
+  //     type: actions.NOTE_STAR_UPDATE_ERR,
+  //     err,
+  //   };
+  // },
 
   labelUpdateBegin: () => {
     return {

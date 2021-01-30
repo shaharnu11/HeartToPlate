@@ -1,8 +1,8 @@
 import actions from './actions';
-import toData from '../../demoData/todo.json';
+// import toData from '../../demoData/todo.json';
 
 const initialState = {
-  data: toData,
+  data: [],
   loading: false,
   error: null,
 };
@@ -27,7 +27,7 @@ const TodoReducer = (state = initialState, action) => {
     case TODO_STAR_UPDATE_SUCCESS:
       return {
         ...state,
-        allMessage: data,
+        data,
         sLoading: false,
       };
     case TODO_STAR_UPDATE_ERR:

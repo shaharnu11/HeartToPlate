@@ -57,6 +57,11 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
           Note
         </NavLink>
       </Menu.Item>
+      <Menu.Item icon={!topMenu && <FeatherIcon icon="activity" />} key="to-do">
+        <NavLink onClick={toggleCollapsed} to={`${path}/app/to-do/`}>
+          To Do
+        </NavLink>
+      </Menu.Item>
       <Menu.Item key="VolunteersView" icon={!topMenu && <FeatherIcon icon="database" />}>
         <NavLink onClick={toggleCollapsed} to={`${path}/firestore/Volunteers/View`}>
           Volunteers
@@ -82,7 +87,10 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
           Groups
         </NavLink>
       </Menu.Item>
-      <SubMenu key="firestore" icon={!topMenu && <FeatherIcon icon="database" />} title="Firestore Crud">
+
+      {!topMenu && <p className="sidebar-nav-title">Applications</p>}
+
+      {/* <SubMenu key="firestore" icon={!topMenu && <FeatherIcon icon="database" />} title="Firestore Crud">
         <Menu.Item key="fbView">
           <NavLink onClick={toggleCollapsed} to={`${path}/firestore/fbView`}>
             View All
@@ -93,7 +101,7 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
             Add New
           </NavLink>
         </Menu.Item>
-      </SubMenu>
+      </SubMenu> */}
       <SubMenu key="project" icon={!topMenu && <FeatherIcon icon="target" />} title="Project">
         <Menu.Item key="view">
           <NavLink onClick={toggleCollapsed} to={`${path}/project/view`}>
@@ -165,7 +173,6 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
         </Menu.Item>
       </SubMenu>
 
-      {!topMenu && <p className="sidebar-nav-title">Applications</p>}
       <Menu.Item icon={!topMenu && <FeatherIcon icon="message-square" />} key="chat">
         <NavLink onClick={toggleCollapsed} to={`${path}/main/chat/private/rofiq@gmail.com`}>
           Chat
@@ -252,12 +259,6 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
           </NavLink>
         </Menu.Item>
       </SubMenu>
-
-      <Menu.Item icon={!topMenu && <FeatherIcon icon="activity" />} key="to-do">
-        <NavLink onClick={toggleCollapsed} to={`${path}/app/to-do/`}>
-          To Do
-        </NavLink>
-      </Menu.Item>
 
       {!topMenu && <p className="sidebar-nav-title">Components</p>}
 

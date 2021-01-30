@@ -19,13 +19,13 @@ const SingleView = ({ IsActionAdd, regionManager }) => {
   const [form] = Form.useForm();
   const [streets, setStreets] = useState([]);
   const [groupManagersOptions, setGroupManagersOptions] = useState(null);
-  const groupManagerKeys = ['name'];
+  const groupManagerKeys = ['firstName', 'lastName'];
 
   const setGroupManagersOptionsWrapper = _ => {
     setGroupManagersOptions(
       _.map(groupManager => (
         <Select.Option key={groupManagerKeys.map(key => groupManager[key]).join(' ')} value={groupManager.id}>
-          {groupManager.name}
+          {groupManager.firstName} {groupManager.lastName}
         </Select.Option>
       )),
     );
@@ -41,7 +41,8 @@ const SingleView = ({ IsActionAdd, regionManager }) => {
     if (regionManager !== undefined) {
       setGroupManagersOptionsWrapper(regionManager.groupManagers);
       form.setFieldsValue({
-        name: regionManager.name,
+        firstName: regionManager.firstName,
+        lastName: regionManager.lastName,
         phone: regionManager.phone,
         email: regionManager.email,
         city: regionManager.city,
@@ -49,26 +50,10 @@ const SingleView = ({ IsActionAdd, regionManager }) => {
         addressNumber: regionManager.addressNumber,
         age: regionManager.age,
         language: regionManager.language,
-        groupManager: regionManager.groupManager.map(_ => _.id),
+        groupManager: regionManager.groupManagers.map(_ => _.id),
       });
     }
   }, [regionManager]);
-
-  // const handleSubmit = values => {
-  //   if (IsActionAdd) {
-  //     dispatch(
-  //       fbDataSubmit(collection, {
-  //         ...values,
-  //         id: new Date().getTime(),
-  //         joinDate: new Date(),
-  //       }),
-  //     );
-  //     form.resetFields();
-  //     dispatch(fbFileClear());
-  //   } else {
-  //     dispatch(fbDataUpdate(collection, regionManager.id, values));
-  //   }
-  // };
 
   const handleGroupManagersSearch = value => {
     setGroupManagersOptions(null);
@@ -101,7 +86,11 @@ const SingleView = ({ IsActionAdd, regionManager }) => {
                 )
               }
             >
-              <Form.Item name="name" label="Name" rules={[{ required: requireee }]}>
+              <Form.Item name="firstName" label="First Name" rules={[{ required: requireee }]}>
+                <Input placeholder="Input Name" />
+              </Form.Item>
+
+              <Form.Item name="lastName" label="Last Name" rules={[{ required: requireee }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
 
