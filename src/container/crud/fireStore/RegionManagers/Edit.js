@@ -44,7 +44,7 @@ const Edit = ({ match }) => {
           </Button>,
         ]}
         ghost
-        title="Update Your Recored"
+        title="Update Your Recored "
       />
       <Main>
         <Row gutter={15}>
