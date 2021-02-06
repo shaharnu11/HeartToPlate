@@ -14,20 +14,16 @@ import { firestore as db } from '../../../config/database/firebase';
 const Helper = {
   languages: ['hebrew', 'english', 'russian', 'arabic', 'amharic'],
 
-  checkIfPhoneAlreadyExist: async (collection, phone, id) => {
+  IsPhoneAlreadyExist: async (collection, newPhone, currentPhone) => {
     try {
-      const ref = db.collection(collection).where('phone', '==', phone);
+      if (currentPhone === newPhone) {
+        return true;
+      }
+      const ref = db.collection(collection).where('phone', '==', newPhone);
 
       const result = await ref.get();
 
-      if (id != null) {
-        return result.docs.filter(_ => _.data().id !== id).length;
-        const fff = true;
-      }
-      const gg = result.size === 0;
-      const fff = true;
-
-      const ggg = true;
+      return result.docs.filter(_ => _.data().phone === newPhone).length === 0;
     } catch (err) {
       console.log(err);
       return null;
@@ -89,7 +85,7 @@ const Helper = {
     const date = new Date(seconds * 1000);
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   },
-  handleSubmit: (dispatch, id, collection, form, values) => {
+  handleSubmit: (dispatch, id, collection, whenSuccess, values) => {
     Object.keys(values).forEach(key => {
       if (typeof values[key] === 'string') {
         values[key] = values[key].toLowerCase();
@@ -104,7 +100,7 @@ const Helper = {
           joinDate: new Date(),
         }),
       );
-      form.resetFields();
+      whenSuccess();
       dispatch(fbFileClear());
     } else {
       dispatch(fbDataUpdate(collection, id, values));
@@ -132,7 +128,7 @@ const Helper = {
         )),
   getLanguagesCheckboxs: required => {
     return (
-      <Form.Item name="language" rules={[{ required }]} label="Language">
+      <Form.Item name="language" rules={[{ required }]} label="Language" initialValue={[]}>
         <Checkbox.Group>
           <Row>
             {Helper.languages.map((_, i) => (

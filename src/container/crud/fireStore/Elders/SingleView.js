@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input, Select, InputNumber, Switch, DatePicker } from 'antd';
+import { Row, Col, Form, Input, Select, InputNumber, Switch, DatePicker, notification } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import Helper from '../Helper';
@@ -40,18 +40,18 @@ const SingleView = ({ IsActionAdd, elder }) => {
         city: elder.city,
         address: elder.address,
         addressNumber: elder.addressNumber,
-        birthday: moment(new Date(elder.birthday.seconds * 1000)),
+        birthday: elder.birthday == null ? undefined : moment(new Date(elder.birthday.seconds * 1000)),
         language: elder.language,
         kosherFood: elder.kosherFood,
         deliveryStatus: elder.deliveryStatus,
+        source: elder.source,
+        contact: elder.contact,
         comments: elder.comments.map((_, i) => {
           return { ..._, date: new Date(_.date.seconds * 1000), key: i };
         }),
       });
     }
   }, [elder]);
-
-  const requireee = false;
 
   return (
     <>
@@ -65,27 +65,38 @@ const SingleView = ({ IsActionAdd, elder }) => {
               form={form}
               name={IsActionAdd ? 'addnew' : 'edit'}
               onFinish={values => {
-                Helper.checkIfPhoneAlreadyExist(collection, values.phone, elder === undefined ? null : elder.id).then(
+                Helper.IsPhoneAlreadyExist(collection, values.phone, elder === undefined ? null : elder.phone).then(
                   __ => {
-                    const a = __;
-                    // Helper.handleSubmit(dispatch, elder === undefined ? null : elder.id, collection, form, {
-                    //   ...values,
-                    //   birthday: values.birthday.toDate(),
-                    // });
+                    if (__) {
+                      Helper.handleSubmit(
+                        dispatch,
+                        elder === undefined ? null : elder.id,
+                        collection,
+                        () => form.resetFields(),
+                        {
+                          ...values,
+                          birthday: values.birthday === undefined ? null : values.birthday.toDate(),
+                        },
+                      );
+                    } else {
+                      notification.error({
+                        message: 'this phone already exists',
+                      });
+                    }
                   },
                 );
               }}
             >
-              <Form.Item name="firstName" label="First Name" rules={[{ required: requireee }]}>
+              <Form.Item name="firstName" label="First Name" rules={[{ required: true }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
-              <Form.Item name="lastName" label="Last Name" rules={[{ required: requireee }]}>
+              <Form.Item name="lastName" label="Last Name" rules={[{ required: true }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
-              <Form.Item name="phone" label="Phone" rules={[{ required: requireee }]}>
+              <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
                 <Input placeholder="Phone" />
               </Form.Item>
-              <Form.Item name="city" rules={[{ required: requireee }]} label="City">
+              <Form.Item name="city" rules={[{ required: true }]} label="City">
                 <Select
                   allowClear
                   style={{ width: '100%' }}
@@ -96,23 +107,23 @@ const SingleView = ({ IsActionAdd, elder }) => {
                   {Helper.getCityOptions()}
                 </Select>
               </Form.Item>
-              <Form.Item label="Address">
-                <Form.Item name="address" rules={[{ required: requireee }]}>
+              <Form.Item label="Address" rules={[{ required: true }]}>
+                <Form.Item name="address" rules={[{ required: true }]}>
                   <Select allowClear showSearch placeholder="Street">
                     {Helper.getStreetOptions(streets)}
                   </Select>
                 </Form.Item>
 
-                <Form.Item name="addressNumber" rules={[{ required: requireee }]}>
+                <Form.Item name="addressNumber" rules={[{ required: true }]}>
                   <InputNumber min={1} placeholder="Number" />
                 </Form.Item>
               </Form.Item>
 
-              <Form.Item name="birthday" rules={[{ required: requireee }]} label="Date of birth">
+              <Form.Item name="birthday" rules={[{ required: false }]} label="Date of birth">
                 <DatePicker format="DD/MM/YYYY" />
               </Form.Item>
 
-              {Helper.getLanguagesCheckboxs(requireee)}
+              {Helper.getLanguagesCheckboxs(true)}
 
               <Form.Item name="kosherFood" label="Kosher Food" initialValue={false} valuePropName="checked">
                 <Switch style={{ height: '18px' }} />
@@ -120,6 +131,14 @@ const SingleView = ({ IsActionAdd, elder }) => {
 
               <Form.Item name="deliveryStatus" label="Delivery Status" initialValue={false} valuePropName="checked">
                 <Switch style={{ height: '18px' }} />
+              </Form.Item>
+
+              <Form.Item name="source" label="Source" rules={[{ required: true }]}>
+                <Input placeholder="Source" />
+              </Form.Item>
+
+              <Form.Item name="contact" label="Contact" rules={[{ required: false }]}>
+                <Input placeholder="Contact" />
               </Form.Item>
 
               {Helper.createHistoryComments()}

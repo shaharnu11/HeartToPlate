@@ -16,7 +16,7 @@ const ViewPage = () => {
         phone: elder.phone,
         city: elder.city,
         address: `${elder.address} ${elder.addressNumber}`,
-        birthday: Helper.toDateFormat(elder.birthday.seconds),
+        birthday: elder.birthday == null ? undefined : Helper.toDateFormat(elder.birthday.seconds),
         language: (
           <div>
             {elder.language.map((_, i) => (

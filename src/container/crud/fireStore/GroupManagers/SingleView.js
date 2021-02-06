@@ -63,8 +63,6 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
     }
   };
 
-  const requireee = false;
-
   return (
     <>
       <Row justify="center">
@@ -82,28 +80,28 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
                   dispatch,
                   groupManager === undefined ? null : groupManager.id,
                   collection,
-                  form,
+                  () => form.resetFields(),
                   values,
                 )
               }
             >
-              <Form.Item name="firstName" label="First Name" rules={[{ required: requireee }]}>
+              <Form.Item name="firstName" label="First Name" rules={[{ required: true }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
 
-              <Form.Item name="lastName" label="Last Name" rules={[{ required: requireee }]}>
+              <Form.Item name="lastName" label="Last Name" rules={[{ required: true }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
 
-              <Form.Item name="phone" label="Phone" rules={[{ required: requireee }]}>
+              <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
                 <Input placeholder="Phone" />
               </Form.Item>
 
-              <Form.Item name="email" rules={[{ required: requireee, type: 'email' }]} label="Email">
+              <Form.Item name="email" rules={[{ required: false, type: 'email' }]} label="Email">
                 <Input placeholder="example@gmail.com" />
               </Form.Item>
 
-              <Form.Item name="city" rules={[{ required: requireee }]} label="City">
+              <Form.Item name="city" rules={[{ required: false }]} label="City">
                 <Select
                   allowClear
                   style={{ width: '100%' }}
@@ -115,24 +113,24 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
                 </Select>
               </Form.Item>
 
-              <Form.Item label="Address">
-                <Form.Item name="address" rules={[{ required: requireee }]}>
+              <Form.Item label="Address" rules={[{ required: false }]}>
+                <Form.Item name="address" rules={[{ required: false }]}>
                   <Select allowClear showSearch placeholder="Street">
                     {Helper.getStreetOptions(streets)}
                   </Select>
                 </Form.Item>
-                <Form.Item name="addressNumber" rules={[{ required: requireee }]}>
+                <Form.Item name="addressNumber" rules={[{ required: false }]}>
                   <InputNumber min={1} placeholder="Number" />
                 </Form.Item>
               </Form.Item>
 
-              <Form.Item name="birthday" rules={[{ required: requireee }]} label="Date of birth">
+              <Form.Item name="birthday" rules={[{ required: false }]} label="Date of birth">
                 <DatePicker format="DD/MM/YYYY" />
               </Form.Item>
 
-              {Helper.getLanguagesCheckboxs(requireee)}
+              {Helper.getLanguagesCheckboxs(true)}
 
-              <Form.Item name="groups" rules={[{ required: requireee }]} label="Groups">
+              <Form.Item name="groups" rules={[{ required: true }]} label="Groups">
                 <Select
                   allowClear
                   mode="multiple"

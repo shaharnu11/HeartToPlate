@@ -65,7 +65,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
         city: volunteer.city,
         address: volunteer.address,
         addressNumber: volunteer.addressNumber,
-        birthday: moment(new Date(volunteer.birthday.seconds * 1000)),
+        birthday: volunteer.birthday == null ? undefined : moment(new Date(volunteer.birthday.seconds * 1000)),
         language: volunteer.language,
         carOwner: volunteer.carOwner,
         kosherFood: volunteer.kosherFood,
@@ -104,8 +104,6 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
     });
   };
 
-  const requireee = false;
-
   return (
     <>
       <Row justify="center">
@@ -118,31 +116,49 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
               form={form}
               name={IsActionAdd ? 'addnew' : 'edit'}
               onFinish={values => {
-                const a = 3;
-                return Helper.handleSubmit(dispatch, volunteer === undefined ? null : volunteer.id, collection, form, {
-                  ...values,
-                  signedForm: { name: values.signedForm.name, url: values.signedForm.url },
-                  birthday: values.birthday.toDate(),
-                });
+                return Helper.handleSubmit(
+                  dispatch,
+                  volunteer === undefined ? null : volunteer.id,
+                  collection,
+                  () => {
+                    form.resetFields();
+                    setSignedFormPreview({ image: null, visible: false, title: null });
+                  },
+                  {
+                    ...JSON.parse(
+                      JSON.stringify(values, (k, v) => {
+                        if (v === undefined) {
+                          return null;
+                        }
+                        return v;
+                      }),
+                    ),
+                    signedForm:
+                      values.signedForm === undefined
+                        ? null
+                        : { name: values.signedForm.name, url: values.signedForm.url },
+                    birthday: values.birthday === undefined ? null : values.birthday.toDate(),
+                  },
+                );
               }}
             >
-              <Form.Item name="firstName" label="First Name" rules={[{ required: requireee }]}>
+              <Form.Item name="firstName" label="First Name" rules={[{ required: true }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
 
-              <Form.Item name="lastName" label="Last Name" rules={[{ required: requireee }]}>
+              <Form.Item name="lastName" label="Last Name" rules={[{ required: true }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
 
-              <Form.Item name="phone" label="Phone" rules={[{ required: requireee }]}>
+              <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
                 <Input placeholder="Phone" />
               </Form.Item>
 
-              <Form.Item name="email" rules={[{ required: requireee, type: 'email' }]} label="Email">
+              <Form.Item name="email" rules={[{ required: false, type: 'email' }]} label="Email">
                 <Input placeholder="example@gmail.com" />
               </Form.Item>
 
-              <Form.Item name="city" rules={[{ required: requireee }]} label="City">
+              <Form.Item name="city" rules={[{ required: true }]} label="City">
                 <Select
                   allowClear
                   style={{ width: '100%' }}
@@ -154,22 +170,22 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                 </Select>
               </Form.Item>
 
-              <Form.Item label="Address">
-                <Form.Item name="address" rules={[{ required: requireee }]}>
+              <Form.Item label="Address" rules={[{ required: true }]}>
+                <Form.Item name="address" rules={[{ required: true }]}>
                   <Select allowClear showSearch placeholder="Street">
                     {Helper.getStreetOptions(streets)}
                   </Select>
                 </Form.Item>
-                <Form.Item name="addressNumber" rules={[{ required: requireee }]}>
+                <Form.Item name="addressNumber" rules={[{ required: true }]}>
                   <InputNumber min={1} placeholder="Number" />
                 </Form.Item>
               </Form.Item>
 
-              <Form.Item name="birthday" rules={[{ required: requireee }]} label="Date of birth">
+              <Form.Item name="birthday" rules={[{ required: false }]} label="Date of birth">
                 <DatePicker format="DD/MM/YYYY" />
               </Form.Item>
 
-              {Helper.getLanguagesCheckboxs(requireee)}
+              {Helper.getLanguagesCheckboxs(false)}
 
               <Form.Item name="carOwner" label="Car Owner" initialValue={false} valuePropName="checked">
                 <Switch style={{ height: '18px' }} />
@@ -179,7 +195,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                 <Switch style={{ height: '18px' }} />
               </Form.Item>
 
-              <Form.Item name="frequency" label="Frequency">
+              <Form.Item name="frequency" label="Frequency" rules={[{ required: true }]}>
                 <Radio.Group>
                   <Radio value="weekly">Weekly</Radio>
                   <Radio value="monthly">Monthly</Radio>
@@ -188,7 +204,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
 
               {Helper.createHistoryComments()}
               <Form.Item label="Signed Form">
-                <Form.Item name="signedForm" rules={[{ required: requireee }]} noStyle>
+                <Form.Item name="signedForm" rules={[{ required: false }]} noStyle>
                   <Upload
                     name="files"
                     beforeUpload={() => false}

@@ -19,7 +19,7 @@ const ViewPage = () => {
         email: volunteer.email,
         city: volunteer.city,
         address: `${volunteer.address} ${volunteer.addressNumber}`,
-        birthday: Helper.toDateFormat(volunteer.birthday.seconds),
+        birthday: volunteer.birthday == null ? undefined : Helper.toDateFormat(volunteer.birthday.seconds),
         language: (
           <div>
             {volunteer.language.map((_, i) => (
