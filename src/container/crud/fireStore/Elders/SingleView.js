@@ -37,6 +37,7 @@ const SingleView = ({ IsActionAdd, elder }) => {
         firstName: elder.firstName,
         lastName: elder.lastName,
         phone: elder.phone,
+        homePhone: elder.homePhone,
         city: elder.city,
         address: elder.address,
         addressNumber: elder.addressNumber,
@@ -93,7 +94,10 @@ const SingleView = ({ IsActionAdd, elder }) => {
               <Form.Item name="lastName" label="Last Name" rules={[{ required: true }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
-              <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
+              <Form.Item name="phone" label="Private Phone" rules={[{ required: true }]}>
+                <Input placeholder="Phone" />
+              </Form.Item>
+              <Form.Item name="homePhone" label="Home Phone" rules={[{ required: false }]}>
                 <Input placeholder="Phone" />
               </Form.Item>
               <Form.Item name="city" rules={[{ required: true }]} label="City">

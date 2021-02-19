@@ -14,6 +14,8 @@ const ViewPage = () => {
         firstName: elder.firstName,
         lastName: elder.lastName,
         phone: elder.phone,
+        homePhone: elder.homePhone,
+
         city: elder.city,
         address: `${elder.address} ${elder.addressNumber}`,
         birthday: elder.birthday == null ? undefined : Helper.toDateFormat(elder.birthday.seconds),
@@ -54,9 +56,15 @@ const ViewPage = () => {
       fixed: 'left',
     },
     {
-      title: 'Phone',
+      title: 'Private Phone',
       dataIndex: 'phone',
       key: 'phone',
+      filtered: true,
+    },
+    {
+      title: 'Home Phone',
+      dataIndex: 'homePhone',
+      key: 'homePhone',
       filtered: true,
     },
     {
