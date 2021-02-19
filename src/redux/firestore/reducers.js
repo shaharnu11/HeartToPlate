@@ -13,6 +13,8 @@ const {
   FB_UPLOAD_SUCCESS,
   FB_UPLOAD_ERR,
 
+  FB_CLEAN_SUCCESS,
+
   FB_READ_BEGIN,
   FB_READ_SUCCESS,
   FB_READ_ERR,
@@ -109,6 +111,13 @@ const fsCrudReducer = (state = initialState, action) => {
       return {
         ...state,
         error: err,
+      };
+
+    case FB_CLEAN_SUCCESS:
+      return {
+        ...state,
+        ...data,
+        loading: true,
       };
 
     case FB_READ_BEGIN:

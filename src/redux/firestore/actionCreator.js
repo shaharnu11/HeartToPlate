@@ -44,6 +44,8 @@ const {
   fbAddSuccess,
   fbAddErr,
 
+  fbCleanSuccess,
+
   fbReadBegin,
   fbReadSuccess,
   fbReadErr,
@@ -94,6 +96,12 @@ const fbDataSubmit = (collection, data) => {
 /*
 {collection : }
 */
+
+const fbDataClean = collection => {
+  return async dispatch => {
+    await dispatch(fbCleanSuccess(collection));
+  };
+};
 const fbDataRead = (collection, pagination, sorter, joinColumns, filter) => {
   return async (dispatch, getState, { getFirestore }) => {
     const db = getFirestore();
@@ -350,6 +358,7 @@ const fbFileClear = () => {
 };
 
 export {
+  fbDataClean,
   fbDataSubmit,
   fbDataSearch,
   fbDataDelete,

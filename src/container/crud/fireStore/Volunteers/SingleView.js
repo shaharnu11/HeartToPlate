@@ -125,14 +125,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                     setSignedFormPreview({ image: null, visible: false, title: null });
                   },
                   {
-                    ...JSON.parse(
-                      JSON.stringify(values, (k, v) => {
-                        if (v === undefined) {
-                          return null;
-                        }
-                        return v;
-                      }),
-                    ),
+                    ...values,
                     signedForm:
                       values.signedForm === undefined
                         ? null

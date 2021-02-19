@@ -6,7 +6,7 @@ import moment from 'moment';
 import Helper from '../Helper';
 import { Button } from '../../../../components/buttons/buttons';
 import { BasicFormWrapper } from '../../../styled';
-import { fbDataSearch } from '../../../../redux/firestore/actionCreator';
+import { fbDataSearch, fbDataClean } from '../../../../redux/firestore/actionCreator';
 
 const SingleView = ({ IsActionAdd, groupManager }) => {
   const dispatch = useDispatch();
@@ -36,6 +36,7 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
     if (groups !== undefined) {
       setGroupsOptionsWrapper(groups);
     }
+    return () => dispatch(fbDataClean('Groups'));
   }, [groups]);
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
         city: groupManager.city,
         address: groupManager.address,
         addressNumber: groupManager.addressNumber,
-        birthday: moment(new Date(groupManager.birthday.seconds * 1000)),
+        birthday: groupManager.birthday == null ? undefined : moment(new Date(groupManager.birthday.seconds * 1000)),
         language: groupManager.language,
         groups: groupManager.groups.map(_ => _.id),
       });

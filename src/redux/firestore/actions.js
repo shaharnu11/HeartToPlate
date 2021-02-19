@@ -3,6 +3,8 @@ const actions = {
   FB_ADD_SUCCESS: 'FB_ADD_SUCCESS',
   FB_ADD_ERR: 'FB_ADD_ERR',
 
+  FB_CLEAN_SUCCESS: 'FB_CLEAN_SUCCESS',
+
   FB_READ_BEGIN: 'FB_READ_BEGIN',
   FB_READ_SUCCESS: 'FB_READ_SUCCESS',
   FB_READ_ERR: 'FB_READ_ERR',
@@ -118,6 +120,15 @@ const actions = {
     };
   },
 
+  fbCleanSuccess: collection => {
+    const action = {
+      type: actions.FB_CLEAN_SUCCESS,
+      data: {},
+    };
+    action.data[collection] = undefined;
+
+    return action;
+  },
   fbReadBegin: () => {
     return {
       type: actions.FB_READ_BEGIN,

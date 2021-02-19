@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Helper from '../Helper';
 import { Button } from '../../../../components/buttons/buttons';
 import { BasicFormWrapper } from '../../../styled';
-import { fbDataUpdate, fbDataSubmit, fbDataSearch, fbFileClear } from '../../../../redux/firestore/actionCreator';
+import { fbDataClean, fbDataSearch } from '../../../../redux/firestore/actionCreator';
 
 const SingleView = ({ IsActionAdd, regionManager }) => {
   const dispatch = useDispatch();
@@ -35,6 +35,7 @@ const SingleView = ({ IsActionAdd, regionManager }) => {
     if (groupManagers !== undefined) {
       setGroupManagersOptionsWrapper(groupManagers);
     }
+    return () => dispatch(fbDataClean('groupManagers'));
   }, [groupManagers]);
 
   useEffect(() => {
@@ -75,13 +76,12 @@ const SingleView = ({ IsActionAdd, regionManager }) => {
               layout="vertical"
               form={form}
               name={IsActionAdd ? 'addnew' : 'edit'}
-              // onFinish={handleSubmit}
               onFinish={values =>
                 Helper.handleSubmit(
                   dispatch,
                   regionManager === undefined ? null : regionManager.id,
                   collection,
-                  form,
+                  () => form.resetFields(),
                   values,
                 )
               }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Table, Input, Button, Space } from 'antd';
+import { Switch } from 'antd';
 import ViewPageBase from '../View';
 import Helper from '../Helper';
 

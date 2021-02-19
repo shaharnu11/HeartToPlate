@@ -12,16 +12,18 @@ const ViewPage = () => {
         name: group.name,
         city: group.city,
         comments: group.comments,
-        groupManager: (
-          <a href={`../GroupManagers/edit/${group.groupManager[0].id}`}>
-            {group.groupManager[0].firstName} {group.groupManager[0].lastName}
+        groupManagers: group.groupManagers.map(groupManager => (
+          <a href={`../GroupManagers/edit/${groupManager.id}`}>
+            {groupManager.firstName} {groupManager.lastName}
           </a>
-        ),
+        )),
         volunteers: (
           <div>
             {group.volunteers.map((_, i) => (
               <div key={i}>
-                <a href={`../Volunteers/edit/${_.id}`}>{_.name}</a>
+                <a href={`../Volunteers/edit/${_.id}`}>
+                  {_.firstName} {_.lastName}
+                </a>
                 <br />
               </div>
             ))}
@@ -31,7 +33,9 @@ const ViewPage = () => {
           <div>
             {group.elders.map((_, i) => (
               <div key={i}>
-                <a href={`../Elders/edit/${_.id}`}>{_.name}</a>
+                <a href={`../Elders/edit/${_.id}`}>
+                  {_.firstName} {_.lastName}
+                </a>
                 <br />
               </div>
             ))}
@@ -63,9 +67,9 @@ const ViewPage = () => {
       key: 'comments',
     },
     {
-      title: 'Group Manager',
-      dataIndex: 'groupManager',
-      key: 'groupManager',
+      title: 'Group Managers',
+      dataIndex: 'groupManagers',
+      key: 'groupManagers',
       joinCollection: 'GroupManagers',
       sourceColumn: 'id',
       action: 'array-contains',

@@ -5,7 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import Helper from '../Helper';
 import { Button } from '../../../../components/buttons/buttons';
 import { BasicFormWrapper } from '../../../styled';
-import { fbDataUpdate, fbDataSubmit, fbDataSearch, fbFileClear } from '../../../../redux/firestore/actionCreator';
+import {
+  fbDataUpdate,
+  fbDataSubmit,
+  fbDataSearch,
+  fbFileClear,
+  fbDataClean,
+  fbDataRead,
+} from '../../../../redux/firestore/actionCreator';
 
 const SingleView = ({ IsActionAdd, group }) => {
   const dispatch = useDispatch();
@@ -20,14 +27,14 @@ const SingleView = ({ IsActionAdd, group }) => {
   const [form] = Form.useForm();
   const [volunteersOptions, setVolunteersOptions] = useState(null);
   const [eldersOptions, setEldersOptions] = useState(null);
-  const volunteersKeys = ['name', 'email'];
-  const eldersKeys = ['name'];
+  const volunteersKeys = ['firstName', 'lastName'];
+  const eldersKeys = ['firstName', 'lastName'];
 
   const setVolunteersOptionsWrapper = _ => {
     setVolunteersOptions(
       _.map(volunteer => (
         <Select.Option key={volunteersKeys.map(key => volunteer[key]).join(' ')} value={volunteer.id}>
-          {volunteer.name} ({volunteer.email})
+          {volunteer.firstName} {volunteer.lastName} ({volunteer.email})
         </Select.Option>
       )),
     );
@@ -37,7 +44,7 @@ const SingleView = ({ IsActionAdd, group }) => {
     setEldersOptions(
       _.map(elder => (
         <Select.Option key={eldersKeys.map(key => elder[key]).join(' ')} value={elder.id}>
-          {elder.name}
+          {elder.firstName} {elder.lastName}
         </Select.Option>
       )),
     );
@@ -47,12 +54,15 @@ const SingleView = ({ IsActionAdd, group }) => {
     if (volunteers !== undefined) {
       setVolunteersOptionsWrapper(volunteers);
     }
+
+    return () => dispatch(fbDataClean('Volunteers'));
   }, [volunteers]);
 
   useEffect(() => {
     if (elders !== undefined) {
       setEldersOptionsWrapper(elders);
     }
+    return () => dispatch(fbDataClean('Elders'));
   }, [elders]);
 
   useEffect(() => {
@@ -70,13 +80,13 @@ const SingleView = ({ IsActionAdd, group }) => {
 
   const handleVolunteersSearch = value => {
     setVolunteersOptions(null);
-    if (value.length > 2) {
+    if (value.length > 1) {
       dispatch(fbDataSearch('Volunteers', value, volunteersKeys));
     }
   };
   const handleEldersSearch = value => {
     setEldersOptions(null);
-    if (value.length > 2) {
+    if (value.length > 1) {
       dispatch(fbDataSearch('Elders', value, eldersKeys));
     }
   };
@@ -96,7 +106,13 @@ const SingleView = ({ IsActionAdd, group }) => {
               name={IsActionAdd ? 'addnew' : 'edit'}
               // onFinish={handleSubmit}
               onFinish={values =>
-                Helper.handleSubmit(dispatch, group === undefined ? null : group.id, collection, form, values)
+                Helper.handleSubmit(
+                  dispatch,
+                  group === undefined ? null : group.id,
+                  collection,
+                  () => form.resetFields(),
+                  values,
+                )
               }
             >
               <Form.Item name="name" label="Name" rules={[{ required: requireee }]}>

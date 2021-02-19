@@ -25,7 +25,6 @@ const Helper = {
 
       return result.docs.filter(_ => _.data().phone === newPhone).length === 0;
     } catch (err) {
-      console.log(err);
       return null;
     }
   },
@@ -86,16 +85,25 @@ const Helper = {
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   },
   handleSubmit: (dispatch, id, collection, whenSuccess, values) => {
+    const newValues = JSON.parse(
+      JSON.stringify(values, (k, v) => {
+        if (v === undefined) {
+          return null;
+        }
+        return v;
+      }),
+    );
+
     Object.keys(values).forEach(key => {
       if (typeof values[key] === 'string') {
-        values[key] = values[key].toLowerCase();
+        newValues[key] = values[key].toLowerCase();
       }
     });
 
     if (id === null) {
       dispatch(
         fbDataSubmit(collection, {
-          ...values,
+          ...newValues,
           id: new Date().getTime(),
           joinDate: new Date(),
         }),
@@ -103,7 +111,7 @@ const Helper = {
       whenSuccess();
       dispatch(fbFileClear());
     } else {
-      dispatch(fbDataUpdate(collection, id, values));
+      dispatch(fbDataUpdate(collection, id, newValues));
     }
   },
 

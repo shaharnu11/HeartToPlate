@@ -16,8 +16,8 @@ const ViewPage = () => {
           phone: groupManager.phone,
           email: groupManager.email,
           city: groupManager.city,
-          address: `${groupManager.address} ${groupManager.addressNumber}`,
-          birthday: Helper.toDateFormat(groupManager.birthday.seconds),
+          address: groupManager.address == null ? undefined : `${groupManager.address} ${groupManager.addressNumber}`,
+          birthday: groupManager.birthday == null ? undefined : Helper.toDateFormat(groupManager.birthday.seconds),
           language: (
             <div>
               {groupManager.language.map((_, i) => (

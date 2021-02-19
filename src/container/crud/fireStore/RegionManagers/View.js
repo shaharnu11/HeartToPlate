@@ -26,7 +26,9 @@ const ViewPage = () => {
             <div>
               {regionManager.groupManagers.map((_, i) => (
                 <div key={i}>
-                  <a href={`../GroupManagers/edit/${_.id}`}>{_.name}</a>
+                  <a href={`../GroupManagers/edit/${_.id}`}>
+                    {_.firstName} {_.lastName}
+                  </a>
                   <br />
                 </div>
               ))}
