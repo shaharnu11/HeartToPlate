@@ -168,7 +168,7 @@ const ViewPageBase = (collection, columns, createDataSource) => {
   const handleChange = (tablePagination, filters, tableSorter, extra) => {
     if (extra.action === 'paginate') {
       setPagination(tablePagination);
-      dispatch(fbDataRead(collection, pagination, sorter, joinColumns, filter));
+      dispatch(fbDataRead(collection, tablePagination, sorter, joinColumns, filter));
     }
     if (extra.action === 'sort') {
       setSorter(tableSorter);
