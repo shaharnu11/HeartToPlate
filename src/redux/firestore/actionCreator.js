@@ -130,6 +130,10 @@ const fbDataRead = (collection, pagination, sorter, joinColumns, filter) => {
         const promiss = [];
         datas.forEach(data => {
           joinColumns.forEach(joinColumn => {
+            if (joinColumn.action === 'in' && data[joinColumn.sourceColumn].length === 0) {
+              return;
+            }
+
             promiss.push(
               db
                 .collection(joinColumn.joinCollection)

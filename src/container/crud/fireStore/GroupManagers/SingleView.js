@@ -75,14 +75,13 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
               layout="vertical"
               form={form}
               name={IsActionAdd ? 'addnew' : 'edit'}
-              // onFinish={handleSubmit}
               onFinish={values =>
                 Helper.handleSubmit(
                   dispatch,
                   groupManager === undefined ? null : groupManager.id,
                   collection,
                   () => form.resetFields(),
-                  values,
+                  { ...values, birthday: values.birthday === undefined ? null : values.birthday.toDate() },
                 )
               }
             >

@@ -127,7 +127,12 @@ const SingleView = ({ IsActionAdd, regionManager }) => {
 
               {Helper.getLanguagesCheckboxs(requireee)}
 
-              <Form.Item name="groupManagers" rules={[{ required: requireee }]} label="Group Managers">
+              <Form.Item
+                name="groupManagers"
+                rules={[{ required: requireee }]}
+                label="Group Managers"
+                initialValue={[]}
+              >
                 <Select
                   mode="multiple"
                   allowClear
