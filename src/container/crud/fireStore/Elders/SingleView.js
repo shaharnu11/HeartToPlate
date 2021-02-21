@@ -41,6 +41,7 @@ const SingleView = ({ IsActionAdd, elder }) => {
         city: elder.city,
         address: elder.address,
         addressNumber: elder.addressNumber,
+        aptFloor: elder.aptFloor,
         birthday: elder.birthday == null ? undefined : moment(new Date(elder.birthday.seconds * 1000)),
         language: elder.language,
         kosherFood: elder.kosherFood,
@@ -120,6 +121,9 @@ const SingleView = ({ IsActionAdd, elder }) => {
 
                 <Form.Item name="addressNumber" rules={[{ required: true }]}>
                   <InputNumber min={1} placeholder="Number" />
+                </Form.Item>
+                <Form.Item name="aptFloor" rules={[{ required: false }]}>
+                  <Input placeholder="Apartment and Floor" />
                 </Form.Item>
               </Form.Item>
 

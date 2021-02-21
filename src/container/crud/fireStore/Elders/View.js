@@ -18,6 +18,7 @@ const ViewPage = () => {
 
         city: elder.city,
         address: `${elder.address} ${elder.addressNumber}`,
+        aptFloor: elder.aptFloor,
         birthday: elder.birthday == null ? undefined : Helper.toDateFormat(elder.birthday.seconds),
         language: (
           <div>
@@ -76,6 +77,11 @@ const ViewPage = () => {
       title: 'Address',
       dataIndex: 'address',
       key: 'address',
+    },
+    {
+      title: 'Apartment/Floor',
+      dataIndex: 'aptFloor',
+      key: 'aptFloor',
     },
     {
       title: 'Birthday',
