@@ -30,6 +30,16 @@ const ViewPage = () => {
             ))}
           </div>
         ),
+        groups: (
+          <div>
+            {elder.groups.map((_, i) => (
+              <div key={i}>
+                <a href={`../Groups/edit/${_.id}`}>{_.name}</a>
+                <br />
+              </div>
+            ))}
+          </div>
+        ),
         kosherFood: <Switch checked={elder.kosherFood} />,
         contact: elder.contact,
         source: elder.source,
@@ -93,6 +103,15 @@ const ViewPage = () => {
       dataIndex: 'language',
       key: 'language',
       filters: Helper.languages.map(_ => ({ text: _, value: _ })),
+    },
+    {
+      title: 'Groups',
+      dataIndex: 'groups',
+      key: 'groups',
+      joinCollection: 'Groups',
+      sourceColumn: 'groups',
+      action: 'in',
+      destinationColumn: 'id',
     },
     {
       title: 'Kosher',

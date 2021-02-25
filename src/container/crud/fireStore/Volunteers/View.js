@@ -125,9 +125,9 @@ const ViewPage = () => {
       dataIndex: 'groups',
       key: 'groups',
       joinCollection: 'Groups',
-      sourceColumn: 'id',
-      action: 'array-contains',
-      destinationColumn: 'volunteers',
+      sourceColumn: 'groups',
+      action: 'in',
+      destinationColumn: 'id',
     },
     {
       title: 'Joined Date',

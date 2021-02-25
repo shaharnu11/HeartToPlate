@@ -29,6 +29,8 @@ const ViewPage = () => {
             ))}
           </div>
         ),
+        maxVolunteers: group.maxVolunteers,
+
         elders: (
           <div>
             {group.elders.map((_, i) => (
@@ -41,6 +43,7 @@ const ViewPage = () => {
             ))}
           </div>
         ),
+        maxElders: group.maxElders,
       });
     });
 

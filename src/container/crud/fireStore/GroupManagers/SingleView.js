@@ -34,7 +34,9 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
 
   useEffect(() => {
     if (groups !== undefined) {
-      setGroupsOptionsWrapper(groups);
+      setGroupsOptionsWrapper(
+        groups.filter(group => group.volunteers.length < group.maxVolunteers || group.elders.length < group.maxElders),
+      );
     }
     return () => dispatch(fbDataClean('Groups'));
   }, [groups]);
@@ -59,7 +61,7 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
 
   const handleGroupsSearch = value => {
     setGroupsOptions(null);
-    if (value.length > 2) {
+    if (value.length > 0) {
       dispatch(fbDataSearch('Groups', value, groupsKeys));
     }
   };

@@ -85,14 +85,16 @@ const Helper = {
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   },
   handleSubmit: (dispatch, id, collection, whenSuccess, values) => {
-    const newValues = JSON.parse(
-      JSON.stringify(values, (k, v) => {
-        if (v === undefined) {
-          return null;
-        }
-        return v;
-      }),
-    );
+    const newValues = {};
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key of Object.keys(values)) {
+      if (values[key] === undefined) {
+        newValues[key] = null;
+      } else {
+        newValues[key] = values[key];
+      }
+    }
 
     Object.keys(values).forEach(key => {
       if (typeof values[key] === 'string') {

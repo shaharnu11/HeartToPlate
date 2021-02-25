@@ -153,6 +153,27 @@ const fbDataRead = (collection, pagination, sorter, joinColumns, filter) => {
         await Promise.all(promiss);
       }
 
+      // Migration
+      // const datasTemp = [];
+      // await db
+      //   .collection(collection)
+      //   .get()
+      //   .then(query =>
+      //     query.forEach(doc => {
+      //       datasTemp.push(doc.data());
+      //     }),
+      //   );
+
+      // await datas.forEach(async _ => {
+      //   await db
+      //     .collection(collection)
+      //     .doc(_.id.toString())
+      //     .update({
+      //       ..._,
+      //       groups: _.groups.map(__ => __.id),
+      //     });
+      // });
+
       const isEndOfCollection = datas.length > pagination.pageSize * pagination.current;
 
       if (isEndOfCollection) {
@@ -265,6 +286,7 @@ const fbDataSingle = (collection, id, joinColumns) => {
     const db = getFirestore();
     try {
       await dispatch(fbSingleDataBegin());
+
       const data = (
         await db
           .collection(collection)

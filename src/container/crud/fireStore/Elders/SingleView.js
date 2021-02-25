@@ -77,7 +77,7 @@ const SingleView = ({ IsActionAdd, elder }) => {
                         () => form.resetFields(),
                         {
                           ...values,
-                          birthday: values.birthday === undefined ? null : values.birthday.toDate(),
+                          birthday: values.birthday === undefined ? null : new Date(),
                         },
                       );
                     } else {

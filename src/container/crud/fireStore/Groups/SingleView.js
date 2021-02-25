@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input, Select, Spin } from 'antd';
+import { Row, Col, Form, Input, InputNumber, Select, Spin } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import Helper from '../Helper';
 import { Button } from '../../../../components/buttons/buttons';
@@ -34,7 +34,12 @@ const SingleView = ({ IsActionAdd, group }) => {
     setVolunteersOptions(
       _.map(volunteer => (
         <Select.Option key={volunteersKeys.map(key => volunteer[key]).join(' ')} value={volunteer.id}>
-          {volunteer.firstName} {volunteer.lastName} ({volunteer.email})
+          {volunteer.firstName} {volunteer.lastName}
+          {volunteer.groups.length > 0
+            ? group === undefined || !volunteer.groups.includes(group.id)
+              ? '( already assigned )'
+              : ''
+            : ''}
         </Select.Option>
       )),
     );
@@ -45,6 +50,11 @@ const SingleView = ({ IsActionAdd, group }) => {
       _.map(elder => (
         <Select.Option key={eldersKeys.map(key => elder[key]).join(' ')} value={elder.id}>
           {elder.firstName} {elder.lastName}
+          {elder.groups.length > 0
+            ? group === undefined || !elder.groups.includes(group.id)
+              ? '( already assigned )'
+              : ''
+            : ''}
         </Select.Option>
       )),
     );
@@ -73,20 +83,22 @@ const SingleView = ({ IsActionAdd, group }) => {
         name: group.name,
         city: group.city,
         volunteers: group.volunteers.map(_ => _.id),
+        maxVolunteers: group.maxVolunteers,
         elders: group.elders.map(_ => _.id),
+        maxElders: group.maxElders,
       });
     }
   }, [group]);
 
   const handleVolunteersSearch = value => {
     setVolunteersOptions(null);
-    if (value.length > 1) {
+    if (value.length >= 1) {
       dispatch(fbDataSearch('Volunteers', value, volunteersKeys));
     }
   };
   const handleEldersSearch = value => {
     setEldersOptions(null);
-    if (value.length > 1) {
+    if (value.length >= 1) {
       dispatch(fbDataSearch('Elders', value, eldersKeys));
     }
   };
@@ -139,6 +151,10 @@ const SingleView = ({ IsActionAdd, group }) => {
                 </Select>
               </Form.Item>
 
+              <Form.Item name="maxVolunteers" label="Max Volunteers" rules={[{ required: requireee }]} initialValue={4}>
+                <InputNumber placeholder="Max Volunteers" />
+              </Form.Item>
+
               <Form.Item name="elders" rules={[{ required: requireee }]} label="Elders">
                 <Select
                   mode="multiple"
@@ -151,6 +167,10 @@ const SingleView = ({ IsActionAdd, group }) => {
                 >
                   {eldersOptions}
                 </Select>
+              </Form.Item>
+
+              <Form.Item name="maxElders" label="Max Elders" rules={[{ required: requireee }]} initialValue={2}>
+                <InputNumber placeholder="Max Elders" />
               </Form.Item>
 
               <div className="record-form-actions text-right">
