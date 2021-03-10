@@ -6,17 +6,56 @@ import Helper from '../Helper';
 import { Button } from '../../../../components/buttons/buttons';
 import { BasicFormWrapper } from '../../../styled';
 import {
-  fbDataUpdate,
-  fbDataSubmit,
   fbDataSearch,
-  fbFileClear,
   fbDataClean,
-  fbDataRead,
+  fbDataSubmit,
+  fbFileClear,
+  fbDataUpdate,
 } from '../../../../redux/firestore/actionCreator';
+import { firestore as db } from '../../../../config/database/firebase';
+
+const handleGroupSubmit = async (whenSuccess, newGroup, oldGroup, dispatch) => {
+  Helper.convertUndefindToNullAndLowerCaseStrings(newGroup);
+
+  const id = oldGroup === undefined ? new Date().getTime() : oldGroup.id;
+
+  if (oldGroup === undefined) {
+    dispatch(
+      fbDataSubmit('Groups', {
+        ...newGroup,
+        id,
+        joinDate: new Date(),
+      }),
+    );
+    dispatch(fbFileClear());
+    whenSuccess();
+  } else {
+    dispatch(fbDataUpdate('Groups', id, newGroup));
+  }
+
+  const dbVolunteersRef = db.collection('volunteers');
+  if (oldGroup !== undefined) {
+    oldGroup.volunteers.forEach(async volunteer => {
+      await dbVolunteersRef.doc(`${volunteer.id}`).update({ groups: [] });
+    });
+  }
+  newGroup.volunteers.forEach(async volunteerId => {
+    await dbVolunteersRef.doc(`${volunteerId}`).update({ groups: [id] });
+  });
+
+  const dbEldersRef = db.collection('elders');
+  if (oldGroup !== undefined) {
+    oldGroup.elders.forEach(async elder => {
+      await dbEldersRef.doc(`${elder.id}`).update({ groups: [] });
+    });
+  }
+  newGroup.elders.forEach(async elderId => {
+    await dbEldersRef.doc(`${elderId}`).update({ groups: [id] });
+  });
+};
 
 const SingleView = ({ IsActionAdd, group }) => {
   const dispatch = useDispatch();
-  const collection = 'Groups';
 
   const { volunteers, elders } = useSelector(state => {
     return {
@@ -103,8 +142,6 @@ const SingleView = ({ IsActionAdd, group }) => {
     }
   };
 
-  const requireee = false;
-
   return (
     <>
       <Row justify="center">
@@ -116,28 +153,19 @@ const SingleView = ({ IsActionAdd, group }) => {
               layout="vertical"
               form={form}
               name={IsActionAdd ? 'addnew' : 'edit'}
-              // onFinish={handleSubmit}
-              onFinish={values =>
-                Helper.handleSubmit(
-                  dispatch,
-                  group === undefined ? null : group.id,
-                  collection,
-                  () => form.resetFields(),
-                  values,
-                )
-              }
+              onFinish={newGroup => handleGroupSubmit(() => form.resetFields(), newGroup, group, dispatch)}
             >
-              <Form.Item name="name" label="Name" rules={[{ required: requireee }]}>
+              <Form.Item name="name" label="Name" rules={[{ required: true }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
 
-              <Form.Item name="city" rules={[{ required: requireee }]} label="City">
+              <Form.Item name="city" rules={[{ required: true }]} label="City">
                 <Select autoComplete="registration-select" allowClear style={{ width: '100%' }} showSearch>
                   {Helper.getCityOptions()}
                 </Select>
               </Form.Item>
 
-              <Form.Item name="volunteers" rules={[{ required: requireee }]} label="Volunteers">
+              <Form.Item name="volunteers" rules={[{ required: false }]} label="Volunteers" initialValue={[]}>
                 <Select
                   mode="multiple"
                   notFoundContent={volunteersOptions === null ? <Spin size="small" /> : null}
@@ -151,11 +179,11 @@ const SingleView = ({ IsActionAdd, group }) => {
                 </Select>
               </Form.Item>
 
-              <Form.Item name="maxVolunteers" label="Max Volunteers" rules={[{ required: requireee }]} initialValue={4}>
+              <Form.Item name="maxVolunteers" label="Max Volunteers" rules={[{ required: true }]} initialValue={4}>
                 <InputNumber placeholder="Max Volunteers" />
               </Form.Item>
 
-              <Form.Item name="elders" rules={[{ required: requireee }]} label="Elders">
+              <Form.Item name="elders" rules={[{ required: false }]} label="Elders" initialValue={[]}>
                 <Select
                   mode="multiple"
                   notFoundContent={eldersOptions === null ? <Spin size="small" /> : null}
@@ -169,7 +197,7 @@ const SingleView = ({ IsActionAdd, group }) => {
                 </Select>
               </Form.Item>
 
-              <Form.Item name="maxElders" label="Max Elders" rules={[{ required: requireee }]} initialValue={2}>
+              <Form.Item name="maxElders" label="Max Elders" rules={[{ required: true }]} initialValue={2}>
                 <InputNumber placeholder="Max Elders" />
               </Form.Item>
 

@@ -127,7 +127,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                   {
                     ...values,
                     signedForm:
-                      values.signedForm === undefined
+                      values.signedForm === undefined || values.signedForm === null
                         ? null
                         : { name: values.signedForm.name, url: values.signedForm.url },
                     birthday: values.birthday === undefined ? null : values.birthday.toDate(),

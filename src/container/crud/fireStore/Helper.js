@@ -84,6 +84,22 @@ const Helper = {
     const date = new Date(seconds * 1000);
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   },
+
+  convertUndefindToNullAndLowerCaseStrings: object => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key of Object.keys(object)) {
+      if (object[key] === undefined) {
+        object[key] = null;
+      }
+    }
+
+    Object.keys(object).forEach(key => {
+      if (typeof object[key] === 'string') {
+        object[key] = object[key].toLowerCase();
+      }
+    });
+  },
+
   handleSubmit: (dispatch, id, collection, whenSuccess, values) => {
     const newValues = {};
 

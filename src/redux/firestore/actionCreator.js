@@ -174,14 +174,14 @@ const fbDataRead = (collection, pagination, sorter, joinColumns, filter) => {
       //     });
       // });
 
-      const isEndOfCollection = datas.length > pagination.pageSize * pagination.current;
+      // const isEndOfCollection = datas.length > pagination.pageSize * pagination.current;
 
-      if (isEndOfCollection) {
-        datas.pop();
-        [...Array(pagination.pageSize).keys()].forEach(_ => {
-          datas.push(datas[datas.length - 1]);
-        });
-      }
+      // if (isEndOfCollection) {
+      //   datas.pop();
+      //   [...Array(pagination.pageSize).keys()].forEach(_ => {
+      //     datas.push(datas[datas.length - 1]);
+      //   });
+      // }
 
       await dispatch(fbReadSuccess(collection, datas));
     } catch (err) {
@@ -297,6 +297,9 @@ const fbDataSingle = (collection, id, joinColumns) => {
       if (joinColumns !== undefined) {
         const promiss = [];
         joinColumns.forEach(joinColumn => {
+          if (data[joinColumn.key].length === 0) {
+            return;
+          }
           promiss.push(
             db
               .collection(joinColumn.joinCollection)

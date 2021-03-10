@@ -58,7 +58,7 @@ const SingleView = ({ IsActionAdd, regionManager }) => {
 
   const handleGroupManagersSearch = value => {
     setGroupManagersOptions(null);
-    if (value.length > 2) {
+    if (value.length > 0) {
       dispatch(fbDataSearch('GroupManagers', value, groupManagerKeys));
     }
   };
