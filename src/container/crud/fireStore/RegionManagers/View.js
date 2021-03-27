@@ -72,6 +72,7 @@ const ViewPage = () => {
       title: 'City',
       dataIndex: 'city',
       key: 'city',
+      filtered: true,
     },
     {
       title: 'Address',

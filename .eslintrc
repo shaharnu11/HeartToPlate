@@ -19,6 +19,8 @@
   },
   "plugins": ["react", "import", "react-hooks"],
   "rules": {
+    "function-paren-newline":"error", // new
+    "function-call-argument-newline":2,
     "prettier/prettier": "error",
     "import/no-named-as-default-member": 0,
     "import/order": [2, { "groups": ["external", "index", "sibling", "parent", "internal", "builtin"] }],

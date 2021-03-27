@@ -6,7 +6,11 @@ import { Select, Form, Checkbox, Row, Col, Timeline } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import TextArea from 'antd/lib/input/TextArea';
 import citiesAndStreets from './israeli_street_and_cities_names.json';
-import { fbDataUpdate, fbDataSubmit, fbFileClear } from '../../../redux/firestore/actionCreator';
+import {
+  fbDataUpdate,
+  fbDataSubmit,
+  fbFileClear,
+} from '../../../redux/firestore/actionCreator';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 import { Button } from '../../../components/buttons/buttons';
 import { firestore as db } from '../../../config/database/firebase';
@@ -39,7 +43,12 @@ const Helper = {
         {(fields, { add, remove }) => (
           <Cards title="Comments" caption="The simplest use of Timelines">
             <Form.Item>
-              <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+              <Button
+                type="dashed"
+                onClick={() => add()}
+                block
+                icon={<PlusOutlined />}
+              >
                 Add comment
               </Button>
             </Form.Item>
@@ -57,7 +66,10 @@ const Helper = {
                     </Form.Item>
                   }
                 >
-                  <MinusCircleOutlined className="dynamic-delete-button" onClick={() => remove(field.name)} />
+                  <MinusCircleOutlined
+                    className="dynamic-delete-button"
+                    onClick={() => remove(field.name)}
+                  />
 
                   <Form.Item
                     className="dateInput"
@@ -68,7 +80,12 @@ const Helper = {
                     <DateHeader />
                   </Form.Item>
 
-                  <Form.Item name={[field.name, 'text']} fieldKey={[field.fieldKey, 'text']} initialValue="">
+                  <Form.Item
+                    style={{ direction: 'rtl' }}
+                    name={[field.name, 'text']}
+                    fieldKey={[field.fieldKey, 'text']}
+                    initialValue=""
+                  >
                     <TextArea placeholder="Comment" />
                   </Form.Item>
                 </Timeline.Item>
@@ -135,12 +152,18 @@ const Helper = {
 
   getCityOptions: () =>
     citiesAndStreets.data.map(_ => (
-      <Select.Option key={_.city_name} value={_.city_name}>
+      <Select.Option
+        key={_.city_name}
+        value={_.city_name}
+        style={{ direction: 'rtl' }}
+      >
         {_.city_name}
       </Select.Option>
     )),
   handleCitySelect: (value, setValue) => {
-    const { streets } = citiesAndStreets.data.filter(_ => _.city_name === value)[0];
+    const { streets } = citiesAndStreets.data.filter(
+      _ => _.city_name === value,
+    )[0];
 
     setValue(streets);
   },
@@ -154,7 +177,12 @@ const Helper = {
         )),
   getLanguagesCheckboxs: required => {
     return (
-      <Form.Item name="language" rules={[{ required }]} label="Language" initialValue={[]}>
+      <Form.Item
+        name="language"
+        rules={[{ required }]}
+        label="Language"
+        initialValue={[]}
+      >
         <Checkbox.Group>
           <Row>
             {Helper.languages.map((_, i) => (

@@ -19,7 +19,10 @@ const ViewPage = () => {
         city: elder.city,
         address: `${elder.address} ${elder.addressNumber}`,
         aptFloor: elder.aptFloor,
-        birthday: elder.birthday == null ? undefined : Helper.toDateFormat(elder.birthday.seconds),
+        birthday:
+          elder.birthday == null
+            ? undefined
+            : Helper.toDateFormat(elder.birthday.seconds),
         language: (
           <div>
             {elder.language.map((_, i) => (
@@ -82,6 +85,7 @@ const ViewPage = () => {
       title: 'City',
       dataIndex: 'city',
       key: 'city',
+      filtered: true,
     },
     {
       title: 'Address',

@@ -1,9 +1,18 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input, Select, InputNumber, Switch, DatePicker, notification } from 'antd';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Select,
+  InputNumber,
+  Switch,
+  DatePicker,
+  notification,
+} from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
-import ElderData from './Elder';
 import Helper from '../Helper';
 import { Button } from '../../../../components/buttons/buttons';
 import { BasicFormWrapper } from '../../../styled';
@@ -43,7 +52,10 @@ const SingleView = ({ IsActionAdd, elder }) => {
         address: elder.address,
         addressNumber: elder.addressNumber,
         aptFloor: elder.aptFloor,
-        birthday: elder.birthday == null ? undefined : moment(new Date(elder.birthday.seconds * 1000)),
+        birthday:
+          elder.birthday == null
+            ? undefined
+            : moment(new Date(elder.birthday.seconds * 1000)),
         language: elder.language,
         kosherFood: elder.kosherFood,
         deliveryStatus: elder.deliveryStatus,
@@ -52,6 +64,7 @@ const SingleView = ({ IsActionAdd, elder }) => {
         comments: elder.comments.map((_, i) => {
           return { ..._, date: new Date(_.date.seconds * 1000), key: i };
         }),
+        groups: elder.groups,
       });
     }
   }, [elder]);
@@ -68,41 +81,67 @@ const SingleView = ({ IsActionAdd, elder }) => {
               form={form}
               name={IsActionAdd ? 'addnew' : 'edit'}
               onFinish={values => {
-                Helper.IsPhoneAlreadyExist(collection, values.phone, elder === undefined ? null : elder.phone).then(
-                  __ => {
-                    if (__) {
-                      Helper.handleSubmit(
-                        dispatch,
-                        elder === undefined ? null : elder.id,
-                        collection,
-                        () => form.resetFields(),
-                        {
-                          ...values,
-                          birthday: values.birthday === undefined ? null : new Date(),
-                        },
-                      );
-                    } else {
-                      notification.error({
-                        message: 'this phone already exists',
-                      });
-                    }
-                  },
-                );
+                Helper.IsPhoneAlreadyExist(
+                  collection,
+                  values.phone,
+                  elder === undefined ? null : elder.phone,
+                ).then(__ => {
+                  if (__) {
+                    Helper.handleSubmit(
+                      dispatch,
+                      elder === undefined ? null : elder.id,
+                      collection,
+                      () => form.resetFields(),
+                      {
+                        ...values,
+                        birthday:
+                          values.birthday === undefined ? null : new Date(),
+                      },
+                    );
+                  } else {
+                    notification.error({
+                      message: 'this phone already exists',
+                    });
+                  }
+                });
               }}
             >
-              <Form.Item name="firstName" label="First Name" rules={[{ required: true }]}>
+              <Form.Item
+                name="firstName"
+                label="First Name"
+                style={{ direction: 'rtl' }}
+                rules={[{ required: true }]}
+              >
                 <Input placeholder="Input Name" />
               </Form.Item>
-              <Form.Item name="lastName" label="Last Name" rules={[{ required: true }]}>
+              <Form.Item
+                name="lastName"
+                style={{ direction: 'rtl' }}
+                label="Last Name"
+                rules={[{ required: true }]}
+              >
                 <Input placeholder="Input Name" />
               </Form.Item>
-              <Form.Item name="phone" label="Private Phone" rules={[{ required: true }]}>
+              <Form.Item
+                name="phone"
+                label="Private Phone"
+                rules={[{ required: true }]}
+              >
                 <Input placeholder="Phone" />
               </Form.Item>
-              <Form.Item name="homePhone" label="Home Phone" rules={[{ required: false }]}>
+              <Form.Item
+                name="homePhone"
+                label="Home Phone"
+                rules={[{ required: false }]}
+              >
                 <Input placeholder="Phone" />
               </Form.Item>
-              <Form.Item name="city" rules={[{ required: true }]} label="City">
+              <Form.Item
+                name="city"
+                rules={[{ required: true }]}
+                label="City"
+                style={{ direction: 'rtl' }}
+              >
                 <Select
                   allowClear
                   style={{ width: '100%' }}
@@ -114,47 +153,100 @@ const SingleView = ({ IsActionAdd, elder }) => {
                 </Select>
               </Form.Item>
               <Form.Item label="Address" rules={[{ required: true }]}>
-                <Form.Item name="address" rules={[{ required: true }]}>
+                <Form.Item
+                  name="address"
+                  rules={[{ required: true }]}
+                  style={{ direction: 'rtl' }}
+                >
                   <Select allowClear showSearch placeholder="Street">
                     {Helper.getStreetOptions(streets)}
                   </Select>
                 </Form.Item>
 
-                <Form.Item name="addressNumber" rules={[{ required: true }]}>
+                <Form.Item
+                  name="addressNumber"
+                  rules={[{ required: true }]}
+                  style={{ direction: 'rtl' }}
+                >
                   <InputNumber min={1} placeholder="Number" />
                 </Form.Item>
-                <Form.Item name="aptFloor" rules={[{ required: false }]}>
-                  <Input placeholder="Apartment and Floor" />
+                <Form.Item
+                  name="aptFloor"
+                  rules={[{ required: false }]}
+                  style={{ direction: 'rtl' }}
+                >
+                  <Input
+                    placeholder="Apartment and Floor"
+                    style={{ direction: 'rtl' }}
+                  />
                 </Form.Item>
               </Form.Item>
 
-              <Form.Item name="birthday" rules={[{ required: false }]} label="Date of birth">
+              <Form.Item
+                name="birthday"
+                rules={[{ required: false }]}
+                label="Date of birth"
+              >
                 <DatePicker format="DD/MM/YYYY" />
               </Form.Item>
 
               {Helper.getLanguagesCheckboxs(true)}
 
-              <Form.Item name="kosherFood" label="Kosher Food" initialValue={false} valuePropName="checked">
+              <Form.Item
+                name="kosherFood"
+                label="Kosher Food"
+                initialValue={false}
+                valuePropName="checked"
+              >
                 <Switch style={{ height: '18px' }} />
               </Form.Item>
 
-              <Form.Item name="deliveryStatus" label="Delivery Status" initialValue={false} valuePropName="checked">
+              <Form.Item
+                name="deliveryStatus"
+                label="Delivery Status"
+                initialValue={false}
+                valuePropName="checked"
+              >
                 <Switch style={{ height: '18px' }} />
               </Form.Item>
 
-              <Form.Item name="source" label="Source" rules={[{ required: true }]}>
+              <Form.Item
+                name="source"
+                label="Source"
+                style={{ direction: 'rtl' }}
+                rules={[{ required: true }]}
+              >
                 <Input placeholder="Source" />
               </Form.Item>
 
-              <Form.Item name="contact" label="Contact" rules={[{ required: false }]}>
+              <Form.Item
+                name="contact"
+                label="Contact"
+                style={{ direction: 'rtl' }}
+                rules={[{ required: false }]}
+              >
                 <Input placeholder="Contact" />
               </Form.Item>
 
               {Helper.createHistoryComments()}
 
+              {/* None visable items */}
+
+              <Form.Item name="groups" visible initialValue={[]}>
+                <Input />
+              </Form.Item>
+
               <div className="record-form-actions text-right">
-                <Button htmlType={IsActionAdd ? 'submit' : 'save'} type="primary" disabled={IsFileUploadig}>
-                  {IsFileUploadig ? 'Loading File' : IsActionAdd ? 'Submit' : 'Update'}
+                <Button
+                  htmlType={IsActionAdd ? 'submit' : 'save'}
+                  type="primary"
+                  disabled={IsFileUploadig}
+                >
+                  {IsFileUploadig
+                    ? 'Loading File'
+                    : IsActionAdd
+                    ? 'Submit'
+                    : 'Update'}
                 </Button>
               </div>
             </Form>

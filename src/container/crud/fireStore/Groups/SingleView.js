@@ -19,39 +19,54 @@ const handleGroupSubmit = async (whenSuccess, newGroup, oldGroup, dispatch) => {
 
   const id = oldGroup === undefined ? new Date().getTime() : oldGroup.id;
 
-  if (oldGroup === undefined) {
-    dispatch(
-      fbDataSubmit('Groups', {
-        ...newGroup,
-        id,
-        joinDate: new Date(),
-      }),
-    );
-    dispatch(fbFileClear());
-    whenSuccess();
-  } else {
-    dispatch(fbDataUpdate('Groups', id, newGroup));
-  }
+  try {
+    if (oldGroup === undefined) {
+      dispatch(
+        fbDataSubmit('Groups', {
+          ...newGroup,
+          id,
+          joinDate: new Date(),
+        }),
+      );
+      dispatch(fbFileClear());
+      whenSuccess();
+    } else {
+      dispatch(fbDataUpdate('Groups', id, newGroup));
+    }
 
-  const dbVolunteersRef = db.collection('volunteers');
-  if (oldGroup !== undefined) {
-    oldGroup.volunteers.forEach(async volunteer => {
-      await dbVolunteersRef.doc(`${volunteer.id}`).update({ groups: [] });
-    });
-  }
-  newGroup.volunteers.forEach(async volunteerId => {
-    await dbVolunteersRef.doc(`${volunteerId}`).update({ groups: [id] });
-  });
+    const oldGroupVolunteerIds = oldGroup === undefined ? [] : oldGroup.volunteers.map(_ => _.id);
+    const newGroupVolunteerIds = newGroup.volunteers;
 
-  const dbEldersRef = db.collection('elders');
-  if (oldGroup !== undefined) {
-    oldGroup.elders.forEach(async elder => {
-      await dbEldersRef.doc(`${elder.id}`).update({ groups: [] });
+    const removedVolunteersIds = oldGroupVolunteerIds.filter(_ => !newGroupVolunteerIds.includes(_));
+
+    const addedVolunteersIds = newGroupVolunteerIds.filter(_ => !oldGroupVolunteerIds.includes(_));
+
+    const dbVolunteersRef = db.collection('Volunteers');
+    removedVolunteersIds.forEach(async volunteerId => {
+      await dbVolunteersRef.doc(`${volunteerId}`).update({ groups: [] });
     });
+    addedVolunteersIds.forEach(async volunteerId => {
+      await dbVolunteersRef.doc(`${volunteerId}`).update({ groups: [id] });
+    });
+
+    const dbEldersRef = db.collection('Elders');
+
+    const oldGroupElderIds = oldGroup === undefined ? [] : oldGroup.elders.map(_ => _.id);
+    const newGroupElderIds = newGroup.elders;
+
+    const removedElderIds = oldGroupElderIds.filter(_ => !newGroupElderIds.includes(_));
+
+    const addedElderIds = newGroupElderIds.filter(_ => !oldGroupElderIds.includes(_));
+
+    removedElderIds.forEach(async elderId => {
+      await dbEldersRef.doc(`${elderId}`).update({ groups: [] });
+    });
+    addedElderIds.forEach(async elderId => {
+      await dbEldersRef.doc(`${elderId}`).update({ groups: [id] });
+    });
+  } catch (err) {
+    // console.log(err);
   }
-  newGroup.elders.forEach(async elderId => {
-    await dbEldersRef.doc(`${elderId}`).update({ groups: [id] });
-  });
 };
 
 const SingleView = ({ IsActionAdd, group }) => {
@@ -160,7 +175,14 @@ const SingleView = ({ IsActionAdd, group }) => {
               </Form.Item>
 
               <Form.Item name="city" rules={[{ required: true }]} label="City">
-                <Select autoComplete="registration-select" allowClear style={{ width: '100%' }} showSearch>
+                <Select
+                  autoComplete="registration-select"
+                  allowClear
+                  style={{
+                    width: '100%',
+                  }}
+                  showSearch
+                >
                   {Helper.getCityOptions()}
                 </Select>
               </Form.Item>
@@ -170,7 +192,9 @@ const SingleView = ({ IsActionAdd, group }) => {
                   mode="multiple"
                   notFoundContent={volunteersOptions === null ? <Spin size="small" /> : null}
                   allowClear
-                  style={{ width: '100%' }}
+                  style={{
+                    width: '100%',
+                  }}
                   onSearch={_ => handleVolunteersSearch(_)}
                   showSearch
                   optionFilterProp="key"
@@ -188,7 +212,9 @@ const SingleView = ({ IsActionAdd, group }) => {
                   mode="multiple"
                   notFoundContent={eldersOptions === null ? <Spin size="small" /> : null}
                   allowClear
-                  style={{ width: '100%' }}
+                  style={{
+                    width: '100%',
+                  }}
                   onSearch={_ => handleEldersSearch(_)}
                   showSearch
                   optionFilterProp="key"

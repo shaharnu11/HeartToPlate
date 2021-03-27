@@ -1,7 +1,19 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input, Select, InputNumber, Switch, Upload, Modal, Radio, DatePicker } from 'antd';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Select,
+  InputNumber,
+  Switch,
+  Upload,
+  Modal,
+  Radio,
+  DatePicker,
+} from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -65,15 +77,23 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
         city: volunteer.city,
         address: volunteer.address,
         addressNumber: volunteer.addressNumber,
-        birthday: volunteer.birthday == null ? undefined : moment(new Date(volunteer.birthday.seconds * 1000)),
+        birthday:
+          volunteer.birthday == null
+            ? undefined
+            : moment(new Date(volunteer.birthday.seconds * 1000)),
         language: volunteer.language,
         carOwner: volunteer.carOwner,
         kosherFood: volunteer.kosherFood,
         frequency: volunteer.frequency,
         signedForm: volunteer.signedForm,
         comments: volunteer.comments.map((_, i) => {
-          return { ..._, date: new Date(_.date.seconds * 1000), key: i };
+          return {
+            ..._,
+            date: new Date(_.date.seconds * 1000),
+            key: i,
+          };
         }),
+        groups: volunteer.groups,
       });
     }
   }, [volunteer]);
@@ -122,39 +142,91 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                   collection,
                   () => {
                     form.resetFields();
-                    setSignedFormPreview({ image: null, visible: false, title: null });
+                    setSignedFormPreview({
+                      image: null,
+                      visible: false,
+                      title: null,
+                    });
                   },
                   {
                     ...values,
                     signedForm:
-                      values.signedForm === undefined || values.signedForm === null
+                      values.signedForm === undefined ||
+                      values.signedForm === null
                         ? null
-                        : { name: values.signedForm.name, url: values.signedForm.url },
-                    birthday: values.birthday === undefined ? null : values.birthday.toDate(),
+                        : {
+                            name: values.signedForm.name,
+                            url: values.signedForm.url,
+                          },
+                    birthday:
+                      values.birthday === undefined || values.birthday === null
+                        ? null
+                        : values.birthday.toDate(),
                   },
                 );
               }}
             >
-              <Form.Item name="firstName" label="First Name" rules={[{ required: true }]}>
+              <Form.Item
+                name="firstName"
+                label="First Name"
+                rules={[{ required: true }]}
+                initialValue={null}
+                style={{
+                  direction: 'rtl',
+                }}
+              >
                 <Input placeholder="Input Name" />
               </Form.Item>
 
-              <Form.Item name="lastName" label="Last Name" rules={[{ required: true }]}>
+              <Form.Item
+                name="lastName"
+                label="Last Name"
+                rules={[{ required: true }]}
+                style={{
+                  direction: 'rtl',
+                }}
+                initialValue={null}
+              >
                 <Input placeholder="Input Name" />
               </Form.Item>
 
-              <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
+              <Form.Item
+                name="phone"
+                label="Phone"
+                rules={[{ required: true }]}
+                initialValue={null}
+              >
                 <Input placeholder="Phone" />
               </Form.Item>
 
-              <Form.Item name="email" rules={[{ required: false, type: 'email' }]} label="Email">
+              <Form.Item
+                name="email"
+                rules={[
+                  {
+                    required: false,
+                    type: 'email',
+                  },
+                ]}
+                label="Email"
+                initialValue={null}
+              >
                 <Input placeholder="example@gmail.com" />
               </Form.Item>
 
-              <Form.Item name="city" rules={[{ required: true }]} label="City">
+              <Form.Item
+                name="city"
+                rules={[{ required: true }]}
+                label="City"
+                initialValue={null}
+                style={{
+                  direction: 'rtl',
+                }}
+              >
                 <Select
                   allowClear
-                  style={{ width: '100%' }}
+                  style={{
+                    width: '100%',
+                  }}
                   onSelect={_ => Helper.handleCitySelect(_, setStreets)}
                   showSearch
                   autoComplete="registration-select"
@@ -164,31 +236,79 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
               </Form.Item>
 
               <Form.Item label="Address" rules={[{ required: true }]}>
-                <Form.Item name="address" rules={[{ required: true }]}>
+                <Form.Item
+                  name="address"
+                  style={{
+                    direction: 'rtl',
+                  }}
+                  rules={[{ required: true }]}
+                  initialValue={null}
+                >
                   <Select allowClear showSearch placeholder="Street">
                     {Helper.getStreetOptions(streets)}
                   </Select>
                 </Form.Item>
-                <Form.Item name="addressNumber" rules={[{ required: true }]}>
-                  <InputNumber min={1} placeholder="Number" />
+                <Form.Item
+                  name="addressNumber"
+                  rules={[{ required: true }]}
+                  initialValue={null}
+                  style={{
+                    direction: 'rtl',
+                  }}
+                >
+                  <InputNumber
+                    min={1}
+                    placeholder="Number"
+                    style={{
+                      direction: 'rtl',
+                    }}
+                  />
                 </Form.Item>
               </Form.Item>
 
-              <Form.Item name="birthday" rules={[{ required: false }]} label="Date of birth">
+              <Form.Item
+                name="birthday"
+                initialValue={null}
+                rules={[{ required: false }]}
+                label="Date of birth"
+              >
                 <DatePicker format="DD/MM/YYYY" />
               </Form.Item>
 
               {Helper.getLanguagesCheckboxs(false)}
 
-              <Form.Item name="carOwner" label="Car Owner" initialValue={false} valuePropName="checked">
-                <Switch style={{ height: '18px' }} />
+              <Form.Item
+                name="carOwner"
+                label="Car Owner"
+                initialValue={false}
+                valuePropName="checked"
+              >
+                <Switch
+                  style={{
+                    height: '18px',
+                  }}
+                />
               </Form.Item>
 
-              <Form.Item name="kosherFood" label="Kosher Food" initialValue={false} valuePropName="checked">
-                <Switch style={{ height: '18px' }} />
+              <Form.Item
+                name="kosherFood"
+                label="Kosher Food"
+                initialValue={false}
+                valuePropName="checked"
+              >
+                <Switch
+                  style={{
+                    height: '18px',
+                  }}
+                />
               </Form.Item>
 
-              <Form.Item name="frequency" label="Frequency" rules={[{ required: true }]}>
+              <Form.Item
+                name="frequency"
+                label="Frequency"
+                initialValue={null}
+                rules={[{ required: true }]}
+              >
                 <Radio.Group>
                   <Radio value="weekly">Weekly</Radio>
                   <Radio value="monthly">Monthly</Radio>
@@ -196,8 +316,14 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
               </Form.Item>
 
               {Helper.createHistoryComments()}
+
               <Form.Item label="Signed Form">
-                <Form.Item name="signedForm" rules={[{ required: false }]} noStyle>
+                <Form.Item
+                  name="signedForm"
+                  initialValue={null}
+                  rules={[{ required: false }]}
+                  noStyle
+                >
                   <Upload
                     name="files"
                     beforeUpload={() => false}
@@ -206,7 +332,9 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                     multiple={false}
                     onPreview={handleSignedFormPreview}
                     onChange={handleSignedFormChange}
-                    showUploadList={{ showRemoveIcon: false }}
+                    showUploadList={{
+                      showRemoveIcon: false,
+                    }}
                   >
                     <Button>
                       <UploadOutlined />
@@ -220,14 +348,43 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                 visible={signedFormPreview.visible}
                 title={signedFormPreview.title}
                 footer={null}
-                onCancel={() => setSignedFormPreview({ ...signedFormPreview, visible: false })}
+                onCancel={() =>
+                  setSignedFormPreview({
+                    ...signedFormPreview,
+                    visible: false,
+                  })
+                }
               >
-                <img alt="example" style={{ width: '100%' }} src={signedFormPreview.image} />
+                <img
+                  alt="example"
+                  style={{
+                    width: '100%',
+                  }}
+                  src={signedFormPreview.image}
+                />
               </Modal>
 
+              {/* None visable items */}
+
+              <Form.Item
+                name="groups"
+                hidden={volunteer === undefined}
+                initialValue={[]}
+              >
+                <Input />
+              </Form.Item>
+
               <div className="record-form-actions text-right">
-                <Button htmlType={IsActionAdd ? 'submit' : 'save'} type="primary" disabled={IsFileUploadig}>
-                  {IsFileUploadig ? 'Loading File' : IsActionAdd ? 'Submit' : 'Update'}
+                <Button
+                  htmlType={IsActionAdd ? 'submit' : 'save'}
+                  type="primary"
+                  disabled={IsFileUploadig}
+                >
+                  {IsFileUploadig
+                    ? 'Loading File'
+                    : IsActionAdd
+                    ? 'Submit'
+                    : 'Update'}
                 </Button>
               </div>
             </Form>
