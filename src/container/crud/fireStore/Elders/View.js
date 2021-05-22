@@ -1,7 +1,7 @@
-import React from 'react';
 import { Switch } from 'antd';
-import ViewPageBase from '../View';
+import React from 'react';
 import Helper from '../Helper';
+import ViewPageBase from '../View';
 
 const ViewPage = () => {
   const createDataSource = elders => {
@@ -19,10 +19,7 @@ const ViewPage = () => {
         city: elder.city,
         address: `${elder.address} ${elder.addressNumber}`,
         aptFloor: elder.aptFloor,
-        birthday:
-          elder.birthday == null
-            ? undefined
-            : Helper.toDateFormat(elder.birthday.seconds),
+        birthday: elder.birthday == null ? undefined : Helper.toDateFormat(elder.birthday.seconds),
         language: (
           <div>
             {elder.language.map((_, i) => (

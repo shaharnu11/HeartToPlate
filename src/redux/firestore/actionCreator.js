@@ -115,41 +115,36 @@ const fbDataRead = (collection, pagination, sorter, joinColumns, filter) => {
         collectionRef = collectionRef.where(filter.column, '>=', filter.text);
       }
       if (sorter != null) {
-        collectionRef = collectionRef.orderBy(
-          sorter.columnKey,
-          sorter.order === 'ascend' ? 'asc' : 'desc',
-        );
+        collectionRef = collectionRef.orderBy(sorter.columnKey, sorter.order === 'ascend' ? 'asc' : 'desc');
       }
       if (pagination != null) {
-        collectionRef = collectionRef.limit(
-          pagination.pageSize * pagination.current + 1,
-        );
+        collectionRef = collectionRef.limit(pagination.pageSize * pagination.current + 1);
       }
       await collectionRef.get().then(query =>
         query.forEach(doc => {
           datas.push(doc.data());
-        }),
-      );
+        }),);
 
       if (joinColumns.length > 0) {
         const promiss = [];
         datas.forEach(data => {
           joinColumns.forEach(joinColumn => {
-            if (
-              joinColumn.action === 'in' &&
-              data[joinColumn.sourceColumn].length === 0
-            ) {
+            if (joinColumn.action === 'in' && data[joinColumn.sourceColumn].length === 0) {
               return;
             }
+
+            // title: 'Groups',
+            // dataIndex: 'groups',
+            // key: 'groups',
+            // joinCollection: 'Groups',
+            // sourceColumn: 'groups',
+            // action: 'in',
+            // destinationColumn: 'id',
 
             promiss.push(
               db
                 .collection(joinColumn.joinCollection)
-                .where(
-                  joinColumn.destinationColumn,
-                  joinColumn.action,
-                  data[joinColumn.sourceColumn],
-                )
+                .where(joinColumn.destinationColumn, joinColumn.action, data[joinColumn.sourceColumn])
                 .get()
                 .then(query => {
                   const newVal = [];
@@ -322,9 +317,7 @@ const fbDataSingle = (collection, id, joinColumns) => {
                 query.forEach(doc => {
                   newVal.push(doc.data());
                 });
-                data[joinColumn.key] = Array.isArray(data[joinColumn.key])
-                  ? newVal
-                  : newVal[0];
+                data[joinColumn.key] = Array.isArray(data[joinColumn.key]) ? newVal : newVal[0];
               }),
           );
         });
@@ -344,10 +337,7 @@ const fbFileUploder = (imageAsFile, location) => {
     try {
       await dispatch(fbUploadBegin());
 
-      const fileName = imageAsFile.name.replace(
-        /(\.[\w\d_-]+)$/i,
-        `_${new Date().getTime()}$1`,
-      );
+      const fileName = imageAsFile.name.replace(/(\.[\w\d_-]+)$/i, `_${new Date().getTime()}$1`);
       const uploadTask = storage()
         .ref(`/${location}/${fileName}`)
         .put(imageAsFile);
@@ -375,7 +365,7 @@ const fbFileUploder = (imageAsFile, location) => {
 };
 
 const fbFileReader = (location, fileName) => {
-  return async (dispatch, getState, { getFirebase, getFirestore, storage }) => {
+  return async (dispatch, getState, { storage }) => {
     try {
       await dispatch(fbReadFileBegin());
 
@@ -415,3 +405,4 @@ export {
   fbFileUploder,
   fbFileClear,
 };
+

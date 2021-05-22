@@ -1,14 +1,14 @@
+import { Col, Row, Spin } from 'antd';
 import React, { useEffect } from 'react';
-import { Row, Col, Spin } from 'antd';
-import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import SingleView from './SingleView';
-import { RecordFormWrapper } from '../style';
-import { PageHeader } from '../../../../components/page-headers/page-headers';
-import { Cards } from '../../../../components/cards/frame/cards-frame';
+import { Link } from 'react-router-dom';
 import { Button } from '../../../../components/buttons/buttons';
-import { Main } from '../../../styled';
+import { Cards } from '../../../../components/cards/frame/cards-frame';
+import { PageHeader } from '../../../../components/page-headers/page-headers';
 import { fbDataSingle } from '../../../../redux/firestore/actionCreator';
+import { Main } from '../../../styled';
+import { RecordFormWrapper } from '../style';
+import SingleView from './SingleView';
 
 const Edit = ({ match }) => {
   const dispatch = useDispatch();

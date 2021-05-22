@@ -35,7 +35,8 @@ const SingleView = ({ IsActionAdd, groupManager }) => {
   useEffect(() => {
     if (groups !== undefined) {
       setGroupsOptionsWrapper(
-        groups.filter(group => group.volunteers.length < group.maxVolunteers || group.elders.length < group.maxElders),
+        groups,
+        // .filter(group => group.volunteers.length < group.maxVolunteers || group.elders.length < group.maxElders),
       );
     }
     return () => dispatch(fbDataClean('Groups'));
