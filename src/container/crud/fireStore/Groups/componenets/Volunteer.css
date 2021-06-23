@@ -1,0 +1,50 @@
+.volunteer-container {
+    background-color: #EFEFEF;
+    border-radius: 10px;
+    padding: 7px;
+}
+
+.volunteer-container .volunteer-status-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.volunteer-container .volunteer-status {
+    display: flex;
+    align-items: center;
+}
+
+.group-container .volunteer-status-container .volunteer-status-icon {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    margin-right: 7px;
+}
+
+.volunteer-container .volunteer-content {
+    display: flex;
+    padding: 7px;
+}
+
+.volunteer-container .volunteer-content.invited {
+    flex-direction: column;
+}
+
+.volunteer-container .volunteer-content .volunteer-info {
+    margin-left: 17px;
+}
+
+.volunteer-container .volunteer-content .volunteer-info.invited {
+    display: flex;
+    margin: 0;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+.volunteer-container .volunteer-content .volunteer-info .volunteer-info-item {    
+    height: 17px;
+    display: flex;
+    align-items: center;
+}

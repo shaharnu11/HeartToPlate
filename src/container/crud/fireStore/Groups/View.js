@@ -1,5 +1,6 @@
 import React from 'react';
 import ViewPageBase from '../View';
+import Group from './componenets/Group';
 
 const ViewPage = () => {
   const createDataSource = groups => {
@@ -99,7 +100,13 @@ const ViewPage = () => {
     },
   ];
 
-  return ViewPageBase('Groups', columns, createDataSource);
+  return (
+    <>    
+      <Group groupStatus='pending' />
+      <Group  groupStatus='active'/>
+      {ViewPageBase('Groups', columns, createDataSource)}
+    </>
+  )
 };
 
 export default ViewPage;
