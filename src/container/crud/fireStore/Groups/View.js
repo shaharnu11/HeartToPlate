@@ -1,5 +1,5 @@
 import React from 'react';
-import ViewPageBase from '../View';
+import Filters from './componenets/Filters';
 
 const ViewPage = () => {
   const createDataSource = groups => {
@@ -99,7 +99,8 @@ const ViewPage = () => {
     },
   ];
 
-  return ViewPageBase('Groups', columns, createDataSource);
+  return <Filters />;
+  // return ViewPageBase('Groups', columns, createDataSource);
 };
 
 export default ViewPage;
