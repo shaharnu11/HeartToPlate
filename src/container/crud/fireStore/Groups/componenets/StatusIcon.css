@@ -1,0 +1,13 @@
+.status-icon {
+    border-radius: 50%;
+}
+
+.status-icon.group {
+    height: 15px;
+    width: 15px;
+}
+
+.status-icon.volunteer {
+    height: 10px;
+    width: 10px;
+}

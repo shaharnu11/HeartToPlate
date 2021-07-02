@@ -1,0 +1,28 @@
+.volunteer-search-item {
+    background-color: #EFEFEF;
+    border-radius: 10px;
+    padding: 6px;
+    display: flex;
+    margin: 5px;
+}
+
+.volunteer-search-item .volunteer-search-item-status {
+    display: flex;
+    align-items: center;
+}
+
+.volunteer-search-item .volunteer-search-item-info-container {
+    display: flex;
+    align-items: center;
+}
+
+.volunteer-search-item .volunteer-search-item-info-container .volunteer-search-item-info {   
+     margin-left: 6px;
+}
+
+.volunteer-search-item .additional-info-add-button{
+    display: flex;
+    align-items: center;
+    width: 130px;
+    justify-content: space-evenly;
+}

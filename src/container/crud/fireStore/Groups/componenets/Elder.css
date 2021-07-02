@@ -1,0 +1,14 @@
+.elder-container {
+    height: 100%;
+    padding: 7px
+}
+
+.elder-container:first-child {
+    margin-bottom: 10px;
+}
+
+.elder-container .elder-info-item {
+    height: 17px;
+    display: flex;
+    align-items: center;
+}
