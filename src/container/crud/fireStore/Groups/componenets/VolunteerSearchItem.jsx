@@ -26,7 +26,7 @@ const VolunteerSearchItem = ({ status }) => {
             </div>
              <div className='additional-info-add-button'>
                  <div>F/36</div>
-                 <button type='button'>ADD</button>
+                 <button type='button' style={{textDecoration: 'none'}}>ADD</button>
             </div>    
         </div>
     )

@@ -5,6 +5,7 @@ import './Group.css';
 import Volunteer from './Volunteer';
 import StatusIcon from './StatusIcon';
 import ChooseVolunteerButton from './ChooseVolunteerButton';
+import ChooseElderButton from './ChooseElderButton';
 import Elder from './Elder';
 
 const Group = ({groupStatus}) => {
@@ -37,10 +38,7 @@ const Group = ({groupStatus}) => {
             <div className='group-items'>
                 <div className='group-elders'>
                     <Elder />
-                    <button type='button' className='add-elder-button card-button'>
-                        <span>ADD ELDER</span>
-                        <FontAwesomeIcon style={{margin: '0 5px'}} icon={faCaretDown} />
-                    </button>                  
+                    <ChooseElderButton />             
                 </div>
 
                 <Volunteer status='active'/>
