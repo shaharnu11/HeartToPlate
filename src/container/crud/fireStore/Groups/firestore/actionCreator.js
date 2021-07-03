@@ -90,6 +90,10 @@ const readGroups = (filters, pageLimit) => {
 
       const groupsRef = await db.collection('Groups');
       let query = groupsRef;
+      if (filters.filteredCity !== undefined) {
+        query = query.where('city', '==', filters.filteredCity);
+      }
+
       if (filters.filteredElderId !== undefined) {
         query = query.where('elders', 'array-contains', filters.filteredElderId);
       }

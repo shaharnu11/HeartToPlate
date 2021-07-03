@@ -23,6 +23,7 @@ import { teamReducer } from './team/reducers';
 import ChangeLayoutMode from './themeLayout/reducers';
 import themeUsersReducer from './themeUsers/reducers';
 import Todo from './todo/reducers';
+
 // import { userReducer } from './users/reducers';
 
 const rootReducers = combineReducers({

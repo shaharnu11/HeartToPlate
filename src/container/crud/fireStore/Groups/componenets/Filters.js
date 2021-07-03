@@ -16,6 +16,7 @@ function Filters() {
   const [filteredVolunteerId, setFilteredVolunteerId] = useState();
   const [filteredElderId, setFilteredElderId] = useState();
   const [filteredGroupManagerId, setFilteredGroupManagerId] = useState();
+  const [filteredCity, setFilteredCity] = useState();
   const [volunteerIdToDisplayNameMap, setVolunteerIdToDisplayNameMap] = useState({});
   const [elderIdToDisplayNameMap, setElderIdToDisplayNameMap] = useState({});
   const [groupIdToDisplayNameMap, setGroupIdToDisplayNameMap] = useState({});
@@ -49,6 +50,7 @@ function Filters() {
     dispatch(
       readGroups(
         {
+          filteredCity,
           filteredElderId,
           filteredVolunteerId,
           filteredGroupManagerId,
@@ -56,7 +58,7 @@ function Filters() {
         pageNumber * pageCount + 1,
       ),
     );
-  }, [filteredElderId, filteredVolunteerId, filteredGroupManagerId, pageNumber]);
+  }, [filteredElderId, filteredVolunteerId, filteredGroupManagerId, filteredCity, pageNumber]);
 
   function onSorting(value) {
     console.log(`selected ${value}`);
@@ -97,7 +99,13 @@ function Filters() {
             <span>Filters :</span>
           </Col>
           <Col style={{ width: '90%' }}>
-            <SelectStyle placeholder="City" onChange={onSorting} allowClear>
+            <SelectStyle
+              showSearch
+              placeholder="City"
+              onChange={onSorting}
+              allowClear
+              onSelect={value => setFilteredCity(value)}
+            >
               {Helper.getCityOptions()}
             </SelectStyle>
 
@@ -119,7 +127,7 @@ function Filters() {
               ))}
             </SelectStyle>
 
-            <SelectStyle placeholder="Volunteer Status" onChange={onSorting} loading={isLoadingFilters}>
+            <SelectStyle placeholder="Volunteer Status" onSelect={onSorting} loading={isLoadingFilters}>
               {volunteerStatuses.map(status => (
                 <Select.Option key={status} value={status}>
                   {status}
