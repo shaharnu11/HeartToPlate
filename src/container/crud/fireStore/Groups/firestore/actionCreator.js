@@ -85,7 +85,7 @@ const readGroups = (filters, pageLimit) => {
   return async (dispatch, getState, { getFirestore }) => {
     const db = getFirestore();
     try {
-      const groups = [];
+      let groups = [];
       await dispatch(readGroupActions.begin());
 
       const groupsRef = await db.collection('Groups');
@@ -151,6 +151,26 @@ const readGroups = (filters, pageLimit) => {
         }
       });
 
+      const groupIds = groups.map(_ => _.id);
+
+      const groupManagers = [];
+      const groupMnagersSnapshot = await db
+        .collection('GroupManagers')
+        .where('groups', 'array-contains-any', groupIds)
+        .get();
+      groupMnagersSnapshot.forEach(doc => {
+        groupManagers.push(doc.data());
+      });
+      console.log(groupIds);
+      console.log(groupManagers);
+      groups = groups.map(group => ({
+        ...group,
+        groupManager: groupManagers.find(groupManager => {
+          console.log(groupManager);
+          console.log(groupManager.groups);
+          return groupManager.groups.includes(group.id);
+        }),
+      }));
       await Promise.all(promiss);
 
       await dispatch(readGroupActions.success(groups));

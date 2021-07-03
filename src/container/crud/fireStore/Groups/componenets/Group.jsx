@@ -7,19 +7,25 @@ import './Group.css';
 import StatusIcon from './StatusIcon';
 import Volunteer from './Volunteer';
 
-const Group = ({ groupStatus }) => {
+const Group = ({ group }) => {
+  if (group.status == undefined) {
+    group.status = 'active';
+  }
+  console.log(group);
   return (
     <div className="group-container">
       <div className="group-status-container">
-        <StatusIcon status={groupStatus} type="group" />
-        <h3 className="group-status">Group {groupStatus} since 30/12/20</h3>
+        <StatusIcon status={group.status} type="group" />
+        {/* {group.id} */}
+        <h3 className="group-status">Group {group.status} since 30/12/20</h3>
         <p className="group-status-issues">// Please add volunteers, elders, manage and activate</p>
         <div className="group-manager-info">
-          {groupStatus === 'active' ? (
+          {group.status === 'active' ? (
             <div className="manager-info card-button">
-              <span>Manager Nickname - </span>
-              <span> Full Name - </span>
-              <span> 0527243298</span>
+              <span>
+                {group.groupManager.firstName} {group.groupManager.lastName}
+              </span>
+              <span> {group.groupManager.phone}</span>
             </div>
           ) : (
             <>

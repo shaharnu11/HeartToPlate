@@ -10,6 +10,7 @@ import { Main } from '../../../../styled';
 import Helper from '../../Helper';
 import { groupStatuses, volunteerStatuses } from '../Data/Group';
 import { readGroupFilters, readGroups } from '../firestore/actionCreator';
+import Group from './Group';
 
 function Filters() {
   const dispatch = useDispatch();
@@ -205,8 +206,8 @@ function Filters() {
           <>
             {groups.slice((pageNumber - 1) * pageCount, pageNumber * pageCount).map((group, i) => {
               return (
-                <Row style={{ height: '100', width: '100', backgroundColor: 'red' }}>
-                  <div style={{ height: '100px', width: '100px', backgroundColor: 'red' }}>{group.id}</div>
+                <Row style={{ height: '100', width: '100' }}>
+                  <Group group={group} />
                 </Row>
               );
             })}
