@@ -1,6 +1,5 @@
 import React from 'react';
-import ViewPageBase from '../View';
-import Group from './componenets/Group';
+import Filters from './componenets/Filters';
 
 const ViewPage = () => {
   const createDataSource = groups => {
@@ -100,13 +99,17 @@ const ViewPage = () => {
     },
   ];
 
-  return (
-    <>    
-      <Group groupStatus='pending' />
-      <Group  groupStatus='active'/>
-      {ViewPageBase('Groups', columns, createDataSource)}
-    </>
-  )
+  return <Filters />;
+  // return ViewPageBase('Groups', columns, createDataSource);
+  // =======
+  //   return (
+  //     <>
+  //       <Group groupStatus='pending' />
+  //       <Group  groupStatus='active'/>
+  //       {ViewPageBase('Groups', columns, createDataSource)}
+  //     </>
+  //   )
+  // >>>>>>> 168f692ea7d3d980a98003650325e7cd447b9f16
 };
 
 export default ViewPage;
