@@ -18,6 +18,8 @@ function Filters() {
   const [filteredElderId, setFilteredElderId] = useState();
   const [filteredGroupManagerId, setFilteredGroupManagerId] = useState();
   const [filteredCity, setFilteredCity] = useState();
+  const [filteredOrganizationId, setFilteredOrganizationId] = useState();
+  const [filteredGroupStatus, setFilteredGroupStatus] = useState();
   const [volunteerIdToDisplayNameMap, setVolunteerIdToDisplayNameMap] = useState({});
   const [elderIdToDisplayNameMap, setElderIdToDisplayNameMap] = useState({});
   const [groupIdToDisplayNameMap, setGroupIdToDisplayNameMap] = useState({});
@@ -38,11 +40,11 @@ function Filters() {
 
   useEffect(() => {
     if (groupFilters !== undefined) {
-      setGroupIdToDisplayNameMap(groupFilters.idToDisplayName);
-      setGroupManagerIdToDisplayNameMap(groupFilters.groupManagerIdToDisplayName);
-      setOrganizationIdToDisplayNameMap(groupFilters.organizationIdToDisplayName);
-      setVolunteerIdToDisplayNameMap(groupFilters.volunteerIdToDisplayName);
-      setElderIdToDisplayNameMap(groupFilters.elderIdToDisplayName);
+      setGroupIdToDisplayNameMap(groupFilters.groupIdToDisplayName);
+      setGroupManagerIdToDisplayNameMap(groupFilters.GroupManagerIdToDisplayName);
+      setOrganizationIdToDisplayNameMap(groupFilters.OrganizationIdToDisplayName);
+      setVolunteerIdToDisplayNameMap(groupFilters.VolunteerIdToDisplayName);
+      setElderIdToDisplayNameMap(groupFilters.ElderIdToDisplayName);
       setIsLoadingFilters(false);
     }
   }, [groupFilters]);
@@ -55,11 +57,13 @@ function Filters() {
           filteredElderId,
           filteredVolunteerId,
           filteredGroupManagerId,
+          filteredOrganizationId,
+          filteredGroupStatus,
         },
         pageNumber * pageCount + 1,
       ),
     );
-  }, [filteredElderId, filteredVolunteerId, filteredGroupManagerId, filteredCity, pageNumber]);
+  }, [filteredElderId, filteredVolunteerId, filteredGroupManagerId, filteredCity,filteredGroupStatus,filteredOrganizationId pageNumber]);
 
   function onSorting(value) {
     console.log(`selected ${value}`);
@@ -110,7 +114,11 @@ function Filters() {
               {Helper.getCityOptions()}
             </SelectStyle>
 
-            <SelectStyle placeholder="Organization" loading={isLoadingFilters} onChange={onSorting}>
+            <SelectStyle
+              placeholder="Organization"
+              loading={isLoadingFilters}
+              onSelect={value => setFilteredOrganizationId(value)}
+            >
               {Object.keys(organizationIdToDisplayNameMap).map(organizationId => {
                 return (
                   <Select.Option key={organizationId} value={organizationId}>
@@ -120,7 +128,12 @@ function Filters() {
               })}
             </SelectStyle>
 
-            <SelectStyle placeholder="Group Status" onChange={onSorting} loading={isLoadingFilters}>
+            <SelectStyle
+              placeholder="Group Status"
+              onChange={onSorting}
+              loading={isLoadingFilters}
+              onSelect={value => setFilteredGroupStatus(value)}
+            >
               {groupStatuses.map(status => (
                 <Select.Option key={status} value={status}>
                   {status}
