@@ -29,7 +29,7 @@ const deleteNotificationError = err => {
 
 const updateNotificationSuccess = () => {
   notification.success({
-    message: 'Your Record hasbeen updated',
+    message: 'Your Record has been updated',
   });
 };
 

@@ -63,7 +63,7 @@ function Filters() {
         pageNumber * pageCount + 1,
       ),
     );
-  }, [filteredElderId, filteredVolunteerId, filteredGroupManagerId, filteredCity,filteredGroupStatus,filteredOrganizationId pageNumber]);
+  }, [filteredElderId, filteredVolunteerId, filteredGroupManagerId, filteredCity,filteredGroupStatus,filteredOrganizationId,   pageNumber]);
 
   function onSorting(value) {
     console.log(`selected ${value}`);
