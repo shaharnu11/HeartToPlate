@@ -13,9 +13,13 @@ const ViewPage = () => {
         id: elder.id,
         firstName: elder.firstName,
         lastName: elder.lastName,
+        gender: elder.gender,
         phone: elder.phone,
         homePhone: elder.homePhone,
-
+        emergencyContactName: elder.emergencyContactName,
+        emergencyContactPhone: elder.emergencyContactPhone,
+        elderTherapist: elder.elderTherapist,
+        therapistPhone: elder.therapistPhone,
         city: elder.city,
         address: `${elder.address} ${elder.addressNumber}`,
         aptFloor: elder.aptFloor,
@@ -30,6 +34,7 @@ const ViewPage = () => {
             ))}
           </div>
         ),
+        otherLanguages: elder.otherLanguages,
         groups: (
           <div>
             {elder.groups.map((_, i) => (
@@ -41,7 +46,10 @@ const ViewPage = () => {
           </div>
         ),
         kosherFood: <Switch checked={elder.kosherFood} />,
-        contact: elder.contact,
+        foodEmphasis: elder.foodEmphasis,
+        medicalEmphases: elder.medicalEmphases,
+        personalBackground: elder.personalBackground,
+        // contact: elder.contact,
         source: elder.source,
         deliveryStatus: <Switch checked={elder.deliveryStatus} />,
         joinDate: Helper.toDateFormat(elder.joinDate.seconds),
@@ -67,6 +75,13 @@ const ViewPage = () => {
       fixed: 'left',
     },
     {
+      title: 'Gender',
+      dataIndex: 'gender',
+      key: 'gender',
+      filtered: true,
+      fixed: 'left',
+    },
+    {
       title: 'Private Phone',
       dataIndex: 'phone',
       key: 'phone',
@@ -76,6 +91,30 @@ const ViewPage = () => {
       title: 'Home Phone',
       dataIndex: 'homePhone',
       key: 'homePhone',
+      filtered: true,
+    },
+    {
+      title: 'Emergency Contact Name',
+      dataIndex: 'emergencyContactName',
+      key: 'emergencyContactName',
+      filtered: true,
+    },
+    {
+      title: 'Emergency Contact Phone',
+      dataIndex: 'emergencyContactPhone',
+      key: 'emergencyContactPhone',
+      filtered: true,
+    },
+    {
+      title: "elder's Therapist",
+      dataIndex: 'elderTherapist',
+      key: 'elderTherapist',
+      filtered: true,
+    },
+    {
+      title: "Therapist Phone",
+      dataIndex: 'therapistPhone',
+      key: 'therapistPhone',
       filtered: true,
     },
     {
@@ -106,6 +145,11 @@ const ViewPage = () => {
       filters: Helper.languages.map(_ => ({ text: _, value: _ })),
     },
     {
+      title: 'Other Language',
+      dataIndex: 'otherLanguages',
+      key: 'otherLanguages',
+    },
+    {
       title: 'Groups',
       dataIndex: 'groups',
       key: 'groups',
@@ -120,10 +164,25 @@ const ViewPage = () => {
       key: 'kosherFood',
     },
     {
-      title: 'Contact',
-      dataIndex: 'contact',
-      key: 'contact',
+      title: 'Food Emphasis',
+      dataIndex: 'foodEmphasis',
+      key: 'foodEmphasis',
     },
+    {
+      title: 'Medical Emphasis',
+      dataIndex: 'medicalEmphases',
+      key: 'medicalEmphases',
+    },
+    {
+      title: 'Personal Background',
+      dataIndex: 'personalBackground',
+      key: 'personalBackground',
+    },
+    // {
+    //   title: 'Contact',
+    //   dataIndex: 'contact',
+    //   key: 'contact',
+    // },
     {
       title: 'Source',
       dataIndex: 'source',
