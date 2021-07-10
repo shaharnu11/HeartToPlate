@@ -4,6 +4,7 @@
     border-radius: 10px;
     padding: 10px;
     margin: 10px;
+    width: 100%;
 }
 
 .group-container .group-status-container {
@@ -85,9 +86,6 @@ button {
     height: 100%;
 }
 
-.group-container .group-items .group-elders .add-elder-button:first-child {
-    margin-bottom: 10px;
-}
 
 .leader-title {
     text-align: center;

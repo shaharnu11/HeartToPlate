@@ -232,28 +232,28 @@ function Filters() {
                 </Row>
               );
             })}
-            <Button
-              className="btn-add_new"
-              size="default"
-              key="1"
-              type="primary"
-              style={{ float: 'left' }}
-              onClick={handlePagePrevClick}
-              disabled={pageNumber === 1}
-            >
-              <FeatherIcon icon="plus" size={14} /> Preview
-            </Button>
-            <Button
-              disabled={groups.length <= pageNumber * pageCount}
-              className="btn-add_new"
-              size="default"
-              key="1"
-              type="primary"
-              style={{ float: 'right' }}
-              onClick={handlePageNextClick}
-            >
-              <FeatherIcon icon="plus" size={14} /> Next
-            </Button>
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+              <Button
+                className="btn-add_new"
+                size="default"
+                key="1"
+                type="primary"
+                onClick={handlePagePrevClick}
+                disabled={pageNumber === 1}
+              >
+                <FeatherIcon icon="plus" size={14} /> Preview
+              </Button>
+              <Button
+                disabled={groups.length <= pageNumber * pageCount}
+                className="btn-add_new"
+                size="default"
+                key="1"
+                type="primary"
+                onClick={handlePageNextClick}
+              >
+                <FeatherIcon icon="plus" size={14} /> Next
+              </Button>
+            </div>
           </>
         ) : (
           'no'

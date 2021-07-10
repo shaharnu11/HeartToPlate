@@ -4,7 +4,7 @@ import React from 'react';
 import StatusIcon from './StatusIcon.jsx';
 import './Volunteer.css';
 
-const Volunteer = ({ isLeader, status }) => {
+const Volunteer = ({ firstName, lastName, city, isLeader, status }) => {
   return (
     <div className="volunteer-container">
       <div className="volunteer-status-container">
@@ -44,9 +44,9 @@ const Volunteer = ({ isLeader, status }) => {
               <div>F/36</div>
             </div>
             <div className="volunteer-info">
-              <div className="volunteer-info-item">City</div>
-              <div className="volunteer-info-item">First Name</div>
-              <div className="volunteer-info-item">Last Name</div>
+              <div className="volunteer-info-item">{city}</div>
+              <div className="volunteer-info-item">{firstName}</div>
+              <div className="volunteer-info-item">{lastName}</div>
               <div className="volunteer-info-item">Organization</div>
             </div>
           </>
