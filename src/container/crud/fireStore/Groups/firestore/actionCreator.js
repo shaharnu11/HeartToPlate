@@ -72,23 +72,27 @@ const readGroups = (filters, pageLimit) => {
       await dispatch(readGroupActions.begin());
 
       // Create Filters
-      const temp = {};
-      const snapshotasd = await db.collection('Elders').get();
-      snapshotasd.forEach(doc => {
-        const data = doc.data();
-        temp[data.id] = data.firstName + data.lastName;
-      });
+      // const temp = {};
+      // const snapshotasd = await db.collection('Elders').get();
+      // snapshotasd.forEach(doc => {
+      //   const data = doc.data();
+      //   temp[data.id] = data.firstName + data.lastName;
+      // });
 
-      console.log(temp);
-      await db
-        .collection('Filters')
-        .doc('ElderIdToDisplayName')
-        .set({
-          filter: temp,
-        });
+      // console.log(temp);
+      // await db
+      //   .collection('Filters')
+      //   .doc('ElderIdToDisplayName')
+      //   .set({
+      //     filter: temp,
+      //   });
 
       const groupsRef = await db.collection('Groups');
       let query = groupsRef;
+      if (filters.filteredCity !== undefined) {
+        query = query.where('city', '==', filters.filteredCity);
+      }
+
       if (filters.filteredCity !== undefined) {
         query = query.where('city', '==', filters.filteredCity);
       }
