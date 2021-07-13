@@ -104,30 +104,11 @@ const SingleView = ({ IsActionAdd, elder }) => {
               <Form.Item name="firstName" label="First Name" style={{ direction: 'rtl' }} rules={[{ required: true }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
+
               <Form.Item name="lastName" style={{ direction: 'rtl' }} label="Last Name" rules={[{ required: true }]}>
                 <Input placeholder="Input Name" />
               </Form.Item>
-              <Form.Item name="phone" label="Private Phone" rules={[{ required: true }]}>
-                <Input placeholder="Phone" />
-              </Form.Item>
-              <Form.Item name="homePhone" label="Home Phone" rules={[{ required: false }]}>
-                <Input placeholder="Phone" />
-              </Form.Item>
-
-              <Form.Item name="emergencyContactName" label="Emergency contact full name and relations" style={{ direction: 'rtl' }} rules={[{ required: false }]}>
-                <Input placeholder="Input Full Name  and relations to the elder" />
-              </Form.Item>
-              <Form.Item name="emergencyContactPhone" label="Emergency Contact Phone Number" rules={[{ required: false }]}>
-                <Input placeholder="Phone" />
-              </Form.Item>
-
-              <Form.Item name="elderTherapist" label="Name and role of therapist" style={{ direction: 'rtl' }} rules={[{ required: false }]}>
-                <Input placeholder="Input Full Name and role - social worker/psychologist ect." />
-              </Form.Item>
-              <Form.Item name="therapistPhone" label="Therapist Phone Number" rules={[{ required: false }]}>
-                <Input placeholder="Phone" />
-              </Form.Item>
-
+              
               <Form.Item name="gender" label="Gender" initialValue={null} rules={[{ required: true, message:'Please select gender'}]}>
                 <Radio.Group>
                   <Radio value="male">Male</Radio>
@@ -154,22 +135,29 @@ const SingleView = ({ IsActionAdd, elder }) => {
                   </Select>
                 </Form.Item>
 
-                <Form.Item name="addressNumber" rules={[{ required: true }]} style={{ direction: 'rtl' }}>
+                <Form.Item name="addressNumber" label="Street Number" rules={[{ required: true }]} style={{ direction: 'rtl' }}>
                   <InputNumber min={1} placeholder="Number" />
                 </Form.Item>
-                <Form.Item name="aptFloor" rules={[{ required: false }]} style={{ direction: 'rtl' }}>
+                <Form.Item name="aptFloor" label="Apartment Floor and Number" rules={[{ required: false }]} style={{ direction: 'rtl' }}>
                   <Input placeholder="Apartment and Floor" style={{ direction: 'rtl' }} />
                 </Form.Item>
-              </Form.Item>
-
-              <Form.Item name="birthday" rules={[{ required: false }]} label="Date of birth">
-                <DatePicker format="DD/MM/YYYY" />
               </Form.Item>
 
               {Helper.getLanguagesCheckboxs(true)}
               <Form.Item name="otherLanguages" rules={[{ required: false }]}>
                   <Input placeholder="שפות נוספות ודגשים"/>
               </Form.Item>
+
+              <Form.Item name="birthday" rules={[{ required: false }]} label="Date of birth">
+                <DatePicker format="DD/MM/YYYY" />
+              </Form.Item>
+
+              <Form.Item name="source" label="Source" style={{ direction: 'rtl' }} rules={[{ required: true }]}>
+                <Input placeholder="Source" />
+              </Form.Item>
+
+
+
               <h2>Nutrition and health</h2>
               <Form.Item name="kosherFood" label="Kosher Food" initialValue={false} valuePropName="checked">
                 <Switch style={{ height: '18px' }} />
@@ -187,13 +175,33 @@ const SingleView = ({ IsActionAdd, elder }) => {
                 <Switch style={{ height: '18px' }} />
               </Form.Item>
 
-              <Form.Item name="source" label="Source" style={{ direction: 'rtl' }} rules={[{ required: true }]}>
-                <Input placeholder="Source" />
+              <h2>Contact Information</h2>
+              <Form.Item name="phone" label="Private Phone" rules={[{ required: true }]}>
+                <Input placeholder="Phone" />
               </Form.Item>
+              <Form.Item name="homePhone" label="Home Phone" rules={[{ required: false }]}>
+                <Input placeholder="Phone" />
+              </Form.Item>
+
+              <Form.Item name="emergencyContactName" label="Emergency contact full name and relations" style={{ direction: 'rtl' }} rules={[{ required: false }]}>
+                <Input placeholder="Input Full Name  and relations to the elder" />
+              </Form.Item>
+              <Form.Item name="emergencyContactPhone" label="Emergency Contact Phone Number" rules={[{ required: false }]}>
+                <Input placeholder="Phone" />
+              </Form.Item>
+
+              <Form.Item name="elderTherapist" label="Name and role of therapist" style={{ direction: 'rtl' }} rules={[{ required: false }]}>
+                <Input placeholder="Input Full Name and role - social worker/psychologist ect." />
+              </Form.Item>
+              <Form.Item name="therapistPhone" label="Therapist Phone Number" rules={[{ required: false }]}>
+                <Input placeholder="Phone" />
+              </Form.Item>
+
 
               {/* <Form.Item name="contact" label="Contact" style={{ direction: 'rtl' }} rules={[{ required: false }]}>
                 <Input placeholder="Contact" />
               </Form.Item> */}
+              <h2>Background/More</h2>
 
               <Form.Item name="personalBackground" label="Personal Background" rules={[{ required: false}]} initialValue={null} style={{ direction: 'rtl',}}>
                     <Input.TextArea rows={3} placeholder="General information we need to know about the elder" style={{direction: 'rtl',}}/>
@@ -250,7 +258,11 @@ const SingleView = ({ IsActionAdd, elder }) => {
 
               {/* None visable items */}
 
-              {/* <Form.Item name="groups" visible initialValue={[]}>
+              {/* <Form.Item 
+               name="groups"
+               visible
+              //  hidden = {elder === undefined} 
+               initialValue={[]}>
                 <Input />
               </Form.Item> */}
 
