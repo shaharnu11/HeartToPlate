@@ -96,7 +96,6 @@ function Filters() {
         <PageHeader
           ghost
           title="Groups"
-          // subTitle={<>12 Running Projects</>}
           buttons={[
             <Button className="btn-add_new" size="default" key="1" type="primary">
               <Link to="/admin/firestore/Groups/Add">
@@ -232,7 +231,7 @@ function Filters() {
                 </Row>
               );
             })}
-            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Button
                 className="btn-add_new"
                 size="default"
