@@ -72,20 +72,30 @@ export const readGroups = (filters, pageLimit) => {
       await dispatch(readGroupActions.begin());
 
       // Create Filters
-      const temp = {};
-      const snapshotasd = await db.collection('Elders').get();
-      snapshotasd.forEach(doc => {
-        const data = doc.data();
-        temp[data.id] = data.firstName + data.lastName;
-      });
+      // const temp = {};
+      // const snapshotasd = await db.collection('Groups').get();
+      // snapshotasd.forEach(async doc => {
+      //   const data = doc.data();
+      //   console.log(data.id);
+      //   await db
+      //     .collection('Groups')
+      //     .doc(data.id.toString())
+      //     .update({ status: 'Pending' });
 
-      console.log(temp);
-      await db
-        .collection('Filters')
-        .doc('ElderIdToDisplayName')
-        .set({
-          filter: temp,
-        });
+      //   // await db.ref(`Groups/${data.id}`).set({
+      //   //   status: 'active',
+      //   // });
+      //   // const data = doc.data();
+      //   // temp[data.id] = data.firstName + data.lastName;
+      // });
+
+      // console.log(temp);
+      // await db
+      //   .collection('Filters')
+      //   .doc('ElderIdToDisplayName')
+      //   .set({
+      //     filter: temp,
+      //   });
 
       const groupsRef = await db.collection('Groups');
       let query = groupsRef;
