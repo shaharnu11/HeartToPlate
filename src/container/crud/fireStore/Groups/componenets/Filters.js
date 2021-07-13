@@ -159,8 +159,11 @@ function Filters() {
           <Col style={{ width: '25%' }}>
             <SelectSearchStyle
               allowClear
-              onClear={_ => setFilteredVolunteerId()}
-              onSelect={value => setFilteredVolunteerId(value)}
+              onClear={_ => resetFilters()}
+              onSelect={value => {
+                resetFilters();
+                setFilteredVolunteerId(value);
+              }}
               value={filteredVolunteerId}
               showSearch
               loading={isLoadingFilters}
@@ -180,8 +183,11 @@ function Filters() {
           <Col style={{ width: '25%' }}>
             <SelectSearchStyle
               allowClear
-              onClear={_ => setFilteredElderId()}
-              onSelect={value => setFilteredElderId(value)}
+              onClear={_ => resetFilters()}
+              onSelect={value => {
+                resetFilters();
+                setFilteredElderId(value);
+              }}
               value={filteredElderId}
               showSearch
               loading={isLoadingFilters}
@@ -201,8 +207,11 @@ function Filters() {
           <Col style={{ width: '25%' }}>
             <SelectSearchStyle
               allowClear
-              onClear={_ => setFilteredGroupManagerId()}
-              onSelect={value => setFilteredGroupManagerId(value)}
+              onClear={_ => resetFilters()}
+              onSelect={value => {
+                resetFilters();
+                setFilteredGroupManagerId(value);
+              }}
               value={filteredGroupManagerId}
               loading={isLoadingFilters}
               showSearch
