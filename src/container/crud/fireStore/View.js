@@ -236,6 +236,7 @@ const ViewPageBase = (collection, columns, createDataSource) => {
                       scroll={{ x: columns.length * 140, y: 300 }}
                       columns={columns
                         .map(column => {
+                          console.log(column);
                           return {
                             width: 5,
                             ...column,
