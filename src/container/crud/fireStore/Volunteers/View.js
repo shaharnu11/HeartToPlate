@@ -33,6 +33,9 @@ const ViewPage = () => {
             ))}
           </div>
         ),
+        otherLanguages:volunteer.otherLanguages,
+        gender:volunteer.gender,
+        idNumber:volunteer.idNumber,
         groups: (
           <div>
             {volunteer.groups.map((_, i) => (
@@ -45,6 +48,7 @@ const ViewPage = () => {
         ),
         carOwner: <Switch checked={volunteer.carOwner} />,
         kosherFood: <Switch checked={volunteer.kosherFood} />,
+        additionalInfo:volunteer.additionalInfo,
         signedForm:
           volunteer.signedForm === null ? (
             <Icon className="icon-single" style={{ padding: '0px' }}>
@@ -108,6 +112,26 @@ const ViewPage = () => {
       title: 'Language',
       dataIndex: 'language',
       key: 'language',
+    },
+    {
+      title: 'Other Language',
+      dataIndex: 'otherLanguages',
+      key: 'otherLanguages',
+    },
+    {
+      title: 'Gender',
+      dataIndex: 'gender',
+      key: 'gender',
+    },
+    {
+      title: 'ID Number',
+      dataIndex: 'idNumber',
+      key: 'idNumber',
+    },
+    {
+      title: 'Additional Information',
+      dataIndex: 'additionalInfo',
+      key: 'additionalInfo',
     },
     {
       title: 'Car',

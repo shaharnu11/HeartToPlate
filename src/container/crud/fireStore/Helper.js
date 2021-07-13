@@ -12,7 +12,28 @@ import citiesAndStreets from './israeli_street_and_cities_names.json';
 
 
 const Helper = {
-  languages: ['hebrew', 'english', 'russian', 'arabic', 'amharic'],
+  languages: ['hebrew', 'english', 'russian', 'arabic', 'amharic', 'franch'],
+
+  isValidIsraeliID: (id) => {
+    try {
+      var id = String(id).trim();
+      if (id.length > 9 || id.length < 5 || isNaN(id)) {
+        return false;
+      } 
+      // Pad string with zeros up to 9 digits
+        id = id.length < 9 ? ("00000000" + id).slice(-9) : id;
+   
+        return Array
+          .from(id, Number)
+            .reduce((counter, digit, i) => {
+              console.log(counter);
+              const step = digit * ((i % 2) + 1);
+              return counter + (step > 9 ? step - 9 : step);
+            }) % 10 === 0;
+    } catch(err){
+      return false;
+    }
+  },
 
   IsPhoneAlreadyExist: async (collection, newPhone, currentPhone) => {
     try {

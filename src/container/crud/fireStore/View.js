@@ -31,7 +31,7 @@ const ViewPageBase = (collection, columns, createDataSource) => {
   const [pagination, setPagination] = useState({
     showSizeChanger: true,
     current: 1,
-    pageSize: 10,
+    pageSize:10,
     showQuickJumper: false,
   });
 
@@ -236,6 +236,7 @@ const ViewPageBase = (collection, columns, createDataSource) => {
                       scroll={{ x: columns.length * 140, y: 300 }}
                       columns={columns
                         .map(column => {
+                          console.log(column);
                           return {
                             width: 5,
                             ...column,

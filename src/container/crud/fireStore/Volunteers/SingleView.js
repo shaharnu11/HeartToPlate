@@ -21,6 +21,8 @@ import Helper from '../Helper';
 import { Button } from '../../../../components/buttons/buttons';
 import { BasicFormWrapper } from '../../../styled';
 import { fbFileUploder } from '../../../../redux/firestore/actionCreator';
+import { Handler } from 'leaflet';
+import { helpers } from 'chart.js';
 
 const SingleView = ({ IsActionAdd, volunteer }) => {
   const dispatch = useDispatch();
@@ -67,7 +69,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
     }
   }, [dispatch, fileUplode]);
 
-  useEffect(() => {
+    useEffect(() => {
     if (volunteer !== undefined) {
       form.setFieldsValue({
         firstName: volunteer.firstName,
@@ -77,6 +79,10 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
         city: volunteer.city,
         address: volunteer.address,
         addressNumber: volunteer.addressNumber,
+        gender:volunteer.gender,
+        idNumber:volunteer.idNumber,
+        otherLanguages:volunteer.otherLanguages,
+        additionalInfo:volunteer.additionalInfo,
         birthday:
           volunteer.birthday == null
             ? undefined
@@ -84,7 +90,6 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
         language: volunteer.language,
         carOwner: volunteer.carOwner,
         kosherFood: volunteer.kosherFood,
-        frequency: volunteer.frequency,
         signedForm: volunteer.signedForm,
         comments: volunteer.comments.map((_, i) => {
           return {
@@ -99,12 +104,15 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
   }, [volunteer]);
 
   const handleSignedFormChange = ({ fileList }) => {
+    console.log("file list:" + JSON.stringify(fileList))
     const newFileList = [fileList[fileList.length - 1]];
+    console.log("newFileLiST:" + JSON.stringify(newFileList));
     setSignedFormFiles(newFileList);
     dispatch(fbFileUploder(newFileList[0].originFileObj, 'SignedForms'));
   };
 
   const handleSignedFormPreview = async file => {
+    // console.log("this is the file arrgumaent going into the handel signed form preview function:" + JSON.stringify(file));
     function getBase64() {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -169,7 +177,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
               <Form.Item
                 name="firstName"
                 label="First Name"
-                rules={[{ required: true }]}
+                rules={[{ required: true }, {max: 15, message: 'Name can not be longer than 15 characters'}]}
                 initialValue={null}
                 style={{
                   direction: 'rtl',
@@ -191,9 +199,18 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
               </Form.Item>
 
               <Form.Item
+                name="birthday"
+                initialValue={null}
+                rules={[{ required: true }]}
+                label="Date of birth"
+              >
+                <DatePicker format="DD/MM/YYYY" />
+              </Form.Item>
+
+              <Form.Item
                 name="phone"
                 label="Phone"
-                rules={[{ required: true }]}
+                rules={[{ required: true, max: 13}]}
                 initialValue={null}
               >
                 <Input placeholder="Phone" />
@@ -266,21 +283,21 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                 </Form.Item>
               </Form.Item>
 
+{/* **should put the function inside form item */}
+              {Helper.getLanguagesCheckboxs(false)}
               <Form.Item
-                name="birthday"
-                initialValue={null}
-                rules={[{ required: false }]}
-                label="Date of birth"
-              >
-                <DatePicker format="DD/MM/YYYY" />
+                // label="Other languages"
+                name="otherLanguages"
+                rules={[{ required: false }]}>
+                  <Input placeholder="שפות נוספות ודגשים"/>
               </Form.Item>
 
-              {Helper.getLanguagesCheckboxs(false)}
 
               <Form.Item
                 name="carOwner"
                 label="Car Owner"
                 initialValue={false}
+                rules={[{ required: true }]}
                 valuePropName="checked"
               >
                 <Switch
@@ -294,6 +311,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                 name="kosherFood"
                 label="Kosher Food"
                 initialValue={false}
+                rules={[{ required: true }]}
                 valuePropName="checked"
               >
                 <Switch
@@ -303,7 +321,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                 />
               </Form.Item>
 
-              <Form.Item
+              {/* <Form.Item
                 name="frequency"
                 label="Frequency"
                 initialValue={null}
@@ -313,7 +331,88 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                   <Radio value="weekly">Weekly</Radio>
                   <Radio value="monthly">Monthly</Radio>
                 </Radio.Group>
+              </Form.Item> */}
+
+              <Form.Item
+                name="gender"
+                label="Gender"
+                initialValue={null}
+                rules={[{ required: true, message:'Please select gender'}]}
+              >
+                <Radio.Group>
+                  <Radio value="male">Male</Radio>
+                  <Radio value="female">Female</Radio>
+                  <Radio value="other">Other</Radio>
+                </Radio.Group>
               </Form.Item>
+
+              <Form.Item
+                  name="idNumber"
+                  label="ID number"
+                  rules={[
+                    { required: true, message: 'Please input your ID number' }, 
+                    () => ({
+                      validator(_, value) {
+                        if(Helper.isValidIsraeliID(value))
+                        {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error('The ID number is incorrect'));
+                      },
+                    }),
+                  ]}
+                  initialValue={null}
+                  style={{
+                    direction: 'rtl',
+                  }}
+                >
+                  <InputNumber
+                    min={1}
+                    placeholder="id number"
+                    style={{
+                      direction: 'rtl',
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                    name="additionalInfo"
+                    label="Additional Information"
+                    rules={[{ required: false}]}
+                    initialValue={null}
+                    style={{
+                      direction: 'rtl',
+                    }}
+                    >
+                    <Input.TextArea
+                      rows={4}
+                      placeholder="איך אני מבשל, דברים שחשובים לי  וכו'"
+                      style={{
+                        direction: 'rtl',
+                      }}
+
+                    />
+                </Form.Item>
+
+                <Form.Item
+                    name="organizations" 
+                    label="Did you Join through an organization?" 
+                    rules={[
+                      { required: false }
+                    ]}
+                    >
+                  <Select
+                    placeholder="Tell us which one"
+                    allowClear
+                    >
+                      {/* need to change the options to match the needs */}
+                    <Option value="male">male</Option>
+                    <Option value="female">female</Option>
+                    <Option value="other">other</Option>
+                  </Select>
+                </Form.Item>
+
+
 
               {Helper.createHistoryComments()}
 

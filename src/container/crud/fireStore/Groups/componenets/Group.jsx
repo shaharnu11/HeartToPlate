@@ -1,13 +1,12 @@
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import ChooseVolunteerButton from './ChooseVolunteerButton';
 import ChooseElderButton from './ChooseElderButton';
+import ChooseVolunteerButton from './ChooseVolunteerButton';
 import Elder from './Elder';
 import './Group.css';
 import StatusIcon from './StatusIcon';
 import Volunteer from './Volunteer';
-import ElderSearchList from './ElderSearchList';
 
 const Group = ({ group }) => {
   if (group.status == undefined) {
@@ -28,38 +27,37 @@ const Group = ({ group }) => {
                 {`${group.groupManager.firstName} ${group.groupManager.lastName} - ${group.groupManager.phone}`}
               </span>
             </div>
-          ) :(
+          ) : (
             <>
-                <button type='button' className='add-manager-button card-button'>
-                    <span>Add GROUP MANAGER</span>
-                    <FontAwesomeIcon style={{margin: '0 5px'}} icon={faCaretDown} />
-                </button>
-                <button type='button' className='activate-group-button'>ACTIVATE GROUP</button>
+              <button type="button" className="add-manager-button card-button">
+                <span>Add GROUP MANAGER</span>
+                <FontAwesomeIcon style={{ margin: '0 5px' }} icon={faCaretDown} />
+              </button>
+              <button type="button" className="activate-group-button">
+                ACTIVATE GROUP
+              </button>
             </>
-        )
-          }
-      </div>
-    </div>
-    <div className='group-items'>
-        <div className='group-elders'>
-          {
-            group.elders.map(({id, firstName, lastName, city }) => (<Elder key={id} firstName={firstName} lastName={lastName} city={city} />))
-          }
-          {
-            new Array(group.maxElders - group.elders.length).fill(true).map((_, i) => (<ChooseElderButton key={i} />))
-          }
-                       
+          )}
         </div>
-        {
-          group.volunteers.map(({id, firstName, lastName, city }) => (<Volunteer key={id} firstName={firstName} lastName={lastName} city={city} status="active" />))
-        }
-        {
-          new Array(group.maxVolunteers - group.volunteers.length).fill(true).map((_, i) => (<ChooseVolunteerButton key={i} />))
-        }
-
+      </div>
+      <div className="group-items">
+        <div className="group-elders">
+          {group.elders.map(({ id, firstName, lastName, city }) => (
+            <Elder key={id} firstName={firstName} lastName={lastName} city={city} />
+          ))}
+          {new Array(group.maxElders - group.elders.length).fill(true).map((_, i) => (
+            <ChooseElderButton key={i} />
+          ))}
+        </div>
+        {group.volunteers.map(({ id, firstName, lastName, city }) => (
+          <Volunteer key={id} firstName={firstName} lastName={lastName} city={city} status="active" />
+        ))}
+        {new Array(group.maxVolunteers - group.volunteers.length).fill(true).map((_, i) => (
+          <ChooseVolunteerButton key={i} />
+        ))}
       </div>
     </div>
   );
-}
+};
 
 export default Group;
