@@ -1,20 +1,19 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from 'react';
-import { Row, Col, Table, Spin, Input, Button, Space } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { SearchOutlined } from '@ant-design/icons';
+import { Button, Col, Input, Row, Space, Spin, Table } from 'antd';
 import FeatherIcon from 'feather-icons-react';
+import React, { useEffect, useState } from 'react';
 import ReactExport from 'react-export-excel';
 import Highlighter from 'react-highlight-words';
-import { SearchOutlined } from '@ant-design/icons';
-// import { filter } from 'all-the-cities';
-import { RecordViewWrapper } from './style';
-import { Main, TableWrapper } from '../../styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 // import { Button } from '../../../components/buttons/buttons';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 import { PageHeader } from '../../../components/page-headers/page-headers';
-import { fbDataDelete, fbDataRead, fbDataSearch } from '../../../redux/firestore/actionCreator';
-import DownloadExcel from '../../../utilities/DownloadExcel';
+import { fbDataDelete, fbDataRead } from '../../../redux/firestore/actionCreator';
+import { Main, TableWrapper } from '../../styled';
+// import { filter } from 'all-the-cities';
+import { RecordViewWrapper } from './style';
 
 const { ExcelFile } = ReactExport;
 const { ExcelSheet } = ReactExport.ExcelFile;

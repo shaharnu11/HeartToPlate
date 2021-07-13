@@ -1,19 +1,15 @@
-import React from 'react';
-import { Select, Form, Checkbox, Row, Col, Timeline } from 'antd';
-
 // import { useDispatch } from 'react-redux';
 // import { keys } from 'all-the-cities';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Checkbox, Col, Form, Row, Select, Timeline } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
-import citiesAndStreets from './israeli_street_and_cities_names.json';
-import {
-  fbDataUpdate,
-  fbDataSubmit,
-  fbFileClear,
-} from '../../../redux/firestore/actionCreator';
-import { Cards } from '../../../components/cards/frame/cards-frame';
+import React from 'react';
 import { Button } from '../../../components/buttons/buttons';
+import { Cards } from '../../../components/cards/frame/cards-frame';
 import { firestore as db } from '../../../config/database/firebase';
+import { fbDataSubmit, fbDataUpdate, fbFileClear } from '../../../redux/firestore/actionCreator';
+import citiesAndStreets from './israeli_street_and_cities_names.json';
+
 
 const Helper = {
   languages: ['hebrew', 'english', 'russian', 'arabic', 'amharic'],
@@ -43,12 +39,7 @@ const Helper = {
         {(fields, { add, remove }) => (
           <Cards title="Comments" caption="The simplest use of Timelines">
             <Form.Item>
-              <Button
-                type="dashed"
-                onClick={() => add()}
-                block
-                icon={<PlusOutlined />}
-              >
+              <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                 Add comment
               </Button>
             </Form.Item>
@@ -66,10 +57,7 @@ const Helper = {
                     </Form.Item>
                   }
                 >
-                  <MinusCircleOutlined
-                    className="dynamic-delete-button"
-                    onClick={() => remove(field.name)}
-                  />
+                  <MinusCircleOutlined className="dynamic-delete-button" onClick={() => remove(field.name)} />
 
                   <Form.Item
                     className="dateInput"
@@ -152,18 +140,12 @@ const Helper = {
 
   getCityOptions: () =>
     citiesAndStreets.data.map(_ => (
-      <Select.Option
-        key={_.city_name}
-        value={_.city_name}
-        style={{ direction: 'rtl' }}
-      >
+      <Select.Option key={_.city_name} value={_.city_name} style={{ direction: 'rtl' }}>
         {_.city_name}
       </Select.Option>
     )),
   handleCitySelect: (value, setValue) => {
-    const { streets } = citiesAndStreets.data.filter(
-      _ => _.city_name === value,
-    )[0];
+    const { streets } = citiesAndStreets.data.filter(_ => _.city_name === value)[0];
 
     setValue(streets);
   },
@@ -177,12 +159,7 @@ const Helper = {
         )),
   getLanguagesCheckboxs: required => {
     return (
-      <Form.Item
-        name="language"
-        rules={[{ required }]}
-        label="Language"
-        initialValue={[]}
-      >
+      <Form.Item name="language" rules={[{ required }]} label="Language" initialValue={[]}>
         <Checkbox.Group>
           <Row>
             {Helper.languages.map((_, i) => (

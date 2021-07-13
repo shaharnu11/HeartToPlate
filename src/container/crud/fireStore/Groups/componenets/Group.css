@@ -1,0 +1,94 @@
+.group-container {
+    color: #695D5D;
+    background-color: #BDC8D8;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    width: 100%;
+}
+
+.group-container .group-status-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.group-container .group-status-icon {
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+}
+
+.group-container .group-status-icon, .group-container .group-status-icon, .group-container .group-status, .group-status-issues {
+    margin: 0 5px
+}
+
+.group-container .group-status {
+    font-weight: 700;
+    color: #695D5D;
+}
+
+.group-container .group-status-container .group-manager-info {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.group-container .group-status-container .group-manager-info .manager-info {
+    height: 30px;
+    padding: 0 20px;
+}
+
+.group-container .group-status-container .group-manager-info > * {
+    margin: 0 5px;
+}
+
+.group-container .group-status-container .group-manager-info .add-manager-button {
+    height: 30px;
+    width: 300px;
+}
+
+.group-container .group-status-container .group-manager-info  .activate-group-button {
+    font-weight: 600;
+}
+
+
+
+button {
+    color: #1F5EB4;
+    text-decoration: underline;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.card-button {
+    background-color: #EFEFEF;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.group-container .group-items {
+    display: grid;
+    /* height: 145px; */
+    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.group-container .group-items .group-elders {
+    display: flex;
+    flex-direction: column;
+}
+
+.group-container .group-items .group-elders .add-elder-button {
+    height: 100%;
+}
+
+
+.leader-title {
+    text-align: center;
+    color: #000383;
+    font-weight: 500;
+}
