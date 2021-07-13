@@ -8,18 +8,19 @@ import { PageHeader } from '../../../../../components/page-headers/page-headers'
 import { ProjectHeader } from '../../../../project/style';
 import { Main } from '../../../../styled';
 import Helper from '../../Helper';
-import { groupStatuses, volunteerStatuses } from '../Data/Group';
+import { groupStatus } from '../Data/Group';
 import { readGroupFilters, readGroups } from '../firestore/actionCreator';
 import Group from './Group';
 
 function Filters() {
   const dispatch = useDispatch();
-  const [filteredVolunteerId, setFilteredVolunteerId] = useState();
+  const [filteredCity, setFilteredCity] = useState();
   const [filteredElderId, setFilteredElderId] = useState();
   const [filteredGroupManagerId, setFilteredGroupManagerId] = useState();
-  const [filteredCity, setFilteredCity] = useState();
-  const [filteredOrganizationId, setFilteredOrganizationId] = useState();
   const [filteredGroupStatus, setFilteredGroupStatus] = useState();
+  const [filteredOrganizationId, setFilteredOrganizationId] = useState();
+  const [filteredVolunteerId, setFilteredVolunteerId] = useState();
+
   const [volunteerIdToDisplayNameMap, setVolunteerIdToDisplayNameMap] = useState({});
   const [elderIdToDisplayNameMap, setElderIdToDisplayNameMap] = useState({});
   const [groupIdToDisplayNameMap, setGroupIdToDisplayNameMap] = useState({});
@@ -64,23 +65,22 @@ function Filters() {
       ),
     );
   }, [
-    filteredElderId,
-    filteredVolunteerId,
-    filteredGroupManagerId,
     filteredCity,
+    filteredElderId,
+    filteredGroupManagerId,
     filteredGroupStatus,
     filteredOrganizationId,
+    filteredVolunteerId,
     pageNumber,
   ]);
 
-  function onSorting(value) {
-    console.log(`selected ${value}`);
-  }
-
   const resetFilters = () => {
-    setFilteredVolunteerId(undefined);
-    setFilteredGroupManagerId(undefined);
-    setFilteredElderId(undefined);
+    setFilteredCity();
+    setFilteredElderId();
+    setFilteredGroupManagerId();
+    setFilteredGroupStatus();
+    setFilteredOrganizationId();
+    setFilteredVolunteerId();
   };
 
   const handlePageNextClick = () => {
@@ -114,8 +114,8 @@ function Filters() {
             <SelectStyle
               showSearch
               placeholder="City"
-              onChange={onSorting}
               allowClear
+              onClear={_ => setFilteredCity()}
               onSelect={value => setFilteredCity(value)}
             >
               {Helper.getCityOptions()}
@@ -124,6 +124,8 @@ function Filters() {
             <SelectStyle
               placeholder="Organization"
               loading={isLoadingFilters}
+              allowClear
+              onClear={_ => setFilteredOrganizationId()}
               onSelect={value => setFilteredOrganizationId(value)}
             >
               {Object.keys(organizationIdToDisplayNameMap).map(organizationId => {
@@ -136,20 +138,13 @@ function Filters() {
             </SelectStyle>
 
             <SelectStyle
+              allowClear
               placeholder="Group Status"
-              onChange={onSorting}
               loading={isLoadingFilters}
+              onClear={_ => setFilteredGroupStatus()}
               onSelect={value => setFilteredGroupStatus(value)}
             >
-              {groupStatuses.map(status => (
-                <Select.Option key={status} value={status}>
-                  {status}
-                </Select.Option>
-              ))}
-            </SelectStyle>
-
-            <SelectStyle placeholder="Volunteer Status" onSelect={onSorting} loading={isLoadingFilters}>
-              {volunteerStatuses.map(status => (
+              {Object.values(groupStatus).map(status => (
                 <Select.Option key={status} value={status}>
                   {status}
                 </Select.Option>
@@ -163,6 +158,8 @@ function Filters() {
           </Col>
           <Col style={{ width: '25%' }}>
             <SelectSearchStyle
+              allowClear
+              onClear={_ => setFilteredVolunteerId()}
               onSelect={value => setFilteredVolunteerId(value)}
               value={filteredVolunteerId}
               showSearch
@@ -182,6 +179,8 @@ function Filters() {
           </Col>
           <Col style={{ width: '25%' }}>
             <SelectSearchStyle
+              allowClear
+              onClear={_ => setFilteredElderId()}
               onSelect={value => setFilteredElderId(value)}
               value={filteredElderId}
               showSearch
@@ -201,6 +200,8 @@ function Filters() {
           </Col>
           <Col style={{ width: '25%' }}>
             <SelectSearchStyle
+              allowClear
+              onClear={_ => setFilteredGroupManagerId()}
               onSelect={value => setFilteredGroupManagerId(value)}
               value={filteredGroupManagerId}
               loading={isLoadingFilters}

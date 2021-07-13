@@ -89,24 +89,29 @@ const readGroups = (filters, pageLimit) => {
 
       const groupsRef = await db.collection('Groups');
       let query = groupsRef;
+
       if (filters.filteredCity !== undefined) {
         query = query.where('city', '==', filters.filteredCity);
       }
 
-      if (filters.filteredCity !== undefined) {
-        query = query.where('city', '==', filters.filteredCity);
+      if (filters.filteredElderId !== undefined) {
+        query = query.where('elders', 'array-contains', Number(filters.filteredElderId));
+      }
+
+      if (filters.filteredGroupManagerId !== undefined) {
+        query = query.where('groupManager', '==', Number(filters.filteredGroupManagerId));
+      }
+
+      if (filters.filteredGroupStatus !== undefined) {
+        query = query.where('status', '==', filters.filteredGroupStatus);
+      }
+
+      if (filters.filteredOrganizationId !== undefined) {
+        query = query.where('organizations', 'array-contains', Number(filters.filteredOrganizationId));
       }
 
       if (filters.filteredVolunteerId !== undefined) {
-        query = query.where('volunteers', 'array-contains', filters.filteredVolunteerId);
-      }
-
-      if (filters.filteredElderId !== undefined) {
-        query = query.where('elders', 'array-contains', filters.filteredElderId);
-      }
-
-      if (filters.filteredElderId !== undefined) {
-        query = query.where('groupManager', '==', filters.filteredGroupManagerId);
+        query = query.where('volunteers', 'array-contains', Number(filters.filteredVolunteerId));
       }
 
       query = query.limit(pageLimit); // TODO: set limit using pagination
