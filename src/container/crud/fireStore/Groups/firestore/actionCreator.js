@@ -72,6 +72,7 @@ const readGroups = (filters, pageLimit) => {
       await dispatch(readGroupActions.begin());
 
       // Create Filters
+<<<<<<< HEAD
       const temp = {};
       const snapshotasd = await db.collection('Elders').get();
       snapshotasd.forEach(doc => {
@@ -86,9 +87,26 @@ const readGroups = (filters, pageLimit) => {
         .set({
           filter: temp,
         });
+=======
+      // const temp = {};
+      // const snapshotasd = await db.collection('Elders').get();
+      // snapshotasd.forEach(doc => {
+      //   const data = doc.data();
+      //   temp[data.id] = data.firstName + data.lastName;
+      // });
+
+      // console.log(temp);
+      // await db
+      //   .collection('Filters')
+      //   .doc('ElderIdToDisplayName')
+      //   .set({
+      //     filter: temp,
+      //   });
+>>>>>>> 3b63247c9087b6ad9529024639c8d998f6077652
 
       const groupsRef = await db.collection('Groups');
       let query = groupsRef;
+
       if (filters.filteredCity !== undefined) {
         query = query.where('city', '==', filters.filteredCity);
       }
@@ -98,7 +116,23 @@ const readGroups = (filters, pageLimit) => {
       }
 
       if (filters.filteredElderId !== undefined) {
-        query = query.where('elders', 'array-contains', filters.filteredElderId);
+        query = query.where('elders', 'array-contains', Number(filters.filteredElderId));
+      }
+
+      if (filters.filteredGroupManagerId !== undefined) {
+        query = query.where('groupManager', '==', Number(filters.filteredGroupManagerId));
+      }
+
+      if (filters.filteredGroupStatus !== undefined) {
+        query = query.where('status', '==', filters.filteredGroupStatus);
+      }
+
+      if (filters.filteredOrganizationId !== undefined) {
+        query = query.where('organizations', 'array-contains', Number(filters.filteredOrganizationId));
+      }
+
+      if (filters.filteredVolunteerId !== undefined) {
+        query = query.where('volunteers', 'array-contains', Number(filters.filteredVolunteerId));
       }
 
       if (filters.filteredElderId !== undefined) {

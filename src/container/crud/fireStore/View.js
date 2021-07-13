@@ -31,7 +31,7 @@ const ViewPageBase = (collection, columns, createDataSource) => {
   const [pagination, setPagination] = useState({
     showSizeChanger: true,
     current: 1,
-    pageSize: 10,
+    pageSize:10,
     showQuickJumper: false,
   });
 

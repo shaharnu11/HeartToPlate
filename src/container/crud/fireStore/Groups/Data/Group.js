@@ -1,4 +1,4 @@
-class Group {
+export class Group {
   constructor(name, city, elderIds, volunteersIds, id, joinDate, maxElders, maxVolunteers) {
     this.elderIds = elderIds;
     this.volunteersIds = volunteersIds;
@@ -15,11 +15,8 @@ class Group {
   //   }
 }
 
-const groupStatuses = ['Active', 'Pending'];
-const volunteerStatuses = ['Active', 'Pending'];
-
 // Firestore data converter
-const groupConverter = {
+export const groupConverter = {
   toFirestore(group) {
     return {
       elderIds: group.elderIds,
@@ -47,4 +44,7 @@ const groupConverter = {
   },
 };
 
-export { groupConverter, groupStatuses, volunteerStatuses };
+export const groupStatus = {
+  Pending: 'Pending',
+  Active: 'Active',
+};
