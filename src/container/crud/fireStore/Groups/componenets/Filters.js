@@ -32,6 +32,7 @@ function Filters() {
     return {
       groupFilters: state.groupsReducer.groupFilters,
       groups: state.groupsReducer.groups,
+      organizations:state.organizationsReducer.organizations
     };
   });
   const pageCount = 3;
