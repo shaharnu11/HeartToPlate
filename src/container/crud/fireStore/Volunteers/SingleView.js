@@ -177,7 +177,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
               <Form.Item
                 name="firstName"
                 label="First Name"
-                rules={[{ required: true }, {max: 15, message: 'Name can not be longet than 15 characters'}]}
+                rules={[{ required: true }, {max: 15, message: 'Name can not be longer than 15 characters'}]}
                 initialValue={null}
                 style={{
                   direction: 'rtl',

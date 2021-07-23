@@ -104,6 +104,10 @@ export const readGroups = (filters, pageLimit) => {
         query = query.where('city', '==', filters.filteredCity);
       }
 
+      if (filters.filteredVolunteerId !== undefined) {
+        query = query.where('volunteers', 'array-contains', filters.filteredVolunteerId);
+      }
+
       if (filters.filteredElderId !== undefined) {
         query = query.where('elders', 'array-contains', Number(filters.filteredElderId));
       }
@@ -122,6 +126,10 @@ export const readGroups = (filters, pageLimit) => {
 
       if (filters.filteredVolunteerId !== undefined) {
         query = query.where('volunteers', 'array-contains', Number(filters.filteredVolunteerId));
+      }
+
+      if (filters.filteredElderId !== undefined) {
+        query = query.where('groupManager', '==', filters.filteredGroupManagerId);
       }
 
       query = query.limit(pageLimit); // TODO: set limit using pagination

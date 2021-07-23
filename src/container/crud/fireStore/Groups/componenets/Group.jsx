@@ -12,6 +12,7 @@ const Group = ({ group }) => {
   if (group.status == undefined) {
     group.status = 'active';
   }
+  //   console.log(group);
   return (
     <div className="group-container">
       <div className="group-status-container">
