@@ -13,9 +13,11 @@ import {
   fbDataUpdate,
 } from '../../../../redux/firestore/actionCreator';
 import { firestore as db } from '../../../../config/database/firebase';
+import { groupStatus } from './Data/Group';
 
 const handleGroupSubmit = async (whenSuccess, newGroup, oldGroup, dispatch) => {
   Helper.convertUndefindToNullAndLowerCaseStrings(newGroup);
+  console.log("THIS IS THE NEW GROUP" + JSON.stringify(newGroup));
 
   const id = oldGroup === undefined ? new Date().getTime() : oldGroup.id;
 
@@ -202,10 +204,10 @@ const SingleView = ({ IsActionAdd, group }) => {
                   {volunteersOptions}
                 </Select>
               </Form.Item>
-
+{/* 
               <Form.Item name="maxVolunteers" label="Max Volunteers" rules={[{ required: true }]} initialValue={4}>
                 <InputNumber placeholder="Max Volunteers" />
-              </Form.Item>
+              </Form.Item> */}
 
               <Form.Item name="elders" rules={[{ required: false }]} label="Elders" initialValue={[]}>
                 <Select
@@ -223,10 +225,31 @@ const SingleView = ({ IsActionAdd, group }) => {
                 </Select>
               </Form.Item>
 
-              <Form.Item name="maxElders" label="Max Elders" rules={[{ required: true }]} initialValue={2}>
+              {/* <Form.Item name="maxElders" label="Max Elders" rules={[{ required: true }]} initialValue={2}>
                 <InputNumber placeholder="Max Elders" />
-              </Form.Item>
+              </Form.Item> */}
 
+              <Form.Item
+                name="status"
+                label="Group Status"
+                rules={[{ required: false }]}
+                label="Group Status"
+                initialValue={[]}
+              >
+                <Select
+                  mode="single"
+                  allowClear
+                  style={{
+                    width: '100%',
+                  }}
+                >
+                  {Object.values(groupStatus).map(status => (
+                    <Select.Option key={status} value={status}>
+                      {status}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
               <div className="record-form-actions text-right">
                 <Button htmlType={IsActionAdd ? 'submit' : 'save'} type="primary">
                   {IsActionAdd ? 'Submit' : 'Update'}

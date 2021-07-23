@@ -2,6 +2,7 @@ import { firebaseReducer } from 'react-redux-firebase';
 import { combineReducers } from 'redux';
 import { firestoreReducer } from 'redux-firestore';
 import groupsReducer from '../container/crud/fireStore/Groups/firestore/groupsReducer';
+import organizationsReducer from '../container/crud/fireStore/Organizations/firestore/organizationsReducer';
 import authReducer from './authentication/reducers';
 import cartData from './cart/reducers';
 import chartContentReducer from './chartContent/reducers';
@@ -36,6 +37,7 @@ const rootReducers = combineReducers({
   orders: orderReducer,
   sellers: sellersReducer,
   groupsReducer,
+  organizationsReducer,
   // users: userReducer,
   team: teamReducer,
   auth: authReducer,
