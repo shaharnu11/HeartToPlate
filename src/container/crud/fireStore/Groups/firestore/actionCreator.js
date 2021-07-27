@@ -35,34 +35,12 @@ const updateNotificationSuccess = () => {
 };
 
 const updateNotificationError = err => {
-  console.log(err);
   notification.error({
     message: err,
   });
 };
 
-const { readGroupFiltersActions, readGroupActions } = actions;
-
-export const readGroupFilters = () => {
-  return async (dispatch, getState, { getFirestore }) => {
-    const db = getFirestore();
-    try {
-      await dispatch(readGroupFiltersActions.begin());
-
-      const filters = {};
-      const querySnapshot = await db.collection('Filters').get();
-      querySnapshot.forEach(doc => {
-        const data = doc.data();
-        filters[doc.id] = data.filter;
-      });
-
-      await dispatch(readGroupFiltersActions.success(filters));
-    } catch (err) {
-      await dispatch(readGroupFiltersActions.error(err));
-      await updateNotificationError(err);
-    }
-  };
-};
+const { readGroupActions } = actions;
 
 export const readGroups = (filters, pageLimit) => {
   return async (dispatch, getState, { getFirestore }) => {

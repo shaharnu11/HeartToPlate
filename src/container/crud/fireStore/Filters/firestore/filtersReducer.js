@@ -1,30 +1,30 @@
 import actions from './actions';
 
-const { READ_GROUPS_BEGIN, READ_GROUPS_SUCCESS, READ_GROUPS_ERR } = actions;
+const { READ_FILTERS_BEGIN, READ_FILTERS_SUCCESS, READ_FILTERS_ERR } = actions;
 
 const initialState = {
-  groups: undefined,
+  filters: undefined,
   loading: false,
   error: null,
 };
 
-const groupsReducer = (state = initialState, action) => {
+const filtersReducer = (state = initialState, action) => {
   const { type, data, err } = action;
   switch (type) {
-    case READ_GROUPS_BEGIN:
+    case READ_FILTERS_BEGIN:
       return {
         ...state,
-        groups: undefined,
+        filters: undefined,
       };
 
-    case READ_GROUPS_SUCCESS:
+    case READ_FILTERS_SUCCESS:
       return {
         ...state,
-        groups: data,
+        filters: data,
         error: false,
       };
 
-    case READ_GROUPS_ERR:
+    case READ_FILTERS_ERR:
       return {
         ...state,
         error: err,
@@ -35,4 +35,4 @@ const groupsReducer = (state = initialState, action) => {
   }
 };
 
-export default groupsReducer;
+export default filtersReducer;
