@@ -43,37 +43,12 @@ const updateNotificationError = err => {
 const { readGroupActions } = actions;
 
 export const readGroups = (filters, pageLimit) => {
+  console.error(filters);
   return async (dispatch, getState, { getFirestore }) => {
     const db = getFirestore();
     try {
       const groups = [];
       await dispatch(readGroupActions.begin());
-
-      // Create Filters
-      // const temp = {};
-      // const snapshotasd = await db.collection('Groups').get();
-      // snapshotasd.forEach(async doc => {
-      //   const data = doc.data();
-      //   console.log(data.id);
-      //   await db
-      //     .collection('Groups')
-      //     .doc(data.id.toString())
-      //     .update({ status: 'Pending' });
-
-      //   // await db.ref(`Groups/${data.id}`).set({
-      //   //   status: 'active',
-      //   // });
-      //   // const data = doc.data();
-      //   // temp[data.id] = data.firstName + data.lastName;
-      // });
-
-      // console.log(temp);
-      // await db
-      //   .collection('Filters')
-      //   .doc('ElderIdToDisplayName')
-      //   .set({
-      //     filter: temp,
-      //   });
 
       const groupsRef = await db.collection('Groups');
       let query = groupsRef;
@@ -83,7 +58,8 @@ export const readGroups = (filters, pageLimit) => {
       }
 
       if (filters.filteredVolunteerId !== undefined) {
-        query = query.where('volunteers', 'array-contains', filters.filteredVolunteerId);
+        console.error(filters.filteredVolunteerId)
+        query = query.where('volunteers', 'array-contains', Number(filters.filteredVolunteerId));
       }
 
       if (filters.filteredElderId !== undefined) {
@@ -102,20 +78,15 @@ export const readGroups = (filters, pageLimit) => {
         query = query.where('organizations', 'array-contains', Number(filters.filteredOrganizationId));
       }
 
-      if (filters.filteredVolunteerId !== undefined) {
-        query = query.where('volunteers', 'array-contains', Number(filters.filteredVolunteerId));
-      }
-
-      if (filters.filteredElderId !== undefined) {
-        query = query.where('groupManager', '==', filters.filteredGroupManagerId);
-      }
-
       query = query.limit(pageLimit); // TODO: set limit using pagination
 
       const snapshot = await query.get();
       snapshot.forEach(doc => {
         groups.push(doc.data());
       });
+
+      console.error(pageLimit)
+      console.error(groups)
 
       const promiss = [];
 
@@ -178,7 +149,6 @@ export const readGroups = (filters, pageLimit) => {
       });
 
       await Promise.all(promiss);
-
       await dispatch(readGroupActions.success(groups));
     } catch (err) {
       await dispatch(readGroupActions.error(err));

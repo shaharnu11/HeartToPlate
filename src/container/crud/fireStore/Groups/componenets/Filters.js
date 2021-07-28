@@ -30,22 +30,11 @@ function Filters() {
       organizations: state.organizationsReducer.organizations,
     };
   });
-
+  console.log(groups)
   const pageCount = 3;
   useEffect(() => {
     dispatch(readFilters());
   }, []);
-
-  // useEffect(() => {
-  //   if (filters === undefined) {
-  //     setGroupIdToDisplayNameMap(filters.groupIdToDisplayName);
-  //     setGroupManagerIdToDisplayNameMap(filters.GroupManagerIdToDisplayName);
-  //     setOrganizationIdToDisplayNameMap(filters.OrganizationIdToDisplayName);
-  //     setVolunteerIdToDisplayNameMap(filters.VolunteerIdToDisplayName);
-  //     setElderIdToDisplayNameMap(filters.ElderIdToDisplayName);
-  //     setIsLoadingFilters(false);
-  //   }
-  // }, [filters]);
 
   useEffect(() => {
     dispatch(
@@ -167,10 +156,10 @@ function Filters() {
               optionFilterProp="children"
               filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              {Object.keys(filters?.volunteerIdToDisplayNameMap ?? []).map(volunteerId => {
+              {Object.keys(filters?.VolunteerIdToDisplayName ?? []).map(volunteerId => {
                 return (
                   <Select.Option key={volunteerId} value={volunteerId}>
-                    {filters.volunteerIdToDisplayNameMap[volunteerId]}
+                    {filters.VolunteerIdToDisplayName[volunteerId]}
                   </Select.Option>
                 );
               })}

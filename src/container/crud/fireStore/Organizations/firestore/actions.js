@@ -15,8 +15,6 @@ const actions = {
         type: actions.READ_ORGANIZATIONS_SUCCESS,
         data,
       };
-      console.log("this is action.data in organizationsReducer - should be organizations: " + JSON.stringify(action.data))
-      console.log("this is action in organizationsReducer - should be organizations: " + JSON.stringify(action))
       return action;
     },
 

@@ -9,7 +9,7 @@ const VolunteerSearchList = () => {
       <VolunteerSearchItem status="pending" />
       <VolunteerSearchItem status="pending" />
       <VolunteerSearchItem status="pending" />
-      <VolunteerSearchItem status="pending" />
+      <VolunteerSearchItem status="pending" vol={vol} />
       <VolunteerSearchItem status="pending" />
       <VolunteerSearchItem status="pending" />
       <VolunteerSearchItem status="pending" />

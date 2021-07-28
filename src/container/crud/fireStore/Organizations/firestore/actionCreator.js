@@ -24,9 +24,7 @@ export const readOrganizations = () => {
       snapshot.forEach(doc => {
         organizations.push(doc.data());
       });
-      console.log("we are dispaching organizations");
       await dispatch(readOrganizationActions.success(organizations));
-      console.log("this is organizations after dispatch" + organizations);
       
     } catch (err) {
       await dispatch(readOrganizationActions.error(err));

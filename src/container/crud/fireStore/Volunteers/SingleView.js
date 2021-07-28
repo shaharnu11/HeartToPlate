@@ -14,7 +14,6 @@ import { helpers } from 'chart.js';
 import { readOrganizations } from '../Organizations/firestore/actionCreator';
 import FormItem from 'antd/lib/form/FormItem';
 const SingleView = ({ IsActionAdd, volunteer }) => {
-  console.log('alon is here');
   const dispatch = useDispatch();
   const collection = 'Volunteers';
 
@@ -106,7 +105,6 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
   };
 
   const handleSignedFormPreview = async file => {
-    // console.log("this is the file arrgumaent going into the handel signed form preview function:" + JSON.stringify(file));
     function getBase64() {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
