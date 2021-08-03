@@ -30,7 +30,6 @@ function Filters() {
       organizations: state.organizationsReducer.organizations,
     };
   });
-  console.log(groups)
   const pageCount = 3;
   useEffect(() => {
     dispatch(readFilters());

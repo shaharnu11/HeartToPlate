@@ -24,7 +24,6 @@ export const readFilters = () => {
         const data = doc.data();
         filters[doc.id] = data.filter;
       });
-
       await dispatch(readFiltersActions.success(filters));
     } catch (err) {
       await dispatch(readFiltersActions.error(err));

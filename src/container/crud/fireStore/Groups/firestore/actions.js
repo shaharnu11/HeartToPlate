@@ -15,7 +15,6 @@ const actions = {
         type: actions.READ_GROUPS_SUCCESS,
         data,
       };
-
       return action;
     },
 

@@ -3,6 +3,7 @@
 // import { filter } from 'all-the-cities';
 import { notification } from 'antd';
 import actions from './actions';
+import { getFirestore } from 'redux-firestore';
 
 const addNotificationSuccess = () => {
   notification.success({
@@ -30,7 +31,7 @@ const deleteNotificationError = err => {
 
 const updateNotificationSuccess = () => {
   notification.success({
-    message: 'Your Record hasbeen updated',
+    message: 'Your Record has been updated',
   });
 };
 
@@ -42,8 +43,40 @@ const updateNotificationError = err => {
 
 const { readGroupActions } = actions;
 
+// export const readVolunteers = async (filters, pageLimit) => {
+//     const db = getFirestore();
+//     try {
+//       const volunteers = [];
+
+//       const volunteersRef = await db.collection('Volunteers');
+//       let query = volunteersRef;
+
+//       if (filters.filteredCity !== undefined) {
+//         query = query.where('city', '==', filters.filteredCity);
+//       }
+
+//       if (filters.filteredVolunteerId !== undefined) {
+//         console.error(filters.filteredVolunteerId)
+//         query = query.where('id', '==', Number(filters.filteredVolunteerId));
+//       }
+//       // if (filters.filteredVolunteerId !== undefined) {
+//       //   console.error(filters.filteredVolunteerId)
+//       //   query = query.where('volunteers', 'array-contains', Number(filters.filteredVolunteerId));
+//       // }
+
+//       query = query.limit(pageLimit); // TODO: set limit using pagination
+
+//       const snapshot = await query.get();
+//       snapshot.forEach(doc => {
+//         volunteers.push(doc.data());
+//       });
+//       return volunteers;
+//     } catch (err) {
+//       await updateNotificationError(err);
+//     }
+// };
+
 export const readGroups = (filters, pageLimit) => {
-  console.error(filters);
   return async (dispatch, getState, { getFirestore }) => {
     const db = getFirestore();
     try {
@@ -58,7 +91,7 @@ export const readGroups = (filters, pageLimit) => {
       }
 
       if (filters.filteredVolunteerId !== undefined) {
-        console.error(filters.filteredVolunteerId)
+        console.error(filters.filteredVolunteerId);
         query = query.where('volunteers', 'array-contains', Number(filters.filteredVolunteerId));
       }
 
@@ -84,9 +117,6 @@ export const readGroups = (filters, pageLimit) => {
       snapshot.forEach(doc => {
         groups.push(doc.data());
       });
-
-      console.error(pageLimit)
-      console.error(groups)
 
       const promiss = [];
 
@@ -149,6 +179,7 @@ export const readGroups = (filters, pageLimit) => {
       });
 
       await Promise.all(promiss);
+
       await dispatch(readGroupActions.success(groups));
     } catch (err) {
       await dispatch(readGroupActions.error(err));

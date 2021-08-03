@@ -12,8 +12,9 @@ const Group = ({ group }) => {
   if (group.status == undefined) {
     group.status = 'active';
   }
-  group.maxElders = 2;
-  group.maxVolunteers = 4;
+  
+  const maxElders = 2;
+  const maxVolunteers = 4;
   //   console.log(group);
   return (
     <div className="group-container">
@@ -47,14 +48,14 @@ const Group = ({ group }) => {
           {group.elders.map(({ id, firstName, lastName, city }) => (
             <Elder key={id} firstName={firstName} lastName={lastName} city={city} />
             ))}
-            {new Array(group.maxElders - group.elders.length).fill(true).map((_, i) => (
+            {new Array(maxElders - group.elders.length).fill(true).map((_, i) => (
             <ChooseElderButton key={i} />
             ))}
         </div>
         {group.volunteers.map(({ id, firstName, lastName, city }) => (
           <Volunteer key={id} firstName={firstName} lastName={lastName} city={city} status="active" />
           ))}
-        {new Array(group.maxVolunteers - group.volunteers.length).fill(true).map((_, i) => (
+        {new Array(maxVolunteers - group.volunteers.length).fill(true).map((_, i) => (
           <ChooseVolunteerButton key={i} />
           ))}
       </div>
