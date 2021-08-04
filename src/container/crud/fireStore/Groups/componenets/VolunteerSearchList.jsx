@@ -8,7 +8,7 @@ const VolunteerSearchList = ({ volunteers }) => {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 300);
+    }, 500);
   }, []);
 
   const volunteersToDisplay = volunteers?.map(volunteer => {
