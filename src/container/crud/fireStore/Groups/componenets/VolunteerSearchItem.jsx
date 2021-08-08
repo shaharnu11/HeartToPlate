@@ -2,10 +2,11 @@ import React from 'react';
 import StatusIcon from './StatusIcon';
 import './VolunteerSearchItem.css';
 
-const VolunteerSearchItem = ({ status }) => {
+const VolunteerSearchItem = ({ volunteer, status }) => {
+
     return (
         <div className='volunteer-search-item'>
-            <div>
+            <div> 
                 <div className='volunteer-search-item-status'>
                     <StatusIcon type='volunteer' status={status} />  
                     <span style={{marginLeft: '5px'}}>{status} since 01/01/21</span>
@@ -14,12 +15,12 @@ const VolunteerSearchItem = ({ status }) => {
                     <div className='image-container' style={{height: '50px', width:'50px', borderRadius: '50%', backgroundColor: '#898989'}}/>     
                     <div className='volunteer-search-item-info'>
                         <div>
-                            <span>City -</span>
-                            <span>Organization</span>
+                            <span>City - {volunteer.city}</span>
+                            <span>Organization - {volunteer.Organizations}</span>
                         </div>
                         <div>
-                            <span>First Name</span>
-                            <span>Last Name</span>
+                            <span>First Name: {volunteer.firstName}</span>
+                            <span>Last Name: {volunteer.lastName}</span>
                         </div>
                     </div>
                 </div> 

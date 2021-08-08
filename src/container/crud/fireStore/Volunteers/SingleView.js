@@ -1,19 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import {
-  Row,
-  Col,
-  Form,
-  Input,
-  Select,
-  InputNumber,
-  Switch,
-  Upload,
-  Modal,
-  Radio,
-  DatePicker,
-} from 'antd';
+import { Row, Col, Form, Input, Select, InputNumber, Switch, Upload, Modal, Radio, DatePicker } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -23,15 +11,17 @@ import { BasicFormWrapper } from '../../../styled';
 import { fbFileUploder } from '../../../../redux/firestore/actionCreator';
 import { Handler } from 'leaflet';
 import { helpers } from 'chart.js';
-
+import { readOrganizations } from '../Organizations/firestore/actionCreator';
+import FormItem from 'antd/lib/form/FormItem';
 const SingleView = ({ IsActionAdd, volunteer }) => {
   const dispatch = useDispatch();
   const collection = 'Volunteers';
 
-  const { fileUplode, IsFileUploadig } = useSelector(state => {
+  const { fileUplode, IsFileUploadig, organizations } = useSelector(state => {
     return {
       fileUplode: state.crud.file,
       IsFileUploadig: state.crud.fileLoading,
+      organizations: state.organizationsReducer.organizations,
     };
   });
 
@@ -43,6 +33,12 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
     visible: false,
     title: null,
   });
+
+  useEffect(() => {
+    if (organizations == undefined) {
+      dispatch(readOrganizations());
+    }
+  }, []);
 
   useEffect(() => {
     if (volunteer !== undefined) {
@@ -69,7 +65,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
     }
   }, [dispatch, fileUplode]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (volunteer !== undefined) {
       form.setFieldsValue({
         firstName: volunteer.firstName,
@@ -79,14 +75,11 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
         city: volunteer.city,
         address: volunteer.address,
         addressNumber: volunteer.addressNumber,
-        gender:volunteer.gender,
-        idNumber:volunteer.idNumber,
-        otherLanguages:volunteer.otherLanguages,
-        additionalInfo:volunteer.additionalInfo,
-        birthday:
-          volunteer.birthday == null
-            ? undefined
-            : moment(new Date(volunteer.birthday.seconds * 1000)),
+        gender: volunteer.gender,
+        idNumber: volunteer.idNumber,
+        otherLanguages: volunteer.otherLanguages,
+        additionalInfo: volunteer.additionalInfo,
+        birthday: volunteer.birthday == null ? undefined : moment(new Date(volunteer.birthday.seconds * 1000)),
         language: volunteer.language,
         carOwner: volunteer.carOwner,
         kosherFood: volunteer.kosherFood,
@@ -104,15 +97,14 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
   }, [volunteer]);
 
   const handleSignedFormChange = ({ fileList }) => {
-    console.log("file list:" + JSON.stringify(fileList))
+    console.log('file list:' + JSON.stringify(fileList));
     const newFileList = [fileList[fileList.length - 1]];
-    console.log("newFileLiST:" + JSON.stringify(newFileList));
+    console.log('newFileLiST:' + JSON.stringify(newFileList));
     setSignedFormFiles(newFileList);
     dispatch(fbFileUploder(newFileList[0].originFileObj, 'SignedForms'));
   };
 
   const handleSignedFormPreview = async file => {
-    // console.log("this is the file arrgumaent going into the handel signed form preview function:" + JSON.stringify(file));
     function getBase64() {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -159,17 +151,14 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                   {
                     ...values,
                     signedForm:
-                      values.signedForm === undefined ||
-                      values.signedForm === null
+                      values.signedForm === undefined || values.signedForm === null
                         ? null
                         : {
                             name: values.signedForm.name,
                             url: values.signedForm.url,
                           },
                     birthday:
-                      values.birthday === undefined || values.birthday === null
-                        ? null
-                        : values.birthday.toDate(),
+                      values.birthday === undefined || values.birthday === null ? null : values.birthday.toDate(),
                   },
                 );
               }}
@@ -177,7 +166,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
               <Form.Item
                 name="firstName"
                 label="First Name"
-                rules={[{ required: true }, {max: 15, message: 'Name can not be longer than 15 characters'}]}
+                rules={[{ required: true }, { max: 15, message: 'Name can not be longer than 15 characters' }]}
                 initialValue={null}
                 style={{
                   direction: 'rtl',
@@ -198,21 +187,11 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                 <Input placeholder="Input Name" />
               </Form.Item>
 
-              <Form.Item
-                name="birthday"
-                initialValue={null}
-                rules={[{ required: true }]}
-                label="Date of birth"
-              >
+              <Form.Item name="birthday" initialValue={null} rules={[{ required: true }]} label="Date of birth">
                 <DatePicker format="DD/MM/YYYY" />
               </Form.Item>
 
-              <Form.Item
-                name="phone"
-                label="Phone"
-                rules={[{ required: true, max: 13}]}
-                initialValue={null}
-              >
+              <Form.Item name="phone" label="Phone" rules={[{ required: true, max: 13 }]} initialValue={null}>
                 <Input placeholder="Phone" />
               </Form.Item>
 
@@ -283,15 +262,15 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                 </Form.Item>
               </Form.Item>
 
-{/* **should put the function inside form item */}
+              {/* **should put the function inside form item */}
               {Helper.getLanguagesCheckboxs(false)}
               <Form.Item
                 // label="Other languages"
                 name="otherLanguages"
-                rules={[{ required: false }]}>
-                  <Input placeholder="שפות נוספות ודגשים"/>
+                rules={[{ required: false }]}
+              >
+                <Input placeholder="שפות נוספות ודגשים" />
               </Form.Item>
-
 
               <Form.Item
                 name="carOwner"
@@ -337,7 +316,7 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                 name="gender"
                 label="Gender"
                 initialValue={null}
-                rules={[{ required: true, message:'Please select gender'}]}
+                rules={[{ required: true, message: 'Please select gender' }]}
               >
                 <Radio.Group>
                   <Radio value="male">Male</Radio>
@@ -345,84 +324,68 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
                   <Radio value="other">Other</Radio>
                 </Radio.Group>
               </Form.Item>
-
+       
               <Form.Item
-                  name="idNumber"
-                  label="ID number"
-                  rules={[
-                    { required: true, message: 'Please input your ID number' }, 
-                    () => ({
-                      validator(_, value) {
-                        if(Helper.isValidIsraeliID(value))
-                        {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('The ID number is incorrect'));
-                      },
-                    }),
-                  ]}
-                  initialValue={null}
+                name="idNumber"
+                label="ID number"
+                rules={[
+                  { required: true, message: 'Please input your ID number' },
+                  () => ({
+                    validator(_, value) {
+                      return Helper.isValidIsraeliID(value)
+                        ? Promise.resolve()
+                        : Promise.reject(new Error('The ID number is incorrect'));
+                    },
+                  }),
+                ]}
+                style={{
+                  direction: 'rtl',
+                }}>
+                <InputNumber
+                  min={1}
+                  placeholder="id number"
                   style={{
                     direction: 'rtl',
                   }}
-                >
-                  <InputNumber
-                    min={1}
-                    placeholder="id number"
-                    style={{
-                      direction: 'rtl',
-                    }}
-                  />
-                </Form.Item>
+                />
+              </Form.Item>
 
-                <Form.Item
-                    name="additionalInfo"
-                    label="Additional Information"
-                    rules={[{ required: false}]}
-                    initialValue={null}
-                    style={{
-                      direction: 'rtl',
-                    }}
-                    >
-                    <Input.TextArea
-                      rows={4}
-                      placeholder="איך אני מבשל, דברים שחשובים לי  וכו'"
-                      style={{
-                        direction: 'rtl',
-                      }}
+              <Form.Item
+                name="additionalInfo"
+                label="Additional Information"
+                rules={[{ required: false }]}
+                initialValue={null}
+                style={{
+                  direction: 'rtl',
+                }}
+              >
+                <Input.TextArea
+                  rows={4}
+                  placeholder="איך אני מבשל, דברים שחשובים לי  וכו'"
+                  style={{
+                    direction: 'rtl',
+                  }}
+                />
+              </Form.Item>
 
-                    />
-                </Form.Item>
-
-                <Form.Item
-                    name="organizations" 
-                    label="Did you Join through an organization?" 
-                    rules={[
-                      { required: false }
-                    ]}
-                    >
-                  <Select
-                    placeholder="Tell us which one"
-                    allowClear
-                    >
-                      {/* need to change the options to match the needs */}
-                    <Option value="male">male</Option>
-                    <Option value="female">female</Option>
-                    <Option value="other">other</Option>
-                  </Select>
-                </Form.Item>
-
-
+              <Form.Item
+                name="organizations"
+                label="Did you Join through an organization?"
+                rules={[{ required: false }]}
+              >
+                <Select>
+                  {organizations?.map(organization => (
+                    <Option key={organization.id} value={organization.name}>
+                      {organization.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
 
               {Helper.createHistoryComments()}
 
               <Form.Item label="Signed Form">
-                <Form.Item
-                  name="signedForm"
-                  initialValue={null}
-                  rules={[{ required: false }]}
-                  noStyle
-                >
+                <Form.Item name="signedForm" initialValue={null} rules={[{ required: false }]} noStyle>
                   <Upload
                     name="files"
                     beforeUpload={() => false}
@@ -465,25 +428,13 @@ const SingleView = ({ IsActionAdd, volunteer }) => {
 
               {/* None visable items */}
 
-              <Form.Item
-                name="groups"
-                hidden={volunteer === undefined}
-                initialValue={[]}
-              >
+              <Form.Item name="groups" hidden={volunteer === undefined} initialValue={[]}>
                 <Input />
               </Form.Item>
 
               <div className="record-form-actions text-right">
-                <Button
-                  htmlType={IsActionAdd ? 'submit' : 'save'}
-                  type="primary"
-                  disabled={IsFileUploadig}
-                >
-                  {IsFileUploadig
-                    ? 'Loading File'
-                    : IsActionAdd
-                    ? 'Submit'
-                    : 'Update'}
+                <Button htmlType={IsActionAdd ? 'submit' : 'save'} type="primary" disabled={IsFileUploadig}>
+                  {IsFileUploadig ? 'Loading File' : IsActionAdd ? 'Submit' : 'Update'}
                 </Button>
               </div>
             </Form>

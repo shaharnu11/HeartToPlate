@@ -7,9 +7,10 @@ import Styled from 'styled-components';
 import { PageHeader } from '../../../../../components/page-headers/page-headers';
 import { ProjectHeader } from '../../../../project/style';
 import { Main } from '../../../../styled';
+import { readFilters } from '../../Filters/firestore/actionCreator';
 import Helper from '../../Helper';
 import { groupStatus } from '../Data/Group';
-import { readGroupFilters, readGroups } from '../firestore/actionCreator';
+import { readGroups } from '../firestore/actionCreator';
 import Group from './Group';
 
 function Filters() {
@@ -21,34 +22,18 @@ function Filters() {
   const [filteredOrganizationId, setFilteredOrganizationId] = useState();
   const [filteredVolunteerId, setFilteredVolunteerId] = useState();
 
-  const [volunteerIdToDisplayNameMap, setVolunteerIdToDisplayNameMap] = useState({});
-  const [elderIdToDisplayNameMap, setElderIdToDisplayNameMap] = useState({});
-  const [groupIdToDisplayNameMap, setGroupIdToDisplayNameMap] = useState({});
-  const [groupManagerIdToDisplayNameMap, setGroupManagerIdToDisplayNameMap] = useState({});
-  const [organizationIdToDisplayNameMap, setOrganizationIdToDisplayNameMap] = useState({});
-  const [isLoadingFilters, setIsLoadingFilters] = useState(true);
   const [pageNumber, SetPageNumber] = useState(1);
-  const { groupFilters, groups } = useSelector(state => {
+  const { filters, groups } = useSelector(state => {
     return {
-      groupFilters: state.groupsReducer.groupFilters,
+      filters: state.filtersReducer.filters,
       groups: state.groupsReducer.groups,
+      organizations: state.organizationsReducer.organizations,
     };
   });
   const pageCount = 3;
   useEffect(() => {
-    dispatch(readGroupFilters());
+    dispatch(readFilters());
   }, []);
-
-  useEffect(() => {
-    if (groupFilters !== undefined) {
-      setGroupIdToDisplayNameMap(groupFilters.groupIdToDisplayName);
-      setGroupManagerIdToDisplayNameMap(groupFilters.GroupManagerIdToDisplayName);
-      setOrganizationIdToDisplayNameMap(groupFilters.OrganizationIdToDisplayName);
-      setVolunteerIdToDisplayNameMap(groupFilters.VolunteerIdToDisplayName);
-      setElderIdToDisplayNameMap(groupFilters.ElderIdToDisplayName);
-      setIsLoadingFilters(false);
-    }
-  }, [groupFilters]);
 
   useEffect(() => {
     dispatch(
@@ -120,18 +105,17 @@ function Filters() {
             >
               {Helper.getCityOptions()}
             </SelectStyle>
-
             <SelectStyle
               placeholder="Organization"
-              loading={isLoadingFilters}
+              loading={filters === undefined}
               allowClear
               onClear={_ => setFilteredOrganizationId()}
               onSelect={value => setFilteredOrganizationId(value)}
             >
-              {Object.keys(organizationIdToDisplayNameMap).map(organizationId => {
+              {Object.keys(filters?.organizationIdToDisplayNameMap ?? []).map(organizationId => {
                 return (
                   <Select.Option key={organizationId} value={organizationId}>
-                    {organizationIdToDisplayNameMap[organizationId]}
+                    {filters.organizationIdToDisplayNameMap[organizationId]}
                   </Select.Option>
                 );
               })}
@@ -140,7 +124,7 @@ function Filters() {
             <SelectStyle
               allowClear
               placeholder="Group Status"
-              loading={isLoadingFilters}
+              loading={filters === undefined}
               onClear={_ => setFilteredGroupStatus()}
               onSelect={value => setFilteredGroupStatus(value)}
             >
@@ -159,19 +143,22 @@ function Filters() {
           <Col style={{ width: '25%' }}>
             <SelectSearchStyle
               allowClear
-              onClear={_ => setFilteredVolunteerId()}
-              onSelect={value => setFilteredVolunteerId(value)}
+              onClear={_ => resetFilters()}
+              onSelect={value => {
+                resetFilters();
+                setFilteredVolunteerId(value);
+              }}
               value={filteredVolunteerId}
               showSearch
-              loading={isLoadingFilters}
+              loading={filters === undefined}
               placeholder="Select Volunteer"
               optionFilterProp="children"
               filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              {Object.keys(volunteerIdToDisplayNameMap).map(volunteerId => {
+              {Object.keys(filters?.VolunteerIdToDisplayName ?? []).map(volunteerId => {
                 return (
                   <Select.Option key={volunteerId} value={volunteerId}>
-                    {volunteerIdToDisplayNameMap[volunteerId]}
+                    {filters.VolunteerIdToDisplayName[volunteerId]}
                   </Select.Option>
                 );
               })}
@@ -180,19 +167,22 @@ function Filters() {
           <Col style={{ width: '25%' }}>
             <SelectSearchStyle
               allowClear
-              onClear={_ => setFilteredElderId()}
-              onSelect={value => setFilteredElderId(value)}
+              onClear={_ => resetFilters()}
+              onSelect={value => {
+                resetFilters();
+                setFilteredElderId(value);
+              }}
               value={filteredElderId}
               showSearch
-              loading={isLoadingFilters}
+              loading={filters === undefined}
               placeholder="Select Elder"
               optionFilterProp="children"
               filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              {Object.keys(elderIdToDisplayNameMap).map(elderId => {
+              {Object.keys(filters?.elderIdToDisplayNameMap ?? []).map(elderId => {
                 return (
                   <Select.Option key={elderId} value={elderId}>
-                    {elderIdToDisplayNameMap[elderId]}
+                    {filters.elderIdToDisplayNameMap[elderId]}
                   </Select.Option>
                 );
               })}
@@ -201,19 +191,22 @@ function Filters() {
           <Col style={{ width: '25%' }}>
             <SelectSearchStyle
               allowClear
-              onClear={_ => setFilteredGroupManagerId()}
-              onSelect={value => setFilteredGroupManagerId(value)}
+              onClear={_ => resetFilters()}
+              onSelect={value => {
+                resetFilters();
+                setFilteredGroupManagerId(value);
+              }}
               value={filteredGroupManagerId}
-              loading={isLoadingFilters}
+              loading={filters === undefined}
               showSearch
               placeholder="Select Group Manager"
               optionFilterProp="children"
               filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             >
-              {Object.keys(groupManagerIdToDisplayNameMap).map(groupManagerId => {
+              {Object.keys(filters?.groupManagerIdToDisplayNameMap ?? []).map(groupManagerId => {
                 return (
                   <Select.Option key={groupManagerId} value={groupManagerId}>
-                    {groupManagerIdToDisplayNameMap[groupManagerId]}
+                    {filters.groupManagerIdToDisplayNameMap[groupManagerId]}
                   </Select.Option>
                 );
               })}
