@@ -11,7 +11,7 @@ import { Main } from '../../../styled';
 
 const AddNew = () => {
   const collection = 'Elders';
-
+  console.log('render add')
   return (
     <>
       <PageHeader

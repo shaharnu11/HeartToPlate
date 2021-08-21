@@ -12,7 +12,7 @@ import citiesAndStreets from './israeli_street_and_cities_names.json';
 
 
 const Helper = {
-  languages: ['hebrew', 'english', 'russian', 'arabic', 'amharic', 'franch'],
+  languages: ['Hebrew', 'English', 'Russian', 'Arabic', 'Amharic', 'French', "Spanish"],
 
   isValidIsraeliID: (id) => {
     try {
@@ -180,7 +180,7 @@ const Helper = {
         )),
   getLanguagesCheckboxs: required => {
     return (
-      <Form.Item name="language" rules={[{ required }]} label="Language" initialValue={[]}>
+      <Form.Item name="language" rules={[{ required: true }]} label="Language" initialValue={[]}>
         <Checkbox.Group>
           <Row>
             {Helper.languages.map((_, i) => (

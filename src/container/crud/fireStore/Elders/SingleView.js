@@ -1,5 +1,18 @@
 /* eslint-disable react/prop-types */
-import { Col, DatePicker, Form, Input, InputNumber, notification, Row, Select, Radio, Upload,Modal, Switch } from 'antd';
+import {
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  notification,
+  Row,
+  Select,
+  Radio,
+  Upload,
+  Modal,
+  Switch,
+} from 'antd';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -37,20 +50,20 @@ const SingleView = ({ IsActionAdd, elder }) => {
       form.setFieldsValue({
         firstName: elder.firstName,
         lastName: elder.lastName,
+        nameRelatedInfo: elder.nameRelatedInfo,
         gender: elder.gender,
         phone: elder.phone,
-        homePhone: elder.homePhone,
+        additionalPhone: elder.additionalPhone,
         emergencyContactName: elder.emergencyContactName,
         emergencyContactPhone: elder.emergencyContactPhone,
-        elderTherapist: elder.elderTherapist,
-        therapistPhone: elder.therapistPhone,
+        caregiverNameAndRole: elder.caregiverNameAndRole,
+        caregiverPhoneNumber: elder.caregiverPhoneNumber,
         city: elder.city,
-        address: elder.address,
-        addressNumber: elder.addressNumber,
-        aptFloor: elder.aptFloor,
+        streetName: elder.streetName,
+        streetNumber: elder.streetNumber,
+        additionalAddresInfo: elder.additionalAddresInfo,
         birthday: elder.birthday == null ? undefined : moment(new Date(elder.birthday.seconds * 1000)),
         language: elder.language,
-        otherLanguages: elder.otherLanguages,
         kosherFood: elder.kosherFood,
         foodEmphasis: elder.foodEmphasis,
         medicalEmphases: elder.medicalEmphases,
@@ -58,13 +71,15 @@ const SingleView = ({ IsActionAdd, elder }) => {
         source: elder.source,
         contact: elder.contact,
         personalBackground: elder.personalBackground,
-        comments: elder.comments.map((_, i) => {
-          return { ..._, date: new Date(_.date.seconds * 1000), key: i };
-        }),
+        // comments: elder.comments.map((_, i) => {
+        //   return { ..._, date: new Date(_.date.seconds * 1000), key: i };
+        // }),
         groups: elder.groups,
       });
     }
   }, [elder]);
+
+  const getErrorMessage = fieldName => `${fieldName} is required.`;
 
   return (
     <>
@@ -100,16 +115,33 @@ const SingleView = ({ IsActionAdd, elder }) => {
                 );
               }}
             >
-              <h2 style={{ direction: 'rtl' }}>Personal Information</h2>
-              <Form.Item name="firstName" label="First Name" style={{ direction: 'rtl' }} rules={[{ required: true }]}>
-                <Input placeholder="Input Name" />
+              <h2>Personal Information</h2>
+              <Form.Item
+                name="firstName"
+                label="First Name"
+                rules={[{ required: true, message: getErrorMessage('First name') }]}
+              >
+                <Input placeholder="ישראל" style={{ direction: 'rtl' }} />
               </Form.Item>
 
-              <Form.Item name="lastName" style={{ direction: 'rtl' }} label="Last Name" rules={[{ required: true }]}>
-                <Input placeholder="Input Name" />
+              <Form.Item
+                name="lastName"
+                label="Last Name"
+                rules={[{ required: true, message: getErrorMessage('Last name') }]}
+              >
+                <Input placeholder="ישראלי" style={{ direction: 'rtl' }} />
               </Form.Item>
-              
-              <Form.Item name="gender" label="Gender" initialValue={null} rules={[{ required: true, message:'Please select gender'}]}>
+
+              <Form.Item name="nameRelatedInfo" label="Name Related Information">
+                <Input placeholder={`שרוליק`} style={{ direction: 'rtl' }} />
+              </Form.Item>
+
+              <Form.Item
+                name="gender"
+                label="Gender"
+                initialValue={null}
+                rules={[{ required: true, message: getErrorMessage('Gender') }]}
+              >
                 <Radio.Group>
                   <Radio value="male">Male</Radio>
                   <Radio value="female">Female</Radio>
@@ -117,97 +149,118 @@ const SingleView = ({ IsActionAdd, elder }) => {
                 </Radio.Group>
               </Form.Item>
 
-              <Form.Item name="city" rules={[{ required: true }]} label="City" style={{ direction: 'rtl' }}>
+              <Form.Item name="city" rules={[{ required: true, message: getErrorMessage('City') }]} label="City">
                 <Select
                   allowClear
                   style={{ width: '100%' }}
                   onSelect={_ => Helper.handleCitySelect(_, setStreets)}
                   showSearch
                   autoComplete="registration-select"
+                  style={{ direction: 'rtl' }}
                 >
                   {Helper.getCityOptions()}
                 </Select>
               </Form.Item>
-              <Form.Item label="Address" rules={[{ required: true }]}>
-                <Form.Item name="address" rules={[{ required: true }]} style={{ direction: 'rtl' }}>
-                  <Select allowClear showSearch placeholder="Street">
-                    {Helper.getStreetOptions(streets)}
-                  </Select>
-                </Form.Item>
+              <Form.Item
+                name="streetName"
+                label="Street Name"
+                rules={[{ required: true, message: getErrorMessage('Street name') }]}
+              >
+                <Select allowClear showSearch placeholder="שם רחוב" style={{ direction: 'rtl' }}>
+                  {Helper.getStreetOptions(streets)}
+                </Select>
+              </Form.Item>
 
-                <Form.Item name="addressNumber" label="Street Number" rules={[{ required: true }]} style={{ direction: 'rtl' }}>
-                  <InputNumber min={1} placeholder="Number" />
-                </Form.Item>
-                <Form.Item name="aptFloor" label="Apartment Floor and Number" rules={[{ required: false }]} style={{ direction: 'rtl' }}>
-                  <Input placeholder="Apartment and Floor" style={{ direction: 'rtl' }} />
-                </Form.Item>
+              <Form.Item
+                name="streetNumber"
+                label="Street Number"
+                rules={[{ required: true, message: getErrorMessage('Street number') }]}
+              >
+                <InputNumber min={1} placeholder="מספר בית" style={{ direction: 'rtl' }} />
+              </Form.Item>
+
+              <Form.Item name="additionalAddresInfo" label="Additional Address Information">
+                <Input placeholder="מס' דירה\קומה" style={{ direction: 'rtl' }} />
               </Form.Item>
 
               {Helper.getLanguagesCheckboxs(true)}
-              <Form.Item name="otherLanguages" rules={[{ required: false }]}>
-                  <Input placeholder="שפות נוספות ודגשים"/>
+
+              <Form.Item name="birthday" label="Date of birth">
+                <DatePicker placeholder="01/01/1900" format="DD/MM/YYYY" />
               </Form.Item>
 
-              <Form.Item name="birthday" rules={[{ required: false }]} label="Date of birth">
-                <DatePicker format="DD/MM/YYYY" />
+              <Form.Item name="source" label="Source" rules={[{ required: true, message: getErrorMessage('Gender') }]}>
+                <Input placeholder="מקור הקשיש" style={{ direction: 'rtl' }} />
               </Form.Item>
-
-              <Form.Item name="source" label="Source" style={{ direction: 'rtl' }} rules={[{ required: true }]}>
-                <Input placeholder="Source" />
-              </Form.Item>
-
-
 
               <h2>Nutrition and health</h2>
               <Form.Item name="kosherFood" label="Kosher Food" initialValue={false} valuePropName="checked">
                 <Switch style={{ height: '18px' }} />
               </Form.Item>
 
-              <Form.Item name="foodEmphasis" label="Emphasis on food" rules={[{ required: false}]} initialValue={null} style={{ direction: 'rtl',}}>
-                    <Input.TextArea rows={3} placeholder="Allergies, eating routine, etc." style={{direction: 'rtl',}}/>
-              </Form.Item>
-              
-              <Form.Item name="medicalEmphases" label="Medical emphases" rules={[{ required: false}]} initialValue={null} style={{ direction: 'rtl',}}>
-                    <Input.TextArea rows={3} placeholder="Things we need to know about the elder's medical condition" style={{direction: 'rtl',}}/>
+              <Form.Item name="foodEmphasis" label="Emphasis on food" initialValue={null}>
+                <Input.TextArea
+                  rows={3}
+                  placeholder="אלרגיות, דגשים לכשרות, יכולת אכילה וכו'"
+                  style={{ direction: 'rtl' }}
+                />
               </Form.Item>
 
-              <Form.Item name="deliveryStatus" label="Delivery Status" initialValue={false} valuePropName="checked">
-                <Switch style={{ height: '18px' }} />
+              <Form.Item name="medicalEmphases" label="Medical emphases" initialValue={null}>
+                <Input.TextArea
+                  rows={3}
+                  placeholder="יכולת תקשורתית, דגשים רפואיים נוספים"
+                  style={{ direction: 'rtl' }}
+                />
               </Form.Item>
+
+              {/* <Form.Item name="deliveryStatus" label="Delivery Status" initialValue={false} valuePropName="checked">
+                <Switch style={{ height: '18px' }} />
+              </Form.Item> */}
 
               <h2>Contact Information</h2>
-              <Form.Item name="phone" label="Private Phone" rules={[{ required: true }]}>
-                <Input placeholder="Phone" />
-              </Form.Item>
-              <Form.Item name="homePhone" label="Home Phone" rules={[{ required: false }]}>
-                <Input placeholder="Phone" />
-              </Form.Item>
-
-              <Form.Item name="emergencyContactName" label="Emergency contact full name and relations" style={{ direction: 'rtl' }} rules={[{ required: false }]}>
-                <Input placeholder="Input Full Name  and relations to the elder" />
-              </Form.Item>
-              <Form.Item name="emergencyContactPhone" label="Emergency Contact Phone Number" rules={[{ required: false }]}>
-                <Input placeholder="Phone" />
+              <Form.Item
+                name="phone"
+                label="Private Phone"
+                rules={[{ required: true, message: getErrorMessage('Phone number') }]}
+              >
+                <Input placeholder="מס' טלפון" style={{ direction: 'rtl' }} />
               </Form.Item>
 
-              <Form.Item name="elderTherapist" label="Name and role of therapist" style={{ direction: 'rtl' }} rules={[{ required: false }]}>
-                <Input placeholder="Input Full Name and role - social worker/psychologist ect." />
-              </Form.Item>
-              <Form.Item name="therapistPhone" label="Therapist Phone Number" rules={[{ required: false }]}>
-                <Input placeholder="Phone" />
+              <Form.Item name="additionalPhone" label="Additional Phone">
+                <Input placeholder="מס' טלפון נוסף" style={{ direction: 'rtl' }} />
               </Form.Item>
 
+              <Form.Item name="emergencyContactName" label="Emergency contact full name and relation">
+                <Input placeholder="שם מלא + מה הקשר שלו לקשיש" style={{ direction: 'rtl' }} />
+              </Form.Item>
+
+              <Form.Item name="emergencyContactPhone" label="Emergency Contact Phone Number">
+                <Input placeholder="מס' טלפון של איש קשר חירום" style={{ direction: 'rtl' }} />
+              </Form.Item>
+
+              <Form.Item name="caregiverNameAndRole" label="Name and Role of Caregiver">
+                <Input placeholder="שם מלא ותפקיד (מטפל\סוציאלי\תומך)" style={{ direction: 'rtl' }} />
+              </Form.Item>
+              
+              <Form.Item name="caregiverPhoneNumber" label="Caregiver Phone Number">
+                <Input placeholder="מס' טלפון של מטפל" style={{ direction: 'rtl' }} />
+              </Form.Item>
 
               {/* <Form.Item name="contact" label="Contact" style={{ direction: 'rtl' }} rules={[{ required: false }]}>
                 <Input placeholder="Contact" />
               </Form.Item> */}
               <h2>Background/More</h2>
 
-              <Form.Item name="personalBackground" label="Personal Background" rules={[{ required: false}]} initialValue={null} style={{ direction: 'rtl',}}>
-                    <Input.TextArea rows={3} placeholder="General information we need to know about the elder" style={{direction: 'rtl',}}/>
+              <Form.Item name="personalBackground" label="Personal Background" initialValue={null}>
+                <Input.TextArea
+                  rows={3}
+                  placeholder="מצב משפחתי או כל מידע אחר שנדרש לדעת"
+                  style={{ direction: 'rtl' }}
+                />
               </Form.Item>
 
-              {Helper.createHistoryComments()}
+              {/* {Helper.createHistoryComments()} */}
 
               {/* <Form.Item label="Signed Form">
                 <Form.Item
