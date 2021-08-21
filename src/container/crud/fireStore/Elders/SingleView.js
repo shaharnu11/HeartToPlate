@@ -176,7 +176,7 @@ const SingleView = ({ IsActionAdd, elder }) => {
                 label="Street Number"
                 rules={[{ required: true, message: getErrorMessage('Street number') }]}
               >
-                <InputNumber min={1} placeholder="מספר בית" style={{ direction: 'rtl' }} />
+                <InputNumber min={1} placeholder="מספר בית" style={{ direction: 'rtl' }}/>
               </Form.Item>
 
               <Form.Item name="additionalAddresInfo" label="Additional Address Information">
@@ -186,7 +186,7 @@ const SingleView = ({ IsActionAdd, elder }) => {
               {Helper.getLanguagesCheckboxs(true)}
 
               <Form.Item name="birthday" label="Date of birth">
-                <DatePicker placeholder="01/01/1900" format="DD/MM/YYYY" />
+                <DatePicker defaultPickerValue={new moment(new Date("01/01/1950"))} placeholder="01/01/1900" format="DD/MM/YYYY" />
               </Form.Item>
 
               <Form.Item name="source" label="Source" rules={[{ required: true, message: getErrorMessage('Gender') }]}>
@@ -224,7 +224,7 @@ const SingleView = ({ IsActionAdd, elder }) => {
                 label="Private Phone"
                 rules={[{ required: true, message: getErrorMessage('Phone number') }]}
               >
-                <Input placeholder="מס' טלפון" style={{ direction: 'rtl' }} />
+                <Input placeholder="מס' טלפון" style={{ direction: 'rtl' }}/>
               </Form.Item>
 
               <Form.Item name="additionalPhone" label="Additional Phone">
@@ -242,7 +242,7 @@ const SingleView = ({ IsActionAdd, elder }) => {
               <Form.Item name="caregiverNameAndRole" label="Name and Role of Caregiver">
                 <Input placeholder="שם מלא ותפקיד (מטפל\סוציאלי\תומך)" style={{ direction: 'rtl' }} />
               </Form.Item>
-              
+
               <Form.Item name="caregiverPhoneNumber" label="Caregiver Phone Number">
                 <Input placeholder="מס' טלפון של מטפל" style={{ direction: 'rtl' }} />
               </Form.Item>
